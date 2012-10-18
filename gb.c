@@ -25,11 +25,13 @@ int main()
    InitZ80(&z80,&registers);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+   //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/tetris.gb");
    //LoadROM("/home/user/git/gameboy-emulator/roms/tetris.gb",&cartridge);
 
-   Dispatch(&z80);
+   //Dispatch(&memory,&z80);
 
-   printf("%x\n",memory.addr[0]);
+   int i;
+   for(i=0;i<256;i++) printf("%x\n",memory.addr[i]);
    printf("%d\n",z80.r->A);
 
    return 0;

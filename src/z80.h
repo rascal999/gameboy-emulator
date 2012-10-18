@@ -1,3 +1,8 @@
+#ifndef _INCL_MEMORY
+#define _INCL_MEMORY
+#include "memory.h"
+#endif
+
 typedef struct
 {
    unsigned char A;
@@ -8,6 +13,11 @@ typedef struct
    unsigned char H;
    unsigned char L;
    unsigned char F; /* Flag */
+} Registers;
+
+typedef struct
+{
+   Registers * r;
 
    /* Clocks */
    unsigned char M;
@@ -15,13 +25,9 @@ typedef struct
 
    unsigned short PC;
    unsigned short SP;
-} Registers;
-
-typedef struct
-{
-   Registers * r;
 } Z80;
 
 int InitZ80(Z80 * z80, Registers * registers);
 int ResetZ80(Z80 * z80, Registers * registers);
-int Dispatch(Z80 * z80);
+int Dispatch(Memory * memory, Z80 * z80);
+int Execute(Memory * memory, Z80 * z80);
