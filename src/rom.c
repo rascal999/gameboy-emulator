@@ -18,7 +18,8 @@ int LoadGBROM(Memory * memory, char * GBROM)
    int i = 0;
    int k = 0;
    int fd = 0;
-   char buf[bufSize];
+   //unsigned char buf[bufSize];
+   unsigned short buf[bufSize];
    Error error;
 
    printf("Loading GB ROM ...\n");

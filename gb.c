@@ -31,7 +31,7 @@ int main()
    //Dispatch(&memory,&z80);
 
    int i;
-   for(i=0;i<256;i++) printf("%x\n",memory.addr[i]);
+   for(i=0;i<100;i++) printf("%x\n",memory.addr[i]);
    printf("%d\n",z80.r->A);
 
    return 0;

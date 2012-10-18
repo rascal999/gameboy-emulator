@@ -1,5 +1,6 @@
 typedef struct
 {
+   //unsigned char addr[0xFFFF]; /* 16 bit address buffer. Mem size of 65 536 */
    unsigned short addr[0xFFFF]; /* 16 bit address buffer. Mem size of 65 536 */
    int tmp;
 } Memory;
