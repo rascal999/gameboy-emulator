@@ -1,4 +1,7 @@
+#ifndef _INCL_Z80
+#define _INCL_Z80
 #include "z80.h"
+#endif
 
 int InitZ80(Z80 * z80, Registers * registers)
 {
@@ -30,4 +33,6 @@ int Dispatch(Z80 * z80)
 {
    /* Testing register manipulation */
    z80->r->A = 1;
+
+   return 0;
 }
