@@ -64,14 +64,15 @@ int Execute(Memory * memory, Z80 * z80)
 
    if (debug == 1) printf("opcode %x\n",memory->addr[z80->PC]);
 
-   switch(memory->addr[z80->PC] & 0xFF)
+   switch((memory->addr[z80->PC] & 0xFF00) >> 8)
    {
       case 0x00:
          z80->PC++;
       break;
 
       case 0x31:
-         z80->SP = (memory->addr[z80->PC + 2] & 0xFF00) | ((memory->addr[z80->PC] & 0xFF00) >> 8);
+         /* z80->SP = (memory->addr[z80->PC + 2] & 0xFF00) | ((memory->addr[z80->PC] & 0xFF00) >> 8); */
+         z80->SP = (memory->addr[z80->PC+1] & 0xFF00) + (memory->addr[z80->PC] & 0xFF);
          z80->PC = z80->PC + 1;
          if (debug == 1) printf("SP = %x\n",z80->SP);
       break;

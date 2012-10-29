@@ -34,7 +34,10 @@ int LoadGBROM(Memory * memory, char * GBROM)
    {
       for(k=0;k<bufSizeRead;k++)
       {
-         memory->addr[i] = buf[i];
+         /* First byte */
+         memory->addr[i] = (buf[i] & 0xFF) << 8;
+         /* Second byte */
+         memory->addr[i] = memory->addr[i] + ((buf[i] & 0xFF00) >> 8);
          i++;
       }
    }
