@@ -36,6 +36,7 @@ int Dispatch(Memory * memory, Z80 * z80)
 {
    while(1)
    {
+      /*Fetch(memory,z80);*/
       Execute(memory,z80);
    }
 
@@ -45,6 +46,15 @@ int Dispatch(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int Fetch(Memory * memory, Z80 * z80)
+{
+   /* Fetch correct number of bytes for instruction and decode */
+   /* switch(memory->addr[z80->PC] & 0x00FF)
+   {
+   } */
+   return 0; 
+}
+
 int Execute(Memory * memory, Z80 * z80)
 {
    int debug = 1;
@@ -52,7 +62,7 @@ int Execute(Memory * memory, Z80 * z80)
 
    usleep(50000);
 
-   if (debug == 1) printf("what %x\n",memory->addr[z80->PC]);
+   if (debug == 1) printf("opcode %x\n",memory->addr[z80->PC]);
 
    switch(memory->addr[z80->PC] & 0xFF)
    {
@@ -61,8 +71,8 @@ int Execute(Memory * memory, Z80 * z80)
       break;
 
       case 0x31:
-         z80->SP = memory->addr[z80->PC + 1] & (memory->addr[z80->PC + 2] >> 8);
-         z80->PC = z80->PC + 2;
+         z80->SP = (memory->addr[z80->PC + 2] & 0xFF00) | ((memory->addr[z80->PC] & 0xFF00) >> 8);
+         z80->PC = z80->PC + 1;
          if (debug == 1) printf("SP = %x\n",z80->SP);
       break;
 

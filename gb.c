@@ -28,10 +28,14 @@ int main()
    //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/tetris.gb");
    //LoadROM("/home/user/git/gameboy-emulator/roms/tetris.gb",&cartridge);
 
-   //Dispatch(&memory,&z80);
+   Dispatch(&memory,&z80);
 
    int i;
-   for(i=0;i<100;i++) printf("%x\n",memory.addr[i]);
+   for(i=0;i<100;i++)
+   {
+      printf("%x\n",memory.addr[i]);
+   }
+
    printf("%d\n",z80.r->A);
 
    return 0;

@@ -30,4 +30,5 @@ typedef struct
 int InitZ80(Z80 * z80, Registers * registers);
 int ResetZ80(Z80 * z80, Registers * registers);
 int Dispatch(Memory * memory, Z80 * z80);
+int Fetch(Memory * memory, Z80 * z80);
 int Execute(Memory * memory, Z80 * z80);
