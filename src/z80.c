@@ -58,6 +58,7 @@ int Fetch(Memory * memory, Z80 * z80)
 int Execute(Memory * memory, Z80 * z80)
 {
    int debug = 1;
+   uint16_t tmp;
    Error error;
 
    usleep(50000);
@@ -65,18 +66,51 @@ int Execute(Memory * memory, Z80 * z80)
    if (debug == 1) printf("rb %x\n",rb(memory,(z80->PC)));
 
    /* switch((memory->addr[z80->PC] & 0xFF00) >> 8) */
-   switch(rb(memory,(z80->PC)))
+   switch(rb(memory,(z80->PC++)))
    {
       case 0x00:
          z80->PC++;
          z80->ticks = 4;
       break;
 
+      case 0x21: /* LD HL,nn */
+         z80->r->H = rb(memory,(z80->PC+1));
+         z80->r->L = rb(memory,(z80->PC));
+         z80->PC = z80->PC + 2;
+         z80->ticks = 12;
+         if (debug == 1)
+         {
+            printf("H = %x\n",z80->r->H);
+            printf("L = %x\n",z80->r->L);
+         }
+      break;
+
       case 0x31: /* LD SP,nn */
-         z80->SP = (rb(memory,(z80->PC+2)) << 8) + rb(memory,(z80->PC+1));
+         //z80->SP = (rb(memory,(z80->PC+2)) << 8) + rb(memory,(z80->PC+1));
+         z80->SP = rw(memory,z80->PC);
          z80->PC = z80->PC + 2;
          z80->ticks = 12;
          if (debug == 1) printf("SP = %x\n",z80->SP);
+      break;
+
+      case 0x32: /* LD (HL-),A */
+         wb(memory,(z80->r->H << 8) + z80->r->L,0xA);
+         tmp = (z80->r->H << 8) + z80->r->L;
+
+         decrementHL(z80);
+         z80->ticks = 8;
+         if (debug == 1)
+         {
+            printf("H = %x\n",z80->r->H);
+            printf("L = %x\n",z80->r->L);
+            printf("%x = %x\n",tmp,rb(memory,(tmp)));
+         }
+      break;
+
+      case 0xAF: /* XOR A */
+         z80->r->A = 0;
+         z80->ticks = 4;
+         if (debug == 1) printf("A = %x\n",z80->r->A);
       break;
 
       case 0xFF: /* RST 0x38 */
@@ -94,8 +128,6 @@ int Execute(Memory * memory, Z80 * z80)
       break;
    }
 
-   z80->PC++;
-
    return 0;
 }
 
@@ -103,6 +135,19 @@ int HertzToMilliseconds(int Hertz)
 {
    int ms = (Hertz / 1) * 1000;
    usleep(ms);
+
+   return 0;
+}
+
+int decrementHL(Z80 * z80)
+{
+   uint16_t tmpHL;
+
+   tmpHL = (z80->r->H << 8) + z80->r->L;
+   tmpHL--;
+
+   z80->r->H = (tmpHL & 0xFF00) >> 8;
+   z80->r->L = (tmpHL & 0xFF);
 
    return 0;
 }

@@ -12,13 +12,13 @@
 #define _INCL_ERROR
 #include "error.h"
 #endif
-#ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
-#endif
 #ifndef _INCL_Z80
 #define _INCL_Z80
 #include "z80.h"
+#endif
+#ifndef _INCL_MEMORY
+#define _INCL_MEMORY
+#include "memory.h"
 #endif
 
 int LoadCartridge(char * ROM, Cartridge * cartridge)

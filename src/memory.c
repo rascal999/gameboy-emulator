@@ -1,7 +1,14 @@
+#ifndef _INCL_MEMORY
+#define _INCL_MEMORY
 #include "memory.h"
+#endif
 #ifndef _INCL_STDINT
 #define _INCL_STDINT
 #include <stdint.h>
+#endif
+#ifndef _INCL_Z80
+#define _INCL_Z80
+#include "z80.h"
 #endif
 
 /* MMU */
@@ -90,11 +97,11 @@ int wb(Memory * mem, uint16_t addr, uint8_t value)
 /* Read word */
 uint16_t rw(Memory * mem, uint16_t addr)
 {
-   return 0;
+   return (rb(mem,(addr+1)) << 8) + rb(mem,(addr));
 }
 
 /* Write word */
-int ww(Memory * mem, uint16_t addr, uint16_t value)
+int ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value)
 {
    mem->addr[addr] = value;
    return 0;

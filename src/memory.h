@@ -3,6 +3,8 @@
 #include <stdint.h>
 #endif
 
+typedef struct Z80 Z80;
+
 typedef struct
 {
    uint8_t addr[0xFFFF]; /* 16 bit address buffer. Mem size of 65 536 */
@@ -52,7 +54,7 @@ int wb(Memory * mem, uint16_t addr, uint8_t value);
 uint16_t rw(Memory * mem, uint16_t addr);
 
 /* Write word */
-int ww(Memory * mem, uint16_t addr, uint16_t value);
+int ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value);
 /* END MMU */
 
 int InitMemory(Memory * memory);
