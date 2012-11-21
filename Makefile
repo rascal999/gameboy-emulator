@@ -1,4 +1,4 @@
-all: cartridge.o display.o error.o gb.o memory.o rom.o z80.o main
+all: cartridge.o display.o error.o gb.o memory.o rom.o timer.o z80.o main
 
 cartridge.o:
 	gcc -ggdb -Wall -std=c99 -c src/cartridge.c -o objects/cartridge.o
@@ -18,11 +18,14 @@ memory.o:
 rom.o:
 	gcc -ggdb -Wall -std=c99 -c src/rom.c -o objects/rom.o
 
+timer.o:
+	gcc -ggdb -Wall -std=c99 -c src/timer.c -o objects/timer.o
+
 z80.o:
 	gcc -ggdb -Wall -std=c99 -c src/z80.c -o objects/z80.o
 
 main:
-	gcc -ggdb -Wall -std=c99 objects/cartridge.o objects/display.o objects/error.o objects/memory.o objects/rom.o objects/z80.o objects/gb.o -o gb
+	gcc -ggdb -Wall -std=c99 objects/cartridge.o objects/display.o objects/error.o objects/memory.o objects/rom.o objects/timer.o objects/z80.o objects/gb.o -o gb
 
 clean:
 	rm -rf objects/*

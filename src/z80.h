@@ -19,9 +19,8 @@ typedef struct
 {
    Registers * r;
 
-   /* Clocks */
-   unsigned char M;
-   unsigned char T;
+   /* CPU ticks of last instruction */
+   unsigned short ticks;
 
    unsigned short PC;
    unsigned short SP;
@@ -32,3 +31,4 @@ int ResetZ80(Z80 * z80, Registers * registers);
 int Dispatch(Memory * memory, Z80 * z80);
 int Fetch(Memory * memory, Z80 * z80);
 int Execute(Memory * memory, Z80 * z80);
+int HertzToMilliseconds(int Hertz);

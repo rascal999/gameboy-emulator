@@ -11,6 +11,11 @@
 #include "memory.h"
 #endif
 
+#ifndef _INCL_STDINT
+#define _INCL_STDINT
+#include <stdint.h>
+#endif
+
 int LoadGBROM(Memory * memory, char * GBROM)
 {
    int bufSize = 2048;
@@ -18,8 +23,8 @@ int LoadGBROM(Memory * memory, char * GBROM)
    int i = 0;
    int k = 0;
    int fd = 0;
-   //unsigned char buf[bufSize];
-   unsigned short buf[bufSize];
+
+   uint8_t buf[bufSize];
    Error error;
 
    printf("Loading GB ROM ...\n");
@@ -34,10 +39,7 @@ int LoadGBROM(Memory * memory, char * GBROM)
    {
       for(k=0;k<bufSizeRead;k++)
       {
-         /* First byte */
-         memory->addr[i] = (buf[i] & 0xFF) << 8;
-         /* Second byte */
-         memory->addr[i] = memory->addr[i] + ((buf[i] & 0xFF00) >> 8);
+         memory->bios_rom[i] = buf[i];
          i++;
       }
    }

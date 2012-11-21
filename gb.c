@@ -23,6 +23,7 @@ int main()
    Z80 z80;
 
    InitZ80(&z80,&registers);
+   InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
    //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/tetris.gb");

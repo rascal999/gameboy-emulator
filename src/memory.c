@@ -1,25 +1,100 @@
 #include "memory.h"
+#ifndef _INCL_STDINT
+#define _INCL_STDINT
+#include <stdint.h>
+#endif
 
 /* MMU */
 /* 8 bit */
-unsigned short rb(Memory * mem, unsigned short addr)
+/* Read byte */
+uint8_t rb(Memory * mem, uint16_t addr)
 {
+   switch(addr & 0xF000)
+   {
+      case 0x0000:
+         if (mem->bios_rom_loaded == 1)
+         {
+            if (addr < 0x100)
+            {
+               return mem->bios_rom[addr];
+            }
+         }
+      break;
+
+      default:
+      break;
+
+      return 0;
+   }
+
+   /* Timer registers */
+   switch(addr & 0xFFFF)
+   {
+      case 0xFF04:
+         return mem->div;
+      break;
+
+      case 0xFF05:
+         return mem->tima;
+      break;
+
+      case 0xFF06:
+         return mem->tma;
+      break;
+
+      case 0xFF07:
+         return mem->tac;
+      break;
+
+      default:
+      break;
+
+      return 0;
+   }
+
    return 0;
 }
 
-int wb(Memory * mem, unsigned short addr, unsigned char value)
+/* Write byte */
+int wb(Memory * mem, uint16_t addr, uint8_t value)
 {
-   mem->addr[addr] = value;
+   /* Timer registers */
+   switch(addr & 0xFFFF)
+   {
+      case 0xFF04:
+         mem->div = value;
+      break;
+
+      case 0xFF05:
+         mem->tima = value;
+      break;
+
+      case 0xFF06:
+         mem->tma = value;
+      break;
+
+      case 0xFF07:
+         mem->tac = value;
+      break;
+
+      default:
+      break;
+
+      return 0;
+   }
+
    return 0;
 }
 
 /* 16 bit */
-unsigned short rw(Memory * mem, unsigned short addr)
+/* Read word */
+uint16_t rw(Memory * mem, uint16_t addr)
 {
    return 0;
 }
 
-int ww(Memory * mem, unsigned short addr, unsigned short value)
+/* Write word */
+int ww(Memory * mem, uint16_t addr, uint16_t value)
 {
    mem->addr[addr] = value;
    return 0;
@@ -28,5 +103,8 @@ int ww(Memory * mem, unsigned short addr, unsigned short value)
 
 int InitMemory(Memory * memory)
 {
+   /* Start in BIOS ROM */
+   memory->bios_rom_loaded = 1;
+
    return 0;
 }
