@@ -2,6 +2,10 @@
 #define _INCL_STDINT
 #include <stdint.h>
 #endif
+/*#ifndef _INCL_DEBUG
+#define _INCL_DEBUG
+#include "debug.h"
+#endif*/
 
 typedef struct Z80 Z80;
 

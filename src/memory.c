@@ -1,10 +1,11 @@
-#ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
-#endif
+#include <string.h>
 #ifndef _INCL_STDINT
 #define _INCL_STDINT
 #include <stdint.h>
+#endif
+#ifndef _INCL_MEMORY
+#define _INCL_MEMORY
+#include "memory.h"
 #endif
 #ifndef _INCL_Z80
 #define _INCL_Z80

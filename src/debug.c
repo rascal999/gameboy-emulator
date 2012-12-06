@@ -55,19 +55,15 @@ int DebugNextInstructionSize(uint8_t opcode)
    switch(opcode)
    {
       case 0x00:
+      case 0x32:
+      case 0xAF:
+      case 0xFF:
          return 1;
       break;
 
       case 0x21:
-         return 3;
-      break;
-
       case 0x31:
          return 3;
-      break;
-
-      case 0x32:
-         return 1;
       break;
 
       default:
