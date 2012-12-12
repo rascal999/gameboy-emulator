@@ -41,4 +41,8 @@ if [[ $? != 0 ]]; then
 fi
 
 git commit -a
+if [[ $? != 0 ]]; then
+   exit
+fi
+
 git push
