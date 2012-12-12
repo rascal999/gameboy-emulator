@@ -137,7 +137,6 @@ int decrementHL(Z80 * z80)
 /* OPCODES */
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
-   z80->r->PC++;
    z80->ticks = 4;
 
    return 0;
@@ -179,6 +178,7 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
 int OP_AFh_XORA(Memory * memory, Z80 * z80)
 {
    z80->r->A = 0;
+   z80->r->F = 0;
    z80->ticks = 4;
 
    return 0;

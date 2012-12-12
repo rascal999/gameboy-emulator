@@ -1,16 +1,16 @@
 #include <stdio.h>
 
-#include "src/cartridge.h"
-#include "src/display.h"
-#include "src/error.h"
+#include "cartridge.h"
+#include "display.h"
+#include "error.h"
 #ifndef _INCL_MEMORY
 #define _INCL_MEMORY
-#include "src/memory.h"
+#include "memory.h"
 #endif
-#include "src/rom.h"
+#include "rom.h"
 #ifndef _INCL_Z80
 #define _INCL_Z80
-#include "src/z80.h"
+#include "z80.h"
 #endif
 
 int main()

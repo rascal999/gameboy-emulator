@@ -39,3 +39,6 @@ sudo make install
 if [[ $? != 0 ]]; then
    exit
 fi
+
+git commit -a
+git push
