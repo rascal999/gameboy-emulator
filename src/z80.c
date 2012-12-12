@@ -166,7 +166,9 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
 {
    uint16_t tmp;
 
-   wb(memory,(z80->r->H << 8) + z80->r->L,0xA);
+   wb(memory,(z80->r->H << 8) + z80->r->L,z80->r->A);
+printf("dev HL = %x\n",(z80->r->H << 8) + z80->r->L);
+printf("dev HL content = %x\n",rb(memory,(z80->r->H << 8) + z80->r->L));
    tmp = (z80->r->H << 8) + z80->r->L;
 
    decrementHL(z80);
