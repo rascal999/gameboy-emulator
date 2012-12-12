@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef UNITTEST
+#ifndef _INCL_MOCK_HELPER
+#define _INCL_MOCK_HELPER
+#include "mock_helper.c"
+#endif
+#undef wb
+#define wb mock_wb
+#else
 #ifndef _INCL_DEBUG
 #define _INCL_DEBUG
 #include "debug.h"
@@ -10,6 +18,7 @@
 #include "z80.h"
 #endif
 #include "error.h"
+#endif
 
 int InitZ80(Z80 * z80, Registers * registers)
 {

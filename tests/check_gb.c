@@ -11,6 +11,10 @@
 #include "../src/z80.h"
 #endif
 #include "../src/error.h"
+#ifdef UNITTEST
+#define wb mock_wb
+#define rb mock_rb
+#endif
 
                                    //     B     Ticks
 START_TEST (test_check_OP_00h_NOP) //0x00 1     4
@@ -94,7 +98,7 @@ START_TEST (test_check_OP_32h_LDDHLA) //0x32 1     8
    InitZ80(&z80,&registers);
    InitMemory(&memory);
 
-   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+   //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
    int result = 0;
    int tmp_z80_PC = z80.r->PC;
@@ -102,17 +106,17 @@ START_TEST (test_check_OP_32h_LDDHLA) //0x32 1     8
 
    z80.r->H = 0;
    z80.r->L = 0x11;
+   z80.r->A = 0xB;
 
-printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
+   printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
 
    result = OP_32h_LDDHLA(&memory,&z80);
 
    fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
    fail_unless(result == 0,"Result was not 0");
-printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L + 1),z80.r->A);
-   fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L + 1) == z80.r->A,"Content at address pointed by HL (+1 at this point) does not match A register. This test is failing because wb function defined in memory.c does not map to all memory regions. This will need to be done before this opcode can pass test.");
-
+   printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L + 1),z80.r->A);
+   fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L + 1) == z80.r->A,"Content at address pointed by HL (+1 at this point) does not match A register.");
    fail_unless(z80.ticks == 8,"Ticks for opcode not registered or correct value");
 }
 END_TEST
