@@ -4,13 +4,13 @@
 #include "display.h"
 #include "error.h"
 #ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
+   #define _INCL_MEMORY
+   #include "memory.h"
 #endif
 #include "rom.h"
 #ifndef _INCL_Z80
-#define _INCL_Z80
-#include "z80.h"
+   #define _INCL_Z80
+   #include "z80.h"
 #endif
 
 int main()

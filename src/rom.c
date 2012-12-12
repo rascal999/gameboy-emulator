@@ -7,13 +7,13 @@
 #include "error.h"
 #include "rom.h"
 #ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
+   #define _INCL_MEMORY
+   #include "memory.h"
 #endif
 
 #ifndef _INCL_STDINT
-#define _INCL_STDINT
-#include <stdint.h>
+   #define _INCL_STDINT
+   #include <stdint.h>
 #endif
 
 int LoadGBROM(Memory * memory, char * GBROM)

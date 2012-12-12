@@ -1,6 +1,6 @@
 #ifndef _INCL_STDINT
-#define _INCL_STDINT
-#include <stdint.h>
+   #define _INCL_STDINT
+   #include <stdint.h>
 #endif
 /*#ifndef _INCL_DEBUG
 #define _INCL_DEBUG

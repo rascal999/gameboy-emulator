@@ -1,6 +1,6 @@
 #ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
+   #define _INCL_MEMORY
+   #include "memory.h"
 #endif
 
 typedef struct

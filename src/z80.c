@@ -1,23 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef _INCL_STDINT
+   #define _INCL_STDINT
+   #include <stdint.h>
+#endif
 
 #ifdef UNITTEST
-#ifndef _INCL_MOCK_HELPER
-#define _INCL_MOCK_HELPER
-#include "mock_helper.c"
-#endif
-#undef wb
-#define wb mock_wb
+   #ifndef _INCL_MOCK_HELPER
+      #define _INCL_MOCK_HELPER
+      #include "mock_helper.h"
+      #undef rb
+      #undef wb
+      #define rb mock_rb
+      #define wb mock_wb
+   #endif
 #else
-#ifndef _INCL_DEBUG
-#define _INCL_DEBUG
-#include "debug.h"
-#endif
-#ifndef _INCL_Z80
-#define _INCL_Z80
-#include "z80.h"
-#endif
-#include "error.h"
+   #ifndef _INCL_DEBUG
+      #define _INCL_DEBUG
+      #include "debug.h"
+   #endif
+   #ifndef _INCL_Z80
+      #define _INCL_Z80
+      #include "z80.h"
+   #endif
+   #include "error.h"
 #endif
 
 int InitZ80(Z80 * z80, Registers * registers)
@@ -178,6 +184,7 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
    wb(memory,(z80->r->H << 8) + z80->r->L,z80->r->A);
 printf("dev HL = %x\n",(z80->r->H << 8) + z80->r->L);
 printf("dev HL content = %x\n",rb(memory,(z80->r->H << 8) + z80->r->L));
+printf("A register = %x\n",z80->r->A);
    tmp = (z80->r->H << 8) + z80->r->L;
 
    decrementHL(z80);

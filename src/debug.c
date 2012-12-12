@@ -2,16 +2,16 @@
 #include <stdlib.h>
 
 #ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
+   #define _INCL_MEMORY
+   #include "memory.h"
 #endif
 #ifndef _INCL_Z80
-#define _INCL_Z80
-#include "z80.h"
+   #define _INCL_Z80
+   #include "z80.h"
 #endif
 #ifndef _INCL_DEBUG
-#define _INCL_DEBUG
-#include "debug.h"
+   #define _INCL_DEBUG
+   #include "debug.h"
 #endif
 
 int DebugFullInstruction(Z80 * z80, Memory * memory)

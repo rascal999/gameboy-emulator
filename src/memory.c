@@ -1,15 +1,23 @@
 #include <string.h>
 #ifndef _INCL_STDINT
-#define _INCL_STDINT
-#include <stdint.h>
+   #define _INCL_STDINT
+   #include <stdint.h>
 #endif
-#ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
-#endif
-#ifndef _INCL_Z80
-#define _INCL_Z80
-#include "z80.h"
+
+#ifdef UNITTEST
+   #ifndef _INCL_MOCK_HELPER
+      #define _INCL_MOCK_HELPER
+      #include "mock_helper.h"
+   #endif
+#else
+   #ifndef _INCL_MEMORY
+      #define _INCL_MEMORY
+      #include "memory.h"
+   #endif
+   #ifndef _INCL_Z80
+      #define _INCL_Z80
+      #include "z80.h"
+   #endif
 #endif
 
 /* MMU */

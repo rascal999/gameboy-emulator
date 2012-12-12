@@ -1,10 +1,10 @@
 #ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "memory.h"
+   #define _INCL_MEMORY
+   #include "memory.h"
 #endif
 #ifndef _INCL_Z80
-#define _INCL_Z80
-#include "z80.h"
+   #define _INCL_Z80
+   #include "z80.h"
 #endif
 
 typedef struct

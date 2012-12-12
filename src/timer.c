@@ -1,6 +1,6 @@
 #ifndef _INCL_MEMORY
-#define _INCL_MEMORY
-#include "timer.h"
+   #define _INCL_MEMORY
+   #include "timer.h"
 #endif
 
 /* Timers */
