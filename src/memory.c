@@ -10,6 +10,10 @@
       #include "mock_helper.h"
    #endif
 #else
+   #ifndef _INCL_ERROR
+      #define _INCL_ERROR
+      #include "error.h"
+   #endif
    #ifndef _INCL_MEMORY
       #define _INCL_MEMORY
       #include "memory.h"
@@ -19,6 +23,8 @@
       #include "z80.h"
    #endif
 #endif
+
+Error err;
 
 /* MMU */
 /* 8 bit */
@@ -50,13 +56,71 @@ uint8_t rb(Memory * mem, uint16_t addr)
       case 0x5000:
       case 0x6000:
       case 0x7000:
-         return mem->bank0[addr];
+         return mem->bank0[addr & 0x6FFF];
+      break;
+
+      // vram
+      case 0x8000:
+      case 0x9000:
+         return mem->vram[addr & 0x1FFF];
+      break;
+
+      // eram
+      case 0xA000:
+      case 0xB000:
+         return mem->eram[addr & 0x1FFF];
+      break;
+
+      // wram0
+      case 0xC000:
+         return mem->wram0[addr & 0x1FFF];
+      break;
+
+      // wram1 (switchable bank in CGB)
+      case 0xD000:
+         return mem->wram1[addr & 0x2FFF];
+      break;
+
+      // wram (shadow)
+      case 0xE000:
+         return mem->wram_shadow[addr & 0x1FFF];
       break;
 
       default:
       break;
 
       return 0;
+   }
+
+   // Working RAM shadow and sat
+   switch(addr & 0xFF00)
+   {
+      case 0xF000: case 0xF100: case 0xF200: case 0xF300:
+      case 0xF400: case 0xF500: case 0xF600: case 0xF700:
+      case 0xF800: case 0xF900: case 0xFA00: case 0xFB00:
+      case 0xFC00: case 0xFD00:
+         return mem->wram_shadow[addr & 0x1FFF];
+      break;
+
+      case 0xFE00:
+         if (addr < 0xFFA0)
+         {
+            return mem->sat[addr & 0xFF];
+         } else {
+            // Unaddressable memory region
+            err.code = 30;
+            exiterror(&err);
+         }
+      break;
+
+      case 0xFF00:
+         if (addr < 0xFF80)
+         {
+            return mem->io_ports[addr & 0xFF];
+         } else {
+            return mem->hram[addr & 0x7F];
+         }
+      break;
    }
 
    /* Timer registers */

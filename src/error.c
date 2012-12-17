@@ -27,6 +27,11 @@ int exiterror(Error * error)
          printf("Error 20: Missing opcode\n");
          exit(20);
       break;
+
+      case 30:
+         printf("Error 30: Unaddressable location\n");
+         exit(30);
+      break;
    }
 
    return 1;

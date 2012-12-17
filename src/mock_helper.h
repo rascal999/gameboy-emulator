@@ -56,7 +56,9 @@ typedef struct
    uint8_t wram0[0x1000];
    uint8_t wram1[0x1000];
    uint8_t wram_shadow[0x1E00];
+   uint8_t sat[0xA0];
    uint8_t io_ports[0x80];
+   uint8_t hram[0x80];
 
    uint8_t div; /* Divider */
    uint8_t tima; /* Timer Counter */

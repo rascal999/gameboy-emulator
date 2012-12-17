@@ -23,7 +23,10 @@
       #define _INCL_Z80
       #include "z80.h"
    #endif
-   #include "error.h"
+   #ifndef _INCL_ERROR
+      #define _INCL_ERROR
+      #include "error.h"
+   #endif
 #endif
 
 int InitZ80(Z80 * z80, Registers * registers)
@@ -80,7 +83,7 @@ int Execute(Memory * memory, Z80 * z80)
    uint16_t tmp;
 
    Debug debug;
-   Error error;
+   Error err;
 
    usleep(50000);
 
@@ -120,8 +123,8 @@ int Execute(Memory * memory, Z80 * z80)
       break;
 
       default:
-         error.code = 20;
-         exiterror(&error);
+         err.code = 20;
+         exiterror(&err);
       break;
    }
 
