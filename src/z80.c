@@ -5,7 +5,7 @@
    #include <stdint.h>
 #endif
 
-#ifdef UNITTEST
+#ifdef UNITTEST_OPCODES
    #ifndef _INCL_MOCK_HELPER
       #define _INCL_MOCK_HELPER
       #include "mock_helper.h"

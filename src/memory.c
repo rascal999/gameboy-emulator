@@ -4,7 +4,7 @@
    #include <stdint.h>
 #endif
 
-#ifdef UNITTEST
+#ifdef UNITTEST_OPCODES
    #ifndef _INCL_MOCK_HELPER
       #define _INCL_MOCK_HELPER
       #include "mock_helper.h"
@@ -35,6 +35,22 @@ uint8_t rb(Memory * mem, uint16_t addr)
                return mem->bios_rom[addr];
             }
          }
+         return mem->bank0[addr];
+      break;
+
+      // bank0
+      case 0x1000:
+      case 0x2000:
+      case 0x3000:
+         return mem->bank0[addr];
+      break;
+
+      // bankNNN
+      case 0x4000:
+      case 0x5000:
+      case 0x6000:
+      case 0x7000:
+         return mem->bank0[addr];
       break;
 
       default:

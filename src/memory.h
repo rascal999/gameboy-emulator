@@ -11,7 +11,7 @@ typedef struct Z80 Z80;
 
 typedef struct
 {
-   uint8_t addr[0xFFFF]; /* 16 bit address buffer. Mem size of 65 536 */
+   uint8_t addr[0x10000]; /* 16 bit address buffer. Mem size of 65 536 */
 
    /*
       0000-3FFF   16KB ROM Bank 00     (in cartridge, fixed at bank 00)
@@ -28,15 +28,15 @@ typedef struct
       FFFF        Interrupt Enable Register
    */
 
-   uint8_t bios_rom[0xFF];
-   uint8_t bank0[0x3FFF];
-   uint8_t bankNNN[0x3FFF];
-   uint8_t vram[0x1FFF];
-   uint8_t eram[0x1FFF];
-   uint8_t wram0[0xFFF];
-   uint8_t wram1[0xFFF];
-   uint8_t wram_shadow[0x1DFF];
-   uint8_t io_ports[0x7F];
+   uint8_t bios_rom[0x100];
+   uint8_t bank0[0x4000];
+   uint8_t bankNNN[0x4000];
+   uint8_t vram[0x2000];
+   uint8_t eram[0x2000];
+   uint8_t wram0[0x1000];
+   uint8_t wram1[0x1000];
+   uint8_t wram_shadow[0x1E00];
+   uint8_t io_ports[0x80];
 
    uint8_t div; /* Divider */
    uint8_t tima; /* Timer Counter */

@@ -3,17 +3,17 @@
 #include <stdio.h>
 
 #ifndef _INCL_DEBUG
-#define _INCL_DEBUG
-#include "../src/debug.h"
+   #define _INCL_DEBUG
+   #include "../src/debug.h"
 #endif
 #ifndef _INCL_Z80
-#define _INCL_Z80
-#include "../src/z80.h"
+   #define _INCL_Z80
+   #include "../src/z80.h"
 #endif
 #include "../src/error.h"
 #ifdef UNITTEST
-#define wb mock_wb
-#define rb mock_rb
+   #define wb mock_wb
+   #define rb mock_rb
 #endif
 
                                    //     B     Ticks

@@ -37,6 +37,8 @@ uint8_t mock_rb(Memory * mem, uint16_t addr)
 int mock_wb(Memory * mem, uint16_t addr, uint8_t value)
 {
    mem->bios_rom[addr] = value;
+printf("mock addr %x == %x\n",addr,value);
+   return 0;
 }
 
 /* Read word */
