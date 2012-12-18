@@ -39,6 +39,56 @@ START_TEST (test_check_OP_00h_NOP) //0x00 1     4
 }
 END_TEST
 
+START_TEST (test_check_OP_04h_LDBB) //0x04 1     4
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0;
+   uint8_t tmp_z80_PC = z80.r->PC;
+
+   z80.r->B = 0xB;
+   z80.r->B = 0xB;
+
+   result = OP_04h_LDBB(&memory,&z80);
+
+   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+   fail_unless(result == 0,"Result was not 0");
+   fail_unless(z80.r->B == z80.r->B,"Register B does not equal register B");
+   fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+}
+END_TEST
+
+START_TEST (test_check_OP_14h_LDBC) //0x14 1     4
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0;
+   uint8_t tmp_z80_PC = z80.r->PC;
+
+   z80.r->B = 0xB;
+   z80.r->C = 0xC;
+
+   result = OP_14h_LDBC(&memory,&z80);
+
+   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+   fail_unless(result == 0,"Result was not 0");
+   fail_unless(z80.r->B == z80.r->C,"Register B does not equal register C");
+   fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+}
+END_TEST
+
 START_TEST (test_check_OP_21h_LDHLnn) //0x21 1     4
 {
    Memory memory;
@@ -304,6 +354,82 @@ START_TEST (test_check_OP_31h_JRNCn) //0x31 1     4
 }
 END_TEST
 
+START_TEST (test_check_OP_34h_LDBE) //0x34 1     4
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0;
+   uint8_t tmp_z80_PC = z80.r->PC;
+   uint8_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+
+   z80.r->B = 0xB;
+   z80.r->E = 0xE;
+
+   result = OP_34h_LDBE(&memory,&z80);
+
+   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+   fail_unless(result == 0,"Result was not 0");
+   fail_unless(z80.r->B == z80.r->E,"Register B does not equal register E");
+   fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+}
+END_TEST
+
+START_TEST (test_check_OP_44h_LDBH) //0x44 1     4
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0;
+   uint8_t tmp_z80_PC = z80.r->PC;
+
+   z80.r->B = 0xB;
+   z80.r->H = 0x8;
+
+   result = OP_44h_LDBH(&memory,&z80);
+
+   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+   fail_unless(result == 0,"Result was not 0");
+   fail_unless(z80.r->B == z80.r->H,"Register B does not equal register H");
+   fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+}
+END_TEST
+
+START_TEST (test_check_OP_54h_LDBL) //0x54 1     4
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0;
+   uint8_t tmp_z80_PC = z80.r->PC;
+
+   z80.r->B = 0xB;
+   z80.r->L = 0x12;
+
+   result = OP_54h_LDBL(&memory,&z80);
+
+   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+   fail_unless(result == 0,"Result was not 0");
+   fail_unless(z80.r->B == z80.r->L,"Register B does not equal register L");
+   fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+}
+END_TEST
+
 START_TEST (test_check_OP_AFh_XORA) //0xAF 1    4
 {
    Memory memory;
@@ -335,6 +461,8 @@ Suite * add_suite(void)
    /* Core test case */
    TCase *tc_core = tcase_create("Core");
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
+   tcase_add_test(tc_core,test_check_OP_04h_LDBB);
+   tcase_add_test(tc_core,test_check_OP_14h_LDBC);
    tcase_add_test(tc_core,test_check_OP_AFh_XORA);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);
@@ -345,6 +473,9 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_27h_LDHLD);
    tcase_add_test(tc_core,test_check_OP_28h_ADDAD);
    tcase_add_test(tc_core,test_check_OP_31h_JRNCn);
+   tcase_add_test(tc_core,test_check_OP_34h_LDBE);
+   tcase_add_test(tc_core,test_check_OP_44h_LDBH);
+   tcase_add_test(tc_core,test_check_OP_54h_LDBL);
    suite_add_tcase(s,tc_core);
 
    return s;

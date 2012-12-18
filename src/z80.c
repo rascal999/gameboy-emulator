@@ -102,6 +102,14 @@ int Execute(Memory * memory, Z80 * z80)
          OP_00h_NOP(memory,z80);
       break;
 
+      case 0x04:
+         OP_04h_LDBB(memory,z80);
+      break;
+
+      case 0x14:
+         OP_14h_LDBC(memory,z80);
+      break;
+
       case 0x21: /* LD HL,nn */
          OP_21h_LDHLnn(memory,z80);
       break;
@@ -110,8 +118,24 @@ int Execute(Memory * memory, Z80 * z80)
          OP_22h_LDIHLA(memory,z80);
       break;
 
+      case 0x24:
+         OP_24h_LDBD(memory,z80);
+      break;
+
       case 0x31: /* LD SP,nn */
          OP_31h_JRNCn(memory,z80);
+      break;
+
+      case 0x34:
+         OP_34h_LDBE(memory,z80);
+      break;
+
+      case 0x44:
+         OP_44h_LDBH(memory,z80);
+      break;
+
+      case 0x54:
+         OP_54h_LDBL(memory,z80);
       break;
 
       case 0xAF: /* XOR A */
@@ -176,20 +200,28 @@ int OP_00h_NOP(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_21h_LDHLnn(Memory * memory, Z80 * z80)
+int OP_04h_LDBB(Memory * memory, Z80 * z80)
 {
-   z80->r->H = rb(memory,(z80->r->PC+1));
-   z80->r->L = rb(memory,(z80->r->PC));
-   z80->r->PC = z80->r->PC + 2;
-   z80->ticks = 12;
+   z80->r->B = z80->r->B;
+
+   z80->ticks = 4;
 
    return 0;
 }
 
-int OP_31h_JRNCn(Memory * memory, Z80 * z80)
+int OP_14h_LDBC(Memory * memory, Z80 * z80)
 {
-   //z80->r->SP = (rb(memory,(z80->r->PC+2)) << 8) + rb(memory,(z80->r->PC+1));
-   z80->r->SP = rw(memory,z80->r->PC);
+   z80->r->B = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_21h_LDHLnn(Memory * memory, Z80 * z80)
+{
+   z80->r->H = rb(memory,(z80->r->PC+1));
+   z80->r->L = rb(memory,(z80->r->PC));
    z80->r->PC = z80->r->PC + 2;
    z80->ticks = 12;
 
@@ -290,6 +322,43 @@ int OP_28h_ADDAD(Memory * memory, Z80 * z80)
 
    // Subtract flag will be needed at some point
    //
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_31h_JRNCn(Memory * memory, Z80 * z80)
+{
+   //z80->r->SP = (rb(memory,(z80->r->PC+2)) << 8) + rb(memory,(z80->r->PC+1));
+   z80->r->SP = rw(memory,z80->r->PC);
+   z80->r->PC = z80->r->PC + 2;
+   z80->ticks = 12;
+
+   return 0;
+}
+
+int OP_34h_LDBE(Memory * memory, Z80 * z80)
+{
+   z80->r->B = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_44h_LDBH(Memory * memory, Z80 * z80)
+{
+   z80->r->B = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_54h_LDBL(Memory * memory, Z80 * z80)
+{
+   z80->r->B = z80->r->L;
 
    z80->ticks = 4;
 

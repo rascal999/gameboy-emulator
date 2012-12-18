@@ -36,6 +36,8 @@ int incrementHL(Z80 * z80);
 
 /* Opcodes */
 int OP_00h_NOP(Memory * memory, Z80 * z80);
+int OP_04h_LDBB(Memory * memory, Z80 * z80);
+int OP_14h_LDBC(Memory * memory, Z80 * z80);
 int OP_21h_LDHLnn(Memory * memory, Z80 * z80);
 int OP_22h_LDIHLA(Memory * memory, Z80 * z80);
 int OP_23h_LDDHLA(Memory * memory, Z80 * z80);
@@ -45,5 +47,8 @@ int OP_26h_LDHD(Memory * memory, Z80 * z80);
 int OP_27h_LDHLD(Memory * memory, Z80 * z80);
 int OP_28h_ADDAD(Memory * memory, Z80 * z80);
 int OP_31h_JRNCn(Memory * memory, Z80 * z80);
+int OP_34h_LDBE(Memory * memory, Z80 * z80);
+int OP_44h_LDBH(Memory * memory, Z80 * z80);
+int OP_54h_LDBL(Memory * memory, Z80 * z80);
 int OP_AFh_XORA(Memory * memory, Z80 * z80);
 int OP_FFh_RST38h(Memory * memory, Z80 * z80);
