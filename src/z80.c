@@ -106,12 +106,12 @@ int Execute(Memory * memory, Z80 * z80)
          OP_21h_LDHLnn(memory,z80);
       break;
 
-      case 0x31: /* LD SP,nn */
-         OP_31h_JRNCn(memory,z80);
+      case 0x22: /* LD (HL-),A */
+         OP_22h_LDIHLA(memory,z80);
       break;
 
-      case 0x32: /* LD (HL-),A */
-         OP_32h_LDDHLA(memory,z80);
+      case 0x31: /* LD SP,nn */
+         OP_31h_JRNCn(memory,z80);
       break;
 
       case 0xAF: /* XOR A */
@@ -127,6 +127,9 @@ int Execute(Memory * memory, Z80 * z80)
          exiterror(&err);
       break;
    }
+
+   // Reset after acting on ticks
+   z80->ticks = 0;
 
    return 0;
 }
@@ -145,6 +148,19 @@ int decrementHL(Z80 * z80)
 
    tmpHL = (z80->r->H << 8) + z80->r->L;
    tmpHL--;
+
+   z80->r->H = (tmpHL & 0xFF00) >> 8;
+   z80->r->L = (tmpHL & 0xFF);
+
+   return 0;
+}
+
+int incrementHL(Z80 * z80)
+{
+   uint16_t tmpHL;
+
+   tmpHL = (z80->r->H << 8) + z80->r->L;
+   tmpHL++;
 
    z80->r->H = (tmpHL & 0xFF00) >> 8;
    z80->r->L = (tmpHL & 0xFF);
@@ -180,7 +196,23 @@ int OP_31h_JRNCn(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
+int OP_22h_LDIHLA(Memory * memory, Z80 * z80)
+{
+   uint16_t tmp;
+
+   wb(memory,(z80->r->H << 8) + z80->r->L,z80->r->A);
+printf("dev HL = %x\n",(z80->r->H << 8) + z80->r->L);
+printf("dev HL content = %x\n",rb(memory,(z80->r->H << 8) + z80->r->L));
+printf("A register = %x\n",z80->r->A);
+   tmp = (z80->r->H << 8) + z80->r->L;
+
+   incrementHL(z80);
+   z80->ticks = 8;
+
+   return 0;
+}
+
+int OP_23h_LDDHLA(Memory * memory, Z80 * z80)
 {
    uint16_t tmp;
 
@@ -192,6 +224,74 @@ printf("A register = %x\n",z80->r->A);
 
    decrementHL(z80);
    z80->ticks = 8;
+
+   return 0;
+}
+
+int OP_24h_LDBD(Memory * memory, Z80 * z80)
+{
+   z80->r->B = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_25h_LDDD(Memory * memory, Z80 * z80)
+{
+   z80->r->D = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_26h_LDHD(Memory * memory, Z80 * z80)
+{
+   z80->r->H = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_27h_LDHLD(Memory * memory, Z80 * z80)
+{
+   wb(memory,(z80->r->H << 8) + z80->r->L,z80->r->D);
+
+   z80->ticks = 8;
+
+   return 0;
+}
+
+int OP_28h_ADDAD(Memory * memory, Z80 * z80)
+{
+   int tmpA = z80->r->A;
+
+   z80->r->A = z80->r->A + z80->r->D;
+
+   // Flags
+   if (z80->r->A > 0xFF)
+   {
+      // Carry
+      z80->r->F = 0x10;
+   }
+   z80->r->A = z80->r->A & 0xFF;
+   if (z80->r->A == 0x0)
+   {
+      // Zero flag
+      z80->r->F = z80->r->F | 0x80;
+   }
+   if (((tmpA & 0xF) + (z80->r->D & 0xF)) & 0x10)
+   {
+      // Half-carry
+      z80->r->F = z80->r->F | 0x20;
+   }
+
+   // Subtract flag will be needed at some point
+   //
+
+   z80->ticks = 4;
 
    return 0;
 }

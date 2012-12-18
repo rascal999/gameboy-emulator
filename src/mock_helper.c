@@ -30,13 +30,16 @@ int mock_exiterror(Error * err)
 /* Read byte */
 uint8_t mock_rb(Memory * mem, uint16_t addr)
 {
+   //printf("mock rb addr = %x\n",addr);
    return mem->bios_rom[addr];
 }
 
 /* Write byte */
 int mock_wb(Memory * mem, uint16_t addr, uint8_t value)
 {
+   //printf("mock wb addr = %x value = %x\n",addr,value);
    mem->bios_rom[addr] = value;
+
    return 0;
 }
 
