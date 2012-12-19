@@ -106,8 +106,24 @@ int Execute(Memory * memory, Z80 * z80)
          OP_04h_LDBB(memory,z80);
       break;
 
+      case 0x05:
+         OP_05h_LDDB(memory,z80);
+      break;
+
+      case 0x06:
+         OP_06h_LDHB(memory,z80);
+      break;
+
       case 0x14:
          OP_14h_LDBC(memory,z80);
+      break;
+
+      case 0x15:
+         OP_15h_LDDC(memory,z80);
+      break;
+
+      case 0x16:
+         OP_16h_LDHC(memory,z80);
       break;
 
       case 0x21: /* LD HL,nn */
@@ -122,6 +138,14 @@ int Execute(Memory * memory, Z80 * z80)
          OP_24h_LDBD(memory,z80);
       break;
 
+      case 0x25:
+         OP_25h_LDDD(memory,z80);
+      break;
+
+      case 0x26:
+         OP_26h_LDHD(memory,z80);
+      break;
+
       case 0x31: /* LD SP,nn */
          OP_31h_JRNCn(memory,z80);
       break;
@@ -130,12 +154,36 @@ int Execute(Memory * memory, Z80 * z80)
          OP_34h_LDBE(memory,z80);
       break;
 
+      case 0x35:
+         OP_35h_LDDE(memory,z80);
+      break;
+
+      case 0x36:
+         OP_36h_LDHE(memory,z80);
+      break;
+
       case 0x44:
          OP_44h_LDBH(memory,z80);
       break;
 
+      case 0x45:
+         OP_45h_LDDH(memory,z80);
+      break;
+
+      case 0x46:
+         OP_46h_LDHH(memory,z80);
+      break;
+
       case 0x54:
          OP_54h_LDBL(memory,z80);
+      break;
+
+      case 0x55:
+         OP_55h_LDDL(memory,z80);
+      break;
+
+      case 0x56:
+         OP_56h_LDHL(memory,z80);
       break;
 
       case 0xAF: /* XOR A */
@@ -209,9 +257,45 @@ int OP_04h_LDBB(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_05h_LDDB(Memory * memory, Z80 * z80)
+{
+   z80->r->D = z80->r->B;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_06h_LDHB(Memory * memory, Z80 * z80)
+{
+   z80->r->H = z80->r->B;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
 int OP_14h_LDBC(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_15h_LDDC(Memory * memory, Z80 * z80)
+{
+   z80->r->D = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_16h_LDHC(Memory * memory, Z80 * z80)
+{
+   z80->r->H = z80->r->C;
 
    z80->ticks = 4;
 
@@ -347,6 +431,24 @@ int OP_34h_LDBE(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_35h_LDDE(Memory * memory, Z80 * z80)
+{
+   z80->r->D = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_36h_LDHE(Memory * memory, Z80 * z80)
+{
+   z80->r->H = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
 int OP_44h_LDBH(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->H;
@@ -356,9 +458,297 @@ int OP_44h_LDBH(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_45h_LDDH(Memory * memory, Z80 * z80)
+{
+   z80->r->D = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_46h_LDHH(Memory * memory, Z80 * z80)
+{
+   z80->r->H = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
 int OP_54h_LDBL(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_55h_LDDL(Memory * memory, Z80 * z80)
+{
+   z80->r->D = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_56h_LDHL(Memory * memory, Z80 * z80)
+{
+   z80->r->H = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_84h_LDCB(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->B;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_85h_LDEB(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->B;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_86h_LDLB(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->B;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_87h_LDAB(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->B;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_94h_LDCC(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_95h_LDEC(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_96h_LDLC(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_97h_LDAC(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->C;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A4h_LDCD(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A5h_LDED(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A6h_LDLD(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A7h_LDAD(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->D;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_B4h_LDCE(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_B5h_LDEE(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_B6h_LDLE(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_B7h_LDAE(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->E;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_C4h_LDCH(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_C5h_LDEH(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_C6h_LDLH(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_C7h_LDAH(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->H;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_D4h_LDCL(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_D5h_LDEL(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_D6h_LDLL(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_D7h_LDAL(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->L;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_F4h_LDCA(Memory * memory, Z80 * z80)
+{
+   z80->r->C = z80->r->A;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_F5h_LDEA(Memory * memory, Z80 * z80)
+{
+   z80->r->E = z80->r->A;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_F6h_LDLA(Memory * memory, Z80 * z80)
+{
+   z80->r->L = z80->r->A;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_F7h_LDAA(Memory * memory, Z80 * z80)
+{
+   z80->r->A = z80->r->A;
 
    z80->ticks = 4;
 
