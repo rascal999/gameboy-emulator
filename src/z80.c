@@ -102,28 +102,28 @@ int Execute(Memory * memory, Z80 * z80)
          OP_00h_NOP(memory,z80);
       break;
 
-      case 0x04:
-         OP_04h_LDBB(memory,z80);
+      case 0x40:
+         OP_40h_LDBB(memory,z80);
       break;
 
-      case 0x05:
-         OP_05h_LDDB(memory,z80);
+      case 0x50:
+         OP_50h_LDDB(memory,z80);
       break;
 
-      case 0x06:
-         OP_06h_LDHB(memory,z80);
+      case 0x60:
+         OP_60h_LDHB(memory,z80);
       break;
 
-      case 0x14:
-         OP_14h_LDBC(memory,z80);
+      case 0x41:
+         OP_41h_LDBC(memory,z80);
       break;
 
-      case 0x15:
-         OP_15h_LDDC(memory,z80);
+      case 0x51:
+         OP_51h_LDDC(memory,z80);
       break;
 
-      case 0x16:
-         OP_16h_LDHC(memory,z80);
+      case 0x61:
+         OP_61h_LDHC(memory,z80);
       break;
 
       case 0x21: /* LD HL,nn */
@@ -134,56 +134,56 @@ int Execute(Memory * memory, Z80 * z80)
          OP_22h_LDIHLA(memory,z80);
       break;
 
-      case 0x24:
-         OP_24h_LDBD(memory,z80);
+      case 0x42:
+         OP_42h_LDBD(memory,z80);
       break;
 
-      case 0x25:
-         OP_25h_LDDD(memory,z80);
+      case 0x52:
+         OP_52h_LDDD(memory,z80);
       break;
 
-      case 0x26:
-         OP_26h_LDHD(memory,z80);
+      case 0x62:
+         OP_62h_LDHD(memory,z80);
       break;
 
       case 0x31: /* LD SP,nn */
          OP_31h_JRNCn(memory,z80);
       break;
 
-      case 0x34:
-         OP_34h_LDBE(memory,z80);
+      case 0x43:
+         OP_43h_LDBE(memory,z80);
       break;
 
-      case 0x35:
-         OP_35h_LDDE(memory,z80);
+      case 0x53:
+         OP_53h_LDDE(memory,z80);
       break;
 
-      case 0x36:
-         OP_36h_LDHE(memory,z80);
+      case 0x63:
+         OP_63h_LDHE(memory,z80);
       break;
 
       case 0x44:
          OP_44h_LDBH(memory,z80);
       break;
 
-      case 0x45:
-         OP_45h_LDDH(memory,z80);
-      break;
-
-      case 0x46:
-         OP_46h_LDHH(memory,z80);
-      break;
-
       case 0x54:
-         OP_54h_LDBL(memory,z80);
+         OP_54h_LDDH(memory,z80);
+      break;
+
+      case 0x64:
+         OP_64h_LDHH(memory,z80);
+      break;
+
+      case 0x45:
+         OP_45h_LDBL(memory,z80);
       break;
 
       case 0x55:
          OP_55h_LDDL(memory,z80);
       break;
 
-      case 0x56:
-         OP_56h_LDHL(memory,z80);
+      case 0x65:
+         OP_65h_LDHL(memory,z80);
       break;
 
       case 0xAF: /* XOR A */
@@ -248,7 +248,7 @@ int OP_00h_NOP(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_04h_LDBB(Memory * memory, Z80 * z80)
+int OP_40h_LDBB(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->B;
 
@@ -257,7 +257,7 @@ int OP_04h_LDBB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_05h_LDDB(Memory * memory, Z80 * z80)
+int OP_50h_LDDB(Memory * memory, Z80 * z80)
 {
    z80->r->D = z80->r->B;
 
@@ -266,7 +266,7 @@ int OP_05h_LDDB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_06h_LDHB(Memory * memory, Z80 * z80)
+int OP_60h_LDHB(Memory * memory, Z80 * z80)
 {
    z80->r->H = z80->r->B;
 
@@ -275,7 +275,7 @@ int OP_06h_LDHB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_14h_LDBC(Memory * memory, Z80 * z80)
+int OP_41h_LDBC(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->C;
 
@@ -284,7 +284,7 @@ int OP_14h_LDBC(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_15h_LDDC(Memory * memory, Z80 * z80)
+int OP_51h_LDDC(Memory * memory, Z80 * z80)
 {
    z80->r->D = z80->r->C;
 
@@ -293,7 +293,7 @@ int OP_15h_LDDC(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_16h_LDHC(Memory * memory, Z80 * z80)
+int OP_61h_LDHC(Memory * memory, Z80 * z80)
 {
    z80->r->H = z80->r->C;
 
@@ -328,7 +328,7 @@ printf("A register = %x\n",z80->r->A);
    return 0;
 }
 
-int OP_23h_LDDHLA(Memory * memory, Z80 * z80)
+int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
 {
    uint16_t tmp;
 
@@ -344,7 +344,7 @@ printf("A register = %x\n",z80->r->A);
    return 0;
 }
 
-int OP_24h_LDBD(Memory * memory, Z80 * z80)
+int OP_42h_LDBD(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->D;
 
@@ -353,7 +353,7 @@ int OP_24h_LDBD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_25h_LDDD(Memory * memory, Z80 * z80)
+int OP_52h_LDDD(Memory * memory, Z80 * z80)
 {
    z80->r->D = z80->r->D;
 
@@ -362,7 +362,7 @@ int OP_25h_LDDD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_26h_LDHD(Memory * memory, Z80 * z80)
+int OP_62h_LDHD(Memory * memory, Z80 * z80)
 {
    z80->r->H = z80->r->D;
 
@@ -371,7 +371,7 @@ int OP_26h_LDHD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_27h_LDHLD(Memory * memory, Z80 * z80)
+int OP_72h_LDHLD(Memory * memory, Z80 * z80)
 {
    wb(memory,(z80->r->H << 8) + z80->r->L,z80->r->D);
 
@@ -380,7 +380,7 @@ int OP_27h_LDHLD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_28h_ADDAD(Memory * memory, Z80 * z80)
+int OP_82h_ADDAD(Memory * memory, Z80 * z80)
 {
    int tmpA = z80->r->A;
 
@@ -422,7 +422,7 @@ int OP_31h_JRNCn(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_34h_LDBE(Memory * memory, Z80 * z80)
+int OP_43h_LDBE(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->E;
 
@@ -431,7 +431,7 @@ int OP_34h_LDBE(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_35h_LDDE(Memory * memory, Z80 * z80)
+int OP_53h_LDDE(Memory * memory, Z80 * z80)
 {
    z80->r->D = z80->r->E;
 
@@ -440,7 +440,7 @@ int OP_35h_LDDE(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_36h_LDHE(Memory * memory, Z80 * z80)
+int OP_63h_LDHE(Memory * memory, Z80 * z80)
 {
    z80->r->H = z80->r->E;
 
@@ -458,7 +458,7 @@ int OP_44h_LDBH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_45h_LDDH(Memory * memory, Z80 * z80)
+int OP_54h_LDDH(Memory * memory, Z80 * z80)
 {
    z80->r->D = z80->r->H;
 
@@ -467,7 +467,7 @@ int OP_45h_LDDH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_46h_LDHH(Memory * memory, Z80 * z80)
+int OP_64h_LDHH(Memory * memory, Z80 * z80)
 {
    z80->r->H = z80->r->H;
 
@@ -476,7 +476,7 @@ int OP_46h_LDHH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_54h_LDBL(Memory * memory, Z80 * z80)
+int OP_45h_LDBL(Memory * memory, Z80 * z80)
 {
    z80->r->B = z80->r->L;
 
@@ -494,7 +494,7 @@ int OP_55h_LDDL(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_56h_LDHL(Memory * memory, Z80 * z80)
+int OP_65h_LDHL(Memory * memory, Z80 * z80)
 {
    z80->r->H = z80->r->L;
 
@@ -503,7 +503,7 @@ int OP_56h_LDHL(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_84h_LDCB(Memory * memory, Z80 * z80)
+int OP_48h_LDCB(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->B;
 
@@ -512,7 +512,7 @@ int OP_84h_LDCB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_85h_LDEB(Memory * memory, Z80 * z80)
+int OP_58h_LDEB(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->B;
 
@@ -521,7 +521,7 @@ int OP_85h_LDEB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_86h_LDLB(Memory * memory, Z80 * z80)
+int OP_68h_LDLB(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->B;
 
@@ -530,7 +530,7 @@ int OP_86h_LDLB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_87h_LDAB(Memory * memory, Z80 * z80)
+int OP_78h_LDAB(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->B;
 
@@ -539,7 +539,7 @@ int OP_87h_LDAB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_94h_LDCC(Memory * memory, Z80 * z80)
+int OP_49h_LDCC(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->C;
 
@@ -548,7 +548,7 @@ int OP_94h_LDCC(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_95h_LDEC(Memory * memory, Z80 * z80)
+int OP_59h_LDEC(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->C;
 
@@ -557,7 +557,7 @@ int OP_95h_LDEC(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_96h_LDLC(Memory * memory, Z80 * z80)
+int OP_69h_LDLC(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->C;
 
@@ -566,7 +566,7 @@ int OP_96h_LDLC(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_97h_LDAC(Memory * memory, Z80 * z80)
+int OP_79h_LDAC(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->C;
 
@@ -575,7 +575,7 @@ int OP_97h_LDAC(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_A4h_LDCD(Memory * memory, Z80 * z80)
+int OP_4Ah_LDCD(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->D;
 
@@ -584,7 +584,7 @@ int OP_A4h_LDCD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_A5h_LDED(Memory * memory, Z80 * z80)
+int OP_5Ah_LDED(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->D;
 
@@ -593,7 +593,7 @@ int OP_A5h_LDED(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_A6h_LDLD(Memory * memory, Z80 * z80)
+int OP_6Ah_LDLD(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->D;
 
@@ -602,7 +602,7 @@ int OP_A6h_LDLD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_A7h_LDAD(Memory * memory, Z80 * z80)
+int OP_7Ah_LDAD(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->D;
 
@@ -611,7 +611,7 @@ int OP_A7h_LDAD(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_B4h_LDCE(Memory * memory, Z80 * z80)
+int OP_4Bh_LDCE(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->E;
 
@@ -620,7 +620,7 @@ int OP_B4h_LDCE(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_B5h_LDEE(Memory * memory, Z80 * z80)
+int OP_5Bh_LDEE(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->E;
 
@@ -629,7 +629,7 @@ int OP_B5h_LDEE(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_B6h_LDLE(Memory * memory, Z80 * z80)
+int OP_6Bh_LDLE(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->E;
 
@@ -638,7 +638,7 @@ int OP_B6h_LDLE(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_B7h_LDAE(Memory * memory, Z80 * z80)
+int OP_7Bh_LDAE(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->E;
 
@@ -647,7 +647,7 @@ int OP_B7h_LDAE(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_C4h_LDCH(Memory * memory, Z80 * z80)
+int OP_4Ch_LDCH(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->H;
 
@@ -656,7 +656,7 @@ int OP_C4h_LDCH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_C5h_LDEH(Memory * memory, Z80 * z80)
+int OP_5Ch_LDEH(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->H;
 
@@ -665,7 +665,7 @@ int OP_C5h_LDEH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_C6h_LDLH(Memory * memory, Z80 * z80)
+int OP_6Ch_LDLH(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->H;
 
@@ -674,7 +674,7 @@ int OP_C6h_LDLH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_C7h_LDAH(Memory * memory, Z80 * z80)
+int OP_7Ch_LDAH(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->H;
 
@@ -683,7 +683,7 @@ int OP_C7h_LDAH(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_D4h_LDCL(Memory * memory, Z80 * z80)
+int OP_4Dh_LDCL(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->L;
 
@@ -692,7 +692,7 @@ int OP_D4h_LDCL(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_D5h_LDEL(Memory * memory, Z80 * z80)
+int OP_5Dh_LDEL(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->L;
 
@@ -701,7 +701,7 @@ int OP_D5h_LDEL(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_D6h_LDLL(Memory * memory, Z80 * z80)
+int OP_6Dh_LDLL(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->L;
 
@@ -710,7 +710,7 @@ int OP_D6h_LDLL(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_D7h_LDAL(Memory * memory, Z80 * z80)
+int OP_7Dh_LDAL(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->L;
 
@@ -719,7 +719,7 @@ int OP_D7h_LDAL(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_F4h_LDCA(Memory * memory, Z80 * z80)
+int OP_4Fh_LDCA(Memory * memory, Z80 * z80)
 {
    z80->r->C = z80->r->A;
 
@@ -728,7 +728,7 @@ int OP_F4h_LDCA(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_F5h_LDEA(Memory * memory, Z80 * z80)
+int OP_5Fh_LDEA(Memory * memory, Z80 * z80)
 {
    z80->r->E = z80->r->A;
 
@@ -737,7 +737,7 @@ int OP_F5h_LDEA(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_F6h_LDLA(Memory * memory, Z80 * z80)
+int OP_6Fh_LDLA(Memory * memory, Z80 * z80)
 {
    z80->r->L = z80->r->A;
 
@@ -746,7 +746,7 @@ int OP_F6h_LDLA(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_F7h_LDAA(Memory * memory, Z80 * z80)
+int OP_7Fh_LDAA(Memory * memory, Z80 * z80)
 {
    z80->r->A = z80->r->A;
 
