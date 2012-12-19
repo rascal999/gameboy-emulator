@@ -33,6 +33,7 @@ int Execute(Memory * memory, Z80 * z80);
 int HertzToMilliseconds(int Hertz);
 int decrementHL(Z80 * z80);
 int incrementHL(Z80 * z80);
+int calculateFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t oldDest, uint8_t oldSrc);
 
 /* Opcodes */
 int OP_00h_NOP(Memory * memory, Z80 * z80);
@@ -49,6 +50,7 @@ int OP_42h_LDBD(Memory * memory, Z80 * z80);
 int OP_52h_LDDD(Memory * memory, Z80 * z80);
 int OP_62h_LDHD(Memory * memory, Z80 * z80);
 int OP_72h_LDHLD(Memory * memory, Z80 * z80);
+int OP_80h_ADDAB(Memory * memory, Z80 * z80);
 int OP_82h_ADDAD(Memory * memory, Z80 * z80);
 int OP_31h_JRNCn(Memory * memory, Z80 * z80);
 int OP_43h_LDBE(Memory * memory, Z80 * z80);
