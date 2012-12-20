@@ -220,6 +220,22 @@ int calculateSubtractionFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t 
    return 0;
 }
 
+int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
+{
+   z80->r->F = 0x00;
+
+   if ((dest & 0xFF) == 0x00)
+   {
+      // Zero flag
+      z80->r->F = z80->r->F | 0x80;
+   }
+
+   // Half-carry
+   z80->r->F = z80->r->F | 0x20;
+
+   return 0;
+}
+
 /* OPCODES */
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
@@ -1025,6 +1041,232 @@ int OP_95h_SUBL(Memory * memory, Z80 * z80)
    uint8_t dest = z80->r->A & 0xFF;
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_97h_SUBA(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->A;
+
+   z80->r->A = (z80->r->A - z80->r->A) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_98h_SBCAB(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->B;
+   z80->r->A = (z80->r->A - z80->r->B) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_99h_SBCAC(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->C;
+   z80->r->A = (z80->r->A - z80->r->C) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_9Ah_SBCAD(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->D;
+   z80->r->A = (z80->r->A - z80->r->D) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_9Bh_SBCAE(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->E;
+   z80->r->A = (z80->r->A - z80->r->E) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_9Ch_SBCAH(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->H;
+   z80->r->A = (z80->r->A - z80->r->H) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_9Dh_SBCAL(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->L;
+   z80->r->A = (z80->r->A - z80->r->L) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_9Fh_SBCAA(Memory * memory, Z80 * z80)
+{
+   uint8_t oldDest = z80->r->A;
+   uint8_t oldSrc = z80->r->L;
+   z80->r->A = (z80->r->A - z80->r->A) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->r->A = z80->r->A - ((z80->r->F & 0x10) >> 4) & 0xFF;
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A0h_ANDB(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->B) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A1h_ANDC(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->C) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A2h_ANDD(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->D) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A3h_ANDE(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->E) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A4h_ANDH(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->H) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A5h_ANDL(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->L) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
+
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_A7h_ANDA(Memory * memory, Z80 * z80)
+{
+   z80->r->A = (z80->r->A & z80->r->A) & 0xFF;
+
+   uint8_t dest = z80->r->A & 0xFF;
+
+   calculateAndFlags(memory,z80,dest);
 
    z80->ticks = 4;
 
