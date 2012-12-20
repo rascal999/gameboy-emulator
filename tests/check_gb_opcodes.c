@@ -19,14 +19,26 @@
 int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
 {
    z80->r = registers;
+
    z80->r->A = 0xA; // 0x0
    z80->r->B = 0xB; // 0x1
    z80->r->C = 0xC; // 0x2
    z80->r->D = 0xD; // 0x3
    z80->r->E = 0xE; // 0x4
-   z80->r->F = 0x0; // 0x5
+   z80->r->F = 0xF; // 0x5
    z80->r->H = 0x8; // 0x6
    z80->r->L = 0x12; // 0x7
+
+/*
+   z80->r->A = 0xFF; // 0x0
+   z80->r->B = 0xFF; // 0x1
+   z80->r->C = 0xFF; // 0x2
+   z80->r->D = 0xFF; // 0x3
+   z80->r->E = 0xFF; // 0x4
+   z80->r->F = 0xFF; // 0x5
+   z80->r->H = 0xFF; // 0x6
+   z80->r->L = 0xFF; // 0x7
+*/
 
    z80->r->PC = 0x0;
 }
@@ -101,6 +113,61 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    if ((dest < oldDest) | (dest < oldSrc))
    {
       // Carry
+      fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set %x",z80->r->F & 0x10);
+   }
+
+   if ((dest & 0xFF) == 0x00)
+   {
+      // Zero flag
+      fail_unless(z80->r->F & 0x80,"Zero flag should be set");
+   }
+
+   if (((oldSrc & 0xF) + (oldDest & 0xF)) & 0x10)
+   {
+      // Half-carry
+      fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
+   }
+
+   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
+
+   return 0;
+}
+
+int ADCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
+{
+   uint8_t dest, oldDest, oldSrc;
+   char destName;
+
+   switch((regOrder >> 4) & 0xF)
+   {
+      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
+      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
+      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C ;destName = 'C'; break;
+      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
+      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
+      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
+      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
+      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+   }
+
+   switch(regOrder & 0xF)
+   {
+      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register A + carry flag",destName,destName); break;
+      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register B + carry flag",destName,destName); break;
+      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register C + carry flag",destName,destName); break;
+      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register D + carry flag",destName,destName); break;
+      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register E + carry flag",destName,destName); break;
+      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register F + carry flag",destName,destName); break;
+      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register H + carry flag",destName,destName); break;
+      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register L + carry flag",destName,destName); break;
+   }
+   dest = (oldDest + oldSrc) & 0xFF;
+
+   // Flags
+   if ((dest < oldDest) | (dest < oldSrc))
+   {
+      // Carry
       fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set");
    }
 
@@ -111,6 +178,62 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    }
 
    if (((oldSrc & 0xF) + (oldDest & 0xF)) & 0x10)
+   {
+      // Half-carry
+      fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
+   }
+
+   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
+
+   return 0;
+}
+
+int SUBXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
+{
+   uint8_t dest, oldDest, oldSrc;
+   char destName;
+
+   switch((regOrder >> 4) & 0xF)
+   {
+      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
+      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
+      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C; destName = 'C'; break;
+      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
+      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
+      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
+      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
+      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+   }
+
+   switch(regOrder & 0xF)
+   {
+      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register A",destName,destName); break;
+      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register B",destName,destName); break;
+      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register C",destName,destName); break;
+      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register D",destName,destName); break;
+      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register E",destName,destName); break;
+      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register F",destName,destName); break;
+      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register H",destName,destName); break;
+      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register L",destName,destName); break;
+   }
+
+   dest = (oldDest - oldSrc) & 0xFF;
+
+   // Flags
+   if (dest > oldDest)
+   {
+      // Carry
+      fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set %x",z80->r->F & 0x10);
+   }
+
+   if ((dest & 0xFF) == 0x00)
+   {
+      // Zero flag
+      fail_unless(z80->r->F & 0x80,"Zero flag should be set");
+   }
+
+   if (((oldSrc & 0xF) - (oldDest & 0xF)) & 0x10)
    {
       // Half-carry
       fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
@@ -1157,7 +1280,6 @@ START_TEST (test_check_OP_72h_LDHLD)
    fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
    fail_unless(result == 0,"Result was not 0");
-printf("HL addr = %x value = %x\n",(z80.r->H << 8) + z80.r->L,rb(&memory,(z80.r->H << 8) + z80.r->L));
    fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L) == z80.r->D,"Content of address held in HL register does not equal register D");
    fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
 }
@@ -1353,6 +1475,34 @@ START_TEST (test_check_OP_80h_ADDAB)
 }
 END_TEST
 
+START_TEST (test_check_OP_81h_ADDAC)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_81h_ADDAC(memory,z80);
+   ADDXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
 START_TEST (test_check_OP_82h_ADDAD)
 {
    Memory * memory = malloc(sizeof(Memory));
@@ -1371,6 +1521,482 @@ START_TEST (test_check_OP_82h_ADDAD)
 
    result = OP_82h_ADDAD(memory,z80);
    ADDXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_83h_ADDAE)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_83h_ADDAE(memory,z80);
+   ADDXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_84h_ADDAH)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_84h_ADDAH(memory,z80);
+   ADDXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_85h_ADDAL)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_85h_ADDAL(memory,z80);
+   ADDXY(memory,z80,old_z80,0x07,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_87h_ADDAA)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_87h_ADDAA(memory,z80);
+   ADDXY(memory,z80,old_z80,0x00,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_88h_ADCAB)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_88h_ADCAB(memory,z80);
+   ADCXY(memory,z80,old_z80,0x01,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_89h_ADCAC)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_89h_ADCAC(memory,z80);
+   ADCXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_8Ah_ADCAD)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_8Ah_ADCAD(memory,z80);
+   ADCXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_8Bh_ADCAE)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_8Bh_ADCAE(memory,z80);
+   ADCXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_8Ch_ADCAH)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_8Ch_ADCAH(memory,z80);
+   ADCXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_8Dh_ADCAL)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_8Dh_ADCAL(memory,z80);
+   ADCXY(memory,z80,old_z80,0x07,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_8Fh_ADCAA)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_8Fh_ADCAA(memory,z80);
+   ADCXY(memory,z80,old_z80,0x00,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_90h_SUBB)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_90h_SUBB(memory,z80);
+   SUBXY(memory,z80,old_z80,0x01,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_91h_SUBC)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_91h_SUBC(memory,z80);
+   SUBXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_92h_SUBD)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_92h_SUBD(memory,z80);
+   SUBXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_93h_SUBE)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_93h_SUBE(memory,z80);
+   SUBXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_94h_SUBH)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_94h_SUBH(memory,z80);
+   SUBXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_95h_SUBL)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = OP_95h_SUBL(memory,z80);
+   SUBXY(memory,z80,old_z80,0x07,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -1464,7 +2090,25 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_7Dh_LDAL);
    tcase_add_test(tc_core,test_check_OP_7Fh_LDAA);
    tcase_add_test(tc_core,test_check_OP_80h_ADDAB);
+   tcase_add_test(tc_core,test_check_OP_81h_ADDAC);
    tcase_add_test(tc_core,test_check_OP_82h_ADDAD);
+   tcase_add_test(tc_core,test_check_OP_83h_ADDAE);
+   tcase_add_test(tc_core,test_check_OP_84h_ADDAH);
+   tcase_add_test(tc_core,test_check_OP_85h_ADDAL);
+   tcase_add_test(tc_core,test_check_OP_87h_ADDAA);
+   tcase_add_test(tc_core,test_check_OP_88h_ADCAB);
+   tcase_add_test(tc_core,test_check_OP_89h_ADCAC);
+   tcase_add_test(tc_core,test_check_OP_8Ah_ADCAD);
+   tcase_add_test(tc_core,test_check_OP_8Bh_ADCAE);
+   tcase_add_test(tc_core,test_check_OP_8Ch_ADCAH);
+   tcase_add_test(tc_core,test_check_OP_8Dh_ADCAL);
+   tcase_add_test(tc_core,test_check_OP_8Fh_ADCAA);
+   tcase_add_test(tc_core,test_check_OP_90h_SUBB);
+   tcase_add_test(tc_core,test_check_OP_91h_SUBC);
+   tcase_add_test(tc_core,test_check_OP_92h_SUBD);
+   tcase_add_test(tc_core,test_check_OP_93h_SUBE);
+   tcase_add_test(tc_core,test_check_OP_94h_SUBH);
+   tcase_add_test(tc_core,test_check_OP_95h_SUBL);
    tcase_add_test(tc_core,test_check_OP_AFh_XORA);
    suite_add_tcase(s,tc_core);
 
