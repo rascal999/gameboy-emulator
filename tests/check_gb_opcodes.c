@@ -344,7 +344,7 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
       fail_unless(z80->r->F & 0x80 == 0x80,"Zero flag not set");
    }
 
-   //Sbutract
+   //Subtract
    fail_unless((z80->r->F & 0x40) != 0x40,"Subtract flag should not be set");
 
    // Half-carry
@@ -355,6 +355,43 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
 
    fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
+
+   return 0;
+}
+
+int CB_BITXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+{
+   uint8_t cpuRegister;
+   char destName;
+
+   switch(parameters & 0xF)
+   {
+      case 0x0: cpuRegister = z80->r->B; break;
+      case 0x1: cpuRegister = z80->r->C; break;
+      case 0x2: cpuRegister = z80->r->D; break;
+      case 0x3: cpuRegister = z80->r->E; break;
+      case 0x4: cpuRegister = z80->r->H; break;
+      case 0x5: cpuRegister = z80->r->L; break;
+      case 0x7: cpuRegister = z80->r->A; break;
+   }
+
+   if (cpuRegister == 0x00)
+   {
+      // Zero flag
+      fail_unless(z80->r->F & 0x80 == 0x80,"Zero flag not set");
+   }
+
+   //Subtract
+   fail_unless((z80->r->F & 0x40) != 0x40,"Subtract flag should not be set");
+
+   // Half-carry
+   fail_unless((z80->r->F & 0x20) == 0x20,"Half carry flag not set");
+
+   // Carry
+   fail_unless((z80->r->F & 0x10) == (old_z80->r->F & 0x10),"Carry flag should have been preserved");
+
+   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -2541,6 +2578,202 @@ START_TEST (test_check_OP_A7h_ANDA)
 }
 END_TEST
 
+START_TEST (test_check_OP_CB_40h_BITB)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x01);
+   CB_BITXY(memory,z80,old_z80,0x01,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_CB_41h_BITC)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x02);
+   CB_BITXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_CB_42h_BITD)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x03);
+   CB_BITXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_CB_43h_BITE)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x04);
+   CB_BITXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_CB_44h_BITH)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x06);
+   CB_BITXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_CB_45h_BITL)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x07);
+   CB_BITXY(memory,z80,old_z80,0x07,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_CB_47h_BITA)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+   Memory * old_memory = malloc(sizeof(Memory));
+   Registers * old_registers = malloc(sizeof(Registers));
+   Z80 * old_z80 = malloc(sizeof(Z80));
+   
+   resetCPURegisters(memory,z80,registers);
+   resetCPURegisters(memory,old_z80,old_registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->r->PC;
+
+   result = CB_BIT(memory,z80,0x00);
+   CB_BITXY(memory,z80,old_z80,0x00,tmp_z80_PC);
+
+   free(old_z80);
+   free(old_registers);
+   free(old_memory);
+   free(z80);
+   free(memory);
+   free(registers);
+}
+END_TEST
+
 START_TEST (test_check_OP_AFh_XORA)
 {
    Memory memory;
@@ -2658,6 +2891,15 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_A4h_ANDH);
    tcase_add_test(tc_core,test_check_OP_A5h_ANDL);
    tcase_add_test(tc_core,test_check_OP_A7h_ANDA);
+
+   // CB prefix opcodes
+   tcase_add_test(tc_core,test_check_OP_CB_40h_BITB);
+   tcase_add_test(tc_core,test_check_OP_CB_41h_BITC);
+   tcase_add_test(tc_core,test_check_OP_CB_42h_BITD);
+   tcase_add_test(tc_core,test_check_OP_CB_43h_BITE);
+   tcase_add_test(tc_core,test_check_OP_CB_44h_BITH);
+   tcase_add_test(tc_core,test_check_OP_CB_45h_BITL);
+   tcase_add_test(tc_core,test_check_OP_CB_47h_BITA);
 
    tcase_add_test(tc_core,test_check_OP_AFh_XORA);
    suite_add_tcase(s,tc_core);

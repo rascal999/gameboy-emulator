@@ -126,4 +126,5 @@ int OP_A4h_ANDH(Memory * memory, Z80 * z80);
 int OP_A5h_ANDL(Memory * memory, Z80 * z80);
 int OP_A7h_ANDA(Memory * memory, Z80 * z80);
 int OP_AFh_XORA(Memory * memory, Z80 * z80);
+int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80);
 int OP_FFh_RST38h(Memory * memory, Z80 * z80);

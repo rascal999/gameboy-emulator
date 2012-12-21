@@ -96,13 +96,13 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; break;
+      case 0x0: cpuRegister = z80->r->B; break;
+      case 0x1: cpuRegister = z80->r->C; break;
+      case 0x2: cpuRegister = z80->r->D; break;
+      case 0x3: cpuRegister = z80->r->E; break;
+      case 0x4: cpuRegister = z80->r->H; break;
+      case 0x5: cpuRegister = z80->r->L; break;
+      case 0x7: cpuRegister = z80->r->A; break;
    }
 
    // Preserve carry
@@ -116,6 +116,8 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
       // Zero flag
       z80->r->F = z80->r->F | 0x80;
    }
+
+   z80->ticks = 8; 
 
    return 0;
 }
@@ -164,6 +166,8 @@ int Execute(Memory * memory, Z80 * z80)
       case 0x64: OP_64h_LDHH(memory,z80); break;
       case 0x65: OP_65h_LDHL(memory,z80); break;
       case 0xAF: OP_AFh_XORA(memory,z80); break;
+      // CB prefixed opcodes
+      case 0xCB: OP_CBh_PREFIXCB(memory,z80); break;
       case 0xFF: OP_FFh_RST38h(memory,z80); break;
 
       default:
@@ -204,7 +208,7 @@ int ExecuteCB(Memory * memory, Z80 * z80)
       case 0x21: OP_CB_21h_SLAC(memory,z80); break;
       case 0x22: OP_CB_22h_SLAD(memory,z80); break;
       case 0x31: OP_CB_31h_SLAPB(memory,z80); break;*/
-
+      // a = 0 b = 1 c = 2 d = 3 e = 4 f = 5 h = 6 l = 7
       //case 0x40: OP_CB_40h_BIT0B(memory,z80); break;
       case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x41: CB_BIT(memory,z80,0x02); break;
@@ -1395,6 +1399,7 @@ int OP_AFh_XORA(Memory * memory, Z80 * z80)
 
 int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
 {
+   ExecuteCB(memory,z80);
 
    return 0;
 }
