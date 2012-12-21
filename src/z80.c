@@ -77,6 +77,49 @@ int Fetch(Memory * memory, Z80 * z80)
    return 0; 
 }
 
+int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
+{
+   uint8_t bitTest;
+   uint8_t cpuRegister;
+
+   switch((parameters >> 4) & 0xF)
+   {
+      case 0x0: bitTest = 0; break;
+      case 0x1: bitTest = 0; break;
+      case 0x2: bitTest = 0; break;
+      case 0x3: bitTest = 0; break;
+      case 0x4: bitTest = 0; break;
+      case 0x5: bitTest = 0; break;
+      case 0x6: bitTest = 0; break;
+      case 0x7: bitTest = 0; break;
+   }
+
+   switch(parameters & 0xF)
+   {
+      case 0x0: cpuRegister = z80->r->A; break;
+      case 0x1: cpuRegister = z80->r->B; break;
+      case 0x2: cpuRegister = z80->r->C; break;
+      case 0x3: cpuRegister = z80->r->D; break;
+      case 0x4: cpuRegister = z80->r->E; break;
+      case 0x5: cpuRegister = z80->r->H; break;
+      case 0x6: cpuRegister = z80->r->L; break;
+   }
+
+   // Preserve carry
+   z80->r->F = z80->r->F & 0x1F;
+
+   // Zero subtract flag and set half carry
+   z80->r->F = z80->r->F | 0x20;
+
+   if ((cpuRegister & 0x01) == 0x00)
+   {
+      // Zero flag
+      z80->r->F = z80->r->F | 0x80;
+   }
+
+   return 0;
+}
+
 int Execute(Memory * memory, Z80 * z80)
 {
    int callDebug = 1;
@@ -122,6 +165,74 @@ int Execute(Memory * memory, Z80 * z80)
       case 0x65: OP_65h_LDHL(memory,z80); break;
       case 0xAF: OP_AFh_XORA(memory,z80); break;
       case 0xFF: OP_FFh_RST38h(memory,z80); break;
+
+      default:
+         err.code = 20;
+         exiterror(&err);
+      break;
+   }
+
+   // Reset after acting on ticks
+   z80->ticks = 0;
+
+   return 0;
+}
+
+int ExecuteCB(Memory * memory, Z80 * z80)
+{
+   int callDebug = 1;
+   uint16_t tmp;
+
+   Debug debug;
+   Error err;
+
+   usleep(50000);
+
+   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->r->PC)));
+
+   if (callDebug == 1)
+   {
+      debug.instructionSize = 1;
+      DebugAll(z80, memory, &debug);
+   }
+
+   /* switch((memory->addr[z80->r->PC] & 0xFF00) >> 8) */
+   switch(rb(memory,(z80->r->PC++)))
+   {
+      // NEED TO DEVELOP TEST CODE AND SORT OUT
+      /*case 0x00: OP_CB_00h_RLCB(memory,z80); break;
+      case 0x21: OP_CB_21h_SLAC(memory,z80); break;
+      case 0x22: OP_CB_22h_SLAD(memory,z80); break;
+      case 0x31: OP_CB_31h_SLAPB(memory,z80); break;*/
+
+      //case 0x40: OP_CB_40h_BIT0B(memory,z80); break;
+      case 0x40: CB_BIT(memory,z80,0x01); break;
+      case 0x41: CB_BIT(memory,z80,0x02); break;
+      case 0x42: CB_BIT(memory,z80,0x03); break;
+      case 0x43: CB_BIT(memory,z80,0x04); break;
+      case 0x44: CB_BIT(memory,z80,0x06); break;
+      case 0x45: CB_BIT(memory,z80,0x07); break;
+      /*case 0x40: CB_BIT(memory,z80,0x01); break;
+      case 0x40: CB_BIT(memory,z80,0x01); break;
+      case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
+      case 0x42: OP_CB_42h_BIT0D(memory,z80); break;
+      case 0x43: OP_CB_43h_BIT0E(memory,z80); break;
+      case 0x44: OP_CB_44h_BIT0H(memory,z80); break;
+      case 0x45: OP_CB_45h_BIT0L(memory,z80); break;
+      case 0x50: OP_CB_50h_BIT2B(memory,z80); break;
+      case 0x51: OP_CB_51h_BIT2C(memory,z80); break;
+      case 0x52: OP_CB_52h_BIT2D(memory,z80); break;
+      case 0x53: OP_CB_53h_BIT2E(memory,z80); break;
+      case 0x54: OP_CB_54h_BIT2H(memory,z80); break;
+      case 0x55: OP_CB_55h_L(memory,z80); break;
+      case 0x60: OP_CB_60h_LDHB(memory,z80); break;
+      case 0x61: OP_CB_61h_LDHC(memory,z80); break;
+      case 0x62: OP_CB_62h_LDHD(memory,z80); break;
+      case 0x63: OP_CB_63h_LDHE(memory,z80); break;
+      case 0x64: OP_CB_64h_LDHH(memory,z80); break;
+      case 0x65: OP_CB_65h_LDHL(memory,z80); break;
+      case 0xAF: OP_CB_AFh_XORA(memory,z80); break;
+      case 0xFF: OP_CB_FFh_RST38h(memory,z80); break;*/
 
       default:
          err.code = 20;
@@ -1278,6 +1389,12 @@ int OP_AFh_XORA(Memory * memory, Z80 * z80)
    z80->r->A = 0;
    z80->r->F = 0;
    z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
+{
 
    return 0;
 }
