@@ -30,6 +30,7 @@ int ResetZ80(Z80 * z80, Registers * registers);
 int Dispatch(Memory * memory, Z80 * z80);
 int Fetch(Memory * memory, Z80 * z80);
 int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters);
+int CB_RES(Memory * memory, Z80 * z80, uint8_t parameters);
 int Execute(Memory * memory, Z80 * z80);
 int ExecuteCB(Memory * memory, Z80 * z80);
 int HertzToMilliseconds(int Hertz);

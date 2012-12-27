@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #ifndef _INCL_STDINT
    #define _INCL_STDINT
    #include <stdint.h>
@@ -82,27 +83,17 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
    uint8_t bitTest;
    uint8_t cpuRegister;
 
-   switch((parameters >> 4) & 0xF)
-   {
-      case 0x0: bitTest = 0; break;
-      case 0x1: bitTest = 0; break;
-      case 0x2: bitTest = 0; break;
-      case 0x3: bitTest = 0; break;
-      case 0x4: bitTest = 0; break;
-      case 0x5: bitTest = 0; break;
-      case 0x6: bitTest = 0; break;
-      case 0x7: bitTest = 0; break;
-   }
+   bitTest = (parameters >> 4) & 0xF;
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->B; break;
-      case 0x1: cpuRegister = z80->r->C; break;
-      case 0x2: cpuRegister = z80->r->D; break;
-      case 0x3: cpuRegister = z80->r->E; break;
-      case 0x4: cpuRegister = z80->r->H; break;
-      case 0x5: cpuRegister = z80->r->L; break;
-      case 0x7: cpuRegister = z80->r->A; break;
+      case 0x0: cpuRegister = z80->r->A; break;
+      case 0x1: cpuRegister = z80->r->B; break;
+      case 0x2: cpuRegister = z80->r->C; break;
+      case 0x3: cpuRegister = z80->r->D; break;
+      case 0x4: cpuRegister = z80->r->E; break;
+      case 0x5: cpuRegister = z80->r->H; break;
+      case 0x6: cpuRegister = z80->r->L; break;
    }
 
    // Preserve carry
@@ -115,6 +106,54 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
    {
       // Zero flag
       z80->r->F = z80->r->F | 0x80;
+   }
+
+   z80->ticks = 8; 
+
+   return 0;
+}
+
+int CB_RES(Memory * memory, Z80 * z80, uint8_t parameters)
+{
+   char regName;
+   uint8_t bitReset;
+   uint8_t cpuRegister;
+   uint8_t bitMask;
+
+   switch(parameters & 0xF)
+   {
+      case 0x0: cpuRegister = z80->r->A; regName = 'A'; break;
+      case 0x1: cpuRegister = z80->r->B; regName = 'B'; break;
+      case 0x2: cpuRegister = z80->r->C; regName = 'C'; break;
+      case 0x3: cpuRegister = z80->r->D; regName = 'D'; break;
+      case 0x4: cpuRegister = z80->r->E; regName = 'E'; break;
+      case 0x5: cpuRegister = z80->r->H; regName = 'H'; break;
+      case 0x6: cpuRegister = z80->r->L; regName = 'L'; break;
+   }
+
+   bitReset = ((parameters & 0xF0) >> 4) & 0xF;
+
+   switch(bitReset)
+   {
+      case 0x0: bitMask = 0xFE; break;
+      case 0x1: bitMask = 0xFD; break;
+      case 0x2: bitMask = 0xFB; break;
+      case 0x3: bitMask = 0xF7; break;
+      case 0x4: bitMask = 0xEF; break;
+      case 0x5: bitMask = 0xDF; break;
+      case 0x6: bitMask = 0xBF; break;
+      case 0x7: bitMask = 0x7F; break;
+   }
+
+   switch(regName)
+   {
+      case 'A': z80->r->A = cpuRegister & bitMask; break;
+      case 'B': z80->r->B = cpuRegister & bitMask; break;
+      case 'C': z80->r->C = cpuRegister & bitMask; break;
+      case 'D': z80->r->D = cpuRegister & bitMask; break;
+      case 'E': z80->r->E = cpuRegister & bitMask; break;
+      case 'H': z80->r->H = cpuRegister & bitMask; break;
+      case 'L': z80->r->L = cpuRegister & bitMask; break;
    }
 
    z80->ticks = 8; 
@@ -214,8 +253,9 @@ int ExecuteCB(Memory * memory, Z80 * z80)
       case 0x41: CB_BIT(memory,z80,0x02); break;
       case 0x42: CB_BIT(memory,z80,0x03); break;
       case 0x43: CB_BIT(memory,z80,0x04); break;
-      case 0x44: CB_BIT(memory,z80,0x06); break;
-      case 0x45: CB_BIT(memory,z80,0x07); break;
+      case 0x44: CB_BIT(memory,z80,0x05); break;
+      case 0x45: CB_BIT(memory,z80,0x06); break;
+      case 0x47: CB_BIT(memory,z80,0x00); break;
       /*case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
