@@ -161,6 +161,54 @@ int CB_RES(Memory * memory, Z80 * z80, uint8_t parameters)
    return 0;
 }
 
+int CB_SET(Memory * memory, Z80 * z80, uint8_t parameters)
+{
+   char regName;
+   uint8_t bitSet;
+   uint8_t cpuRegister;
+   uint8_t bitMask;
+
+   switch(parameters & 0xF)
+   {
+      case 0x0: cpuRegister = z80->r->A; regName = 'A'; break;
+      case 0x1: cpuRegister = z80->r->B; regName = 'B'; break;
+      case 0x2: cpuRegister = z80->r->C; regName = 'C'; break;
+      case 0x3: cpuRegister = z80->r->D; regName = 'D'; break;
+      case 0x4: cpuRegister = z80->r->E; regName = 'E'; break;
+      case 0x5: cpuRegister = z80->r->H; regName = 'H'; break;
+      case 0x6: cpuRegister = z80->r->L; regName = 'L'; break;
+   }
+
+   bitSet = ((parameters & 0xF0) >> 4) & 0xF;
+
+   switch(bitSet)
+   {
+      case 0x0: bitMask = 0x1; break;
+      case 0x1: bitMask = 0x2; break;
+      case 0x2: bitMask = 0x4; break;
+      case 0x3: bitMask = 0x8; break;
+      case 0x4: bitMask = 0x10; break;
+      case 0x5: bitMask = 0x20; break;
+      case 0x6: bitMask = 0x40; break;
+      case 0x7: bitMask = 0x80; break;
+   }
+
+   switch(regName)
+   {
+      case 'A': z80->r->A = cpuRegister | bitMask; break;
+      case 'B': z80->r->B = cpuRegister | bitMask; break;
+      case 'C': z80->r->C = cpuRegister | bitMask; break;
+      case 'D': z80->r->D = cpuRegister | bitMask; break;
+      case 'E': z80->r->E = cpuRegister | bitMask; break;
+      case 'H': z80->r->H = cpuRegister | bitMask; break;
+      case 'L': z80->r->L = cpuRegister | bitMask; break;
+   }
+
+   z80->ticks = 8; 
+
+   return 0;
+}
+
 int Execute(Memory * memory, Z80 * z80)
 {
    int callDebug = 1;
