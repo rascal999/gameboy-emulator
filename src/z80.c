@@ -209,6 +209,100 @@ int CB_SET(Memory * memory, Z80 * z80, uint8_t parameters)
    return 0;
 }
 
+int CB_RLC(Memory * memory, Z80 * z80, uint8_t parameters)
+{
+   uint8_t cpuRegister;
+   char regName;
+
+   switch(parameters & 0xF)
+   {
+      case 0x0: cpuRegister = z80->r->A; regName = 'A'; break;
+      case 0x1: cpuRegister = z80->r->B; regName = 'B'; break;
+      case 0x2: cpuRegister = z80->r->C; regName = 'C'; break;
+      case 0x3: cpuRegister = z80->r->D; regName = 'D'; break;
+      case 0x4: cpuRegister = z80->r->E; regName = 'E'; break;
+      case 0x5: cpuRegister = z80->r->H; regName = 'H'; break;
+      case 0x6: cpuRegister = z80->r->L; regName = 'L'; break;
+   }
+
+   // Unset F register (flags)
+   z80->r->F = 0x0;
+
+   // Set carry flag (0x10)
+   z80->r->F = z80->r->F | ((cpuRegister >> 7) & 0x1) << 1;
+
+   // Zero flag
+   if (cpuRegister == 0)
+   {
+      z80->r->F = z80->r->F | 0x80;
+   }
+
+   // Rotate register, add carry bit, and ensure 8 bits
+   cpuRegister = (cpuRegister << 1) + ((z80->r->F >> 5) & 0x1) & 0xFF;
+
+   switch(regName)
+   {
+      case 'A': z80->r->A = cpuRegister; break;
+      case 'B': z80->r->B = cpuRegister; break;
+      case 'C': z80->r->C = cpuRegister; break;
+      case 'D': z80->r->D = cpuRegister; break;
+      case 'E': z80->r->E = cpuRegister; break;
+      case 'H': z80->r->H = cpuRegister; break;
+      case 'L': z80->r->L = cpuRegister; break;
+   }
+
+   z80->ticks = 8;
+
+   return 0;
+}
+
+int CB_RRC(Memory * memory, Z80 * z80, uint8_t parameters)
+{
+   uint8_t cpuRegister;
+   char regName;
+
+   switch(parameters & 0xF)
+   {
+      case 0x0: cpuRegister = z80->r->A; regName = 'A'; break;
+      case 0x1: cpuRegister = z80->r->B; regName = 'B'; break;
+      case 0x2: cpuRegister = z80->r->C; regName = 'C'; break;
+      case 0x3: cpuRegister = z80->r->D; regName = 'D'; break;
+      case 0x4: cpuRegister = z80->r->E; regName = 'E'; break;
+      case 0x5: cpuRegister = z80->r->H; regName = 'H'; break;
+      case 0x6: cpuRegister = z80->r->L; regName = 'L'; break;
+   }
+
+   // Unset F register (flags)
+   z80->r->F = 0x0;
+
+   // Set carry flag (0x10)
+   z80->r->F = z80->r->F | (cpuRegister & 0x1) << 1;
+
+   // Zero flag
+   if (cpuRegister == 0)
+   {
+      z80->r->F = z80->r->F | 0x80;
+   }
+
+   // Rotate register, add carry bit, and ensure 8 bits
+   cpuRegister = (cpuRegister >> 1) + (((z80->r->F >> 5) & 0x1) << 7) & 0xFF;
+
+   switch(regName)
+   {
+      case 'A': z80->r->A = cpuRegister; break;
+      case 'B': z80->r->B = cpuRegister; break;
+      case 'C': z80->r->C = cpuRegister; break;
+      case 'D': z80->r->D = cpuRegister; break;
+      case 'E': z80->r->E = cpuRegister; break;
+      case 'H': z80->r->H = cpuRegister; break;
+      case 'L': z80->r->L = cpuRegister; break;
+   }
+
+   z80->ticks = 8;
+
+   return 0;
+}
+
 int Execute(Memory * memory, Z80 * z80)
 {
    int callDebug = 1;
