@@ -43,6 +43,7 @@ int calculateFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t oldDest, ui
 
 /* Opcodes */
 int OP_00h_NOP(Memory * memory, Z80 * z80);
+int OP_20h_JRNZnn(Memory * memory, Z80 * z80);
 int OP_21h_LDHLnn(Memory * memory, Z80 * z80);
 int OP_22h_LDIHLA(Memory * memory, Z80 * z80);
 int OP_31h_JRNCn(Memory * memory, Z80 * z80);

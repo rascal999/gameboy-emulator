@@ -325,9 +325,11 @@ int Execute(Memory * memory, Z80 * z80)
    switch(rb(memory,(z80->r->PC++)))
    {
       case 0x00: OP_00h_NOP(memory,z80); break;
+      case 0x20: OP_20h_JRNZnn(memory,z80); break;
       case 0x21: OP_21h_LDHLnn(memory,z80); break;
       case 0x22: OP_22h_LDIHLA(memory,z80); break;
       case 0x31: OP_31h_JRNCn(memory,z80); break;
+      case 0x32: OP_32h_LDDHLA(memory,z80); break;
       case 0x40: OP_40h_LDBB(memory,z80); break;
       case 0x41: OP_41h_LDBC(memory,z80); break;
       case 0x42: OP_42h_LDBD(memory,z80); break;
@@ -398,6 +400,7 @@ int ExecuteCB(Memory * memory, Z80 * z80)
       case 0x44: CB_BIT(memory,z80,0x05); break;
       case 0x45: CB_BIT(memory,z80,0x06); break;
       case 0x47: CB_BIT(memory,z80,0x00); break;
+      case 0x7c: CB_BIT(memory,z80,0x72); break;
       /*case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
@@ -537,6 +540,20 @@ int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
    z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_20h_JRNZnn(Memory * memory, Z80 * z80)
+{
+   if ((z80->r->F & 0x80) == 0x80)
+   {
+      z80->r->PC = z80->r->PC + rb(memory,(z80->r->PC+1));
+      z80->ticks = 12;
+   } else {
+      z80->r->PC = z80->r->PC + 2;
+      z80->ticks = 8;
+   }
 
    return 0;
 }

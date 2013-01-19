@@ -38,9 +38,7 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
    z80->r->F = 0xFF; // 0x5
    z80->r->H = 0xFF; // 0x6
    z80->r->L = 0xFF; // 0x7
-*/
 
-/*
    z80->r->A = 0x0; // 0x0
    z80->r->B = 0x0; // 0x1
    z80->r->C = 0x0; // 0x2
@@ -626,6 +624,38 @@ START_TEST (test_check_OP_00h_NOP)
    fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(result == 0,"Result was not 0");
    fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+}
+END_TEST
+
+START_TEST (test_check_OP_20h_JRNZnn)
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   // Perhaps it would be worth setting the PC to be at the 0x20 opcode?
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80.r->PC;
+
+   result = OP_20h_JRNZnn(&memory,&z80);
+
+   // Relative jump if ZF is non-zero
+   // If ZF is non-zero, ticks == 12, else ticks == 8
+   if ((z80.r->F & 0x80) == 0x80)
+   {
+      fail_unless((z80.r->PC == (tmp_z80_PC + rb(&memory,(tmp_z80_PC + 1)))),"Program Counter should be set to tmp_z80_PC + value at (tmp_z80_PC + 1)");
+      fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+   } else {
+      fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+      fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+   }
+
+   fail_unless(result == 0,"Result was not 0");
 }
 END_TEST
 
@@ -6548,6 +6578,7 @@ Suite * add_suite(void)
    /* Core test case */
    TCase *tc_core = tcase_create("Core");
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
+   tcase_add_test(tc_core,test_check_OP_20h_JRNZnn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);
    tcase_add_test(tc_core,test_check_OP_31h_JRNCn);
