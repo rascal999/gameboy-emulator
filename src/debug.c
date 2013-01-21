@@ -32,19 +32,19 @@ int DebugFullInstruction(Z80 * z80, Memory * memory)
 int DebugAll(Z80 * z80, Memory * memory, Debug * debug)
 {
    /* CPU Dump */
-   printf("-------------\n");
+   /*printf("-------------\n");
    printf("| D E B U G |\n");
-   printf("-------------\n");
+   printf("-------------\n");*/
    printf("OPCODE = %x\n",rb(memory,(z80->r->PC)));
    DebugFullInstruction(z80,memory);
    printf("\n");
    printf("A = %x\tB = %x\tC = %x\n",z80->r->A,z80->r->B,z80->r->C);
-   printf("D = %x\tE = %x\tH = %x\n",z80->r->D,z80->r->E,z80->r->H);
-   printf("L = %x\tSP\n",z80->r->L,z80->r->SP);
+   printf("D = %x\tE = %x\tF = %x\n",z80->r->D,z80->r->E,z80->r->F);
+   printf("H = %x\tL = %x\tSP = %x\n",z80->r->H,z80->r->L,z80->r->SP);
    printf("PC = %x\n",z80->r->PC);
-   printf("-------------\n");
+   /*printf("-------------\n");
    printf("| E   N   D |\n");
-   printf("-------------\n");
+   printf("-------------\n");*/
    printf("\n");
 
    return 0;

@@ -78,10 +78,16 @@ int Fetch(Memory * memory, Z80 * z80)
    return 0; 
 }
 
+int8_t ensure_8b_signed(int8_t value)
+{
+   return value;
+}
+
 int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
 {
    uint8_t bitTest;
    uint8_t cpuRegister;
+   uint16_t tmp_z80_F = z80->r->F;
 
    bitTest = (parameters >> 4) & 0xF;
 
@@ -96,19 +102,19 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
       case 0x6: cpuRegister = z80->r->L; break;
    }
 
-   // Preserve carry
-   z80->r->F = z80->r->F & 0x1F;
-
    // Zero subtract flag and set half carry
-   z80->r->F = z80->r->F | 0x20;
+   z80->r->F = 0x20;
 
-   if ((cpuRegister & 0x01) == 0x00)
+   // Preserve carry
+   z80->r->F = z80->r->F | (tmp_z80_F & 0x10);
+
+   if (((cpuRegister >> bitTest) & 0x01) == 0x00)
    {
       // Zero flag
       z80->r->F = z80->r->F | 0x80;
    }
 
-   z80->ticks = 8; 
+   z80->ticks = 8;
 
    return 0;
 }
@@ -305,13 +311,13 @@ int CB_RRC(Memory * memory, Z80 * z80, uint8_t parameters)
 
 int Execute(Memory * memory, Z80 * z80)
 {
-   int callDebug = 1;
+   int callDebug = 0;
    uint16_t tmp;
 
    Debug debug;
    Error err;
 
-   usleep(50000);
+   //usleep(50000);
 
    if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->r->PC)));
 
@@ -325,7 +331,7 @@ int Execute(Memory * memory, Z80 * z80)
    switch(rb(memory,(z80->r->PC++)))
    {
       case 0x00: OP_00h_NOP(memory,z80); break;
-      case 0x20: OP_20h_JRNZnn(memory,z80); break;
+      case 0x20: OP_20h_JRNZn(memory,z80); break;
       case 0x21: OP_21h_LDHLnn(memory,z80); break;
       case 0x22: OP_22h_LDIHLA(memory,z80); break;
       case 0x31: OP_31h_JRNCn(memory,z80); break;
@@ -367,13 +373,13 @@ int Execute(Memory * memory, Z80 * z80)
 
 int ExecuteCB(Memory * memory, Z80 * z80)
 {
-   int callDebug = 1;
+   int callDebug = 0;
    uint16_t tmp;
 
    Debug debug;
    Error err;
 
-   usleep(50000);
+   //usleep(50000);
 
    if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->r->PC)));
 
@@ -400,7 +406,7 @@ int ExecuteCB(Memory * memory, Z80 * z80)
       case 0x44: CB_BIT(memory,z80,0x05); break;
       case 0x45: CB_BIT(memory,z80,0x06); break;
       case 0x47: CB_BIT(memory,z80,0x00); break;
-      case 0x7c: CB_BIT(memory,z80,0x72); break;
+      case 0x7c: CB_BIT(memory,z80,0x75); break;
       /*case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x40: CB_BIT(memory,z80,0x01); break;
       case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
@@ -544,11 +550,11 @@ int OP_00h_NOP(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_20h_JRNZnn(Memory * memory, Z80 * z80)
+int OP_20h_JRNZn(Memory * memory, Z80 * z80)
 {
-   if ((z80->r->F & 0x80) == 0x80)
+   if ((z80->r->F & 0x80) == 0x00)
    {
-      z80->r->PC = z80->r->PC + rb(memory,(z80->r->PC+1));
+      z80->r->PC = z80->r->PC + ensure_8b_signed(rb(memory,(z80->r->PC))) + 1;
       z80->ticks = 12;
    } else {
       z80->r->PC = z80->r->PC + 2;
@@ -595,6 +601,7 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
 {
    uint16_t tmp;
 
+   // BUG?
    wb(memory,(z80->r->H << 8) + z80->r->L,z80->r->A);
    tmp = (z80->r->H << 8) + z80->r->L;
 
@@ -1590,7 +1597,7 @@ int OP_A7h_ANDA(Memory * memory, Z80 * z80)
 int OP_AFh_XORA(Memory * memory, Z80 * z80)
 {
    z80->r->A = 0;
-   z80->r->F = 0;
+   z80->r->F = 0x80;
    z80->ticks = 4;
 
    return 0;

@@ -627,7 +627,7 @@ START_TEST (test_check_OP_00h_NOP)
 }
 END_TEST
 
-START_TEST (test_check_OP_20h_JRNZnn)
+START_TEST (test_check_OP_20h_JRNZn)
 {
    Memory memory;
    Registers registers;
@@ -642,13 +642,13 @@ START_TEST (test_check_OP_20h_JRNZnn)
    int result = 0;
    uint16_t tmp_z80_PC = z80.r->PC;
 
-   result = OP_20h_JRNZnn(&memory,&z80);
+   result = OP_20h_JRNZn(&memory,&z80);
 
-   // Relative jump if ZF is non-zero
-   // If ZF is non-zero, ticks == 12, else ticks == 8
-   if ((z80.r->F & 0x80) == 0x80)
+   // Relative jump if last result is non-zero
+   // If last result is non-zero, ticks == 12, else ticks == 8
+   if ((z80.r->F & 0x80) == 0x00)
    {
-      fail_unless((z80.r->PC == (tmp_z80_PC + rb(&memory,(tmp_z80_PC + 1)))),"Program Counter should be set to tmp_z80_PC + value at (tmp_z80_PC + 1)");
+      fail_unless((z80.r->PC == ensure_8b_signed(tmp_z80_PC + rb(&memory,(tmp_z80_PC + 1)))),"Program Counter should be set to tmp_z80_PC + signed value at (tmp_z80_PC)");
       fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
    } else {
       fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
@@ -6567,7 +6567,7 @@ START_TEST (test_check_OP_AFh_XORA)
 
    fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
    fail_unless(z80.r->A == 0,"A register should be 0");
-   fail_unless(z80.r->F == 0,"All flags should be reset");
+   fail_unless(z80.r->F == 0x80,"Zero flag should be set and all others reset");
 }
 END_TEST
 
@@ -6578,7 +6578,7 @@ Suite * add_suite(void)
    /* Core test case */
    TCase *tc_core = tcase_create("Core");
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
-   tcase_add_test(tc_core,test_check_OP_20h_JRNZnn);
+   tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);
    tcase_add_test(tc_core,test_check_OP_31h_JRNCn);
