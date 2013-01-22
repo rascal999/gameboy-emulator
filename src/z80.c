@@ -80,7 +80,7 @@ int Fetch(Memory * memory, Z80 * z80)
 
 int8_t ensure_8b_signed(int8_t value)
 {
-   return value;
+   return (int8_t) value;
 }
 
 int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
@@ -554,7 +554,7 @@ int OP_20h_JRNZn(Memory * memory, Z80 * z80)
 {
    if ((z80->r->F & 0x80) == 0x00)
    {
-      z80->r->PC = z80->r->PC + ensure_8b_signed(rb(memory,(z80->r->PC))) + 1;
+      z80->r->PC = z80->r->PC + ensure_8b_signed(rb(memory,(z80->r->PC + 1)));
       z80->ticks = 12;
    } else {
       z80->r->PC = z80->r->PC + 2;

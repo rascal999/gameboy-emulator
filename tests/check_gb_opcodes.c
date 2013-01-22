@@ -50,7 +50,6 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
 */
 
    z80->r->PC = 0x0;
-
 }
 
 int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
@@ -639,23 +638,41 @@ START_TEST (test_check_OP_20h_JRNZn)
    // Perhaps it would be worth setting the PC to be at the 0x20 opcode?
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   int result = 0;
+   int result = 0, i = 0, k = 0;
+   z80.r->PC = k;
    uint16_t tmp_z80_PC = z80.r->PC;
 
-   result = OP_20h_JRNZn(&memory,&z80);
-
-   // Relative jump if last result is non-zero
-   // If last result is non-zero, ticks == 12, else ticks == 8
-   if ((z80.r->F & 0x80) == 0x00)
+   for(k=0;k<0xFF;k++)
    {
-      fail_unless((z80.r->PC == ensure_8b_signed(tmp_z80_PC + rb(&memory,(tmp_z80_PC + 1)))),"Program Counter should be set to tmp_z80_PC + signed value at (tmp_z80_PC)");
-      fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
-   } else {
-      fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
-      fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
-   }
+      for(i=0;i<0x2;i++)
+      {
+         z80.r->PC = k;
 
-   fail_unless(result == 0,"Result was not 0");
+         if (i == 0x0)
+         {
+            z80.r->F = 0x80;
+         } else {
+            z80.r->F = 0x00;
+         }
+
+         tmp_z80_PC = z80.r->PC;
+
+         result = OP_20h_JRNZn(&memory,&z80);
+
+         // Relative jump if last result is non-zero
+         // If last result is non-zero, ticks == 12, else ticks == 8
+         if ((z80.r->F & 0x80) == 0x00)
+         {
+            fail_unless(((int8_t) z80.r->PC == (int8_t) ensure_8b_signed(tmp_z80_PC + rb(&memory,(tmp_z80_PC + 1)))),"Program Counter should be set to tmp_z80_PC + signed value at (tmp_z80_PC)");
+            fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+         } else {
+            fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+            fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+         }
+
+         fail_unless(result == 0,"Result was not 0");
+      }
+   }
 }
 END_TEST
 
@@ -670,19 +687,25 @@ START_TEST (test_check_OP_21h_LDHLnn)
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   int result = 0;
+   int result = 0, h = 0;
+   z80.r->PC = h;
    uint16_t tmp_z80_PC = z80.r->PC;
 
-   result = OP_21h_LDHLnn(&memory,&z80);
+   for(h=0;h<256;h++)
+   {
+      tmp_z80_PC = z80.r->PC;
 
-   fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+      result = OP_21h_LDHLnn(&memory,&z80);
+//printf("z80.r->PC - 2 == %x\ntmp_z80_PC == %x\n",(z80.r->PC - 2),tmp_z80_PC);
+      fail_unless((uint16_t) (z80.r->PC - 2) == (uint16_t) tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
-   fail_unless(result == 0,"Result was not 0");
-   //tmp_z80_PC is 0, and this byte is treated as an address
-   fail_unless(z80.r->H == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
-   fail_unless(z80.r->L == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
+      fail_unless(result == 0,"Result was not 0");
+      //tmp_z80_PC is 0, and this byte is treated as an address
+      fail_unless(z80.r->H == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
+      fail_unless(z80.r->L == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
 
-   fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+      fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+   }
 }
 END_TEST
 
