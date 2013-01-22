@@ -47,7 +47,7 @@ int OP_00h_NOP(Memory * memory, Z80 * z80);
 int OP_20h_JRNZn(Memory * memory, Z80 * z80);
 int OP_21h_LDHLnn(Memory * memory, Z80 * z80);
 int OP_22h_LDIHLA(Memory * memory, Z80 * z80);
-int OP_31h_JRNCn(Memory * memory, Z80 * z80);
+int OP_31h_LDSPnn(Memory * memory, Z80 * z80);
 int OP_32h_LDDHLA(Memory * memory, Z80 * z80);
 int OP_40h_LDBB(Memory * memory, Z80 * z80);
 int OP_41h_LDBC(Memory * memory, Z80 * z80);

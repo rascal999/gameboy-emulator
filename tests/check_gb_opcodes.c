@@ -52,6 +52,25 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
    z80->r->PC = 0x0;
 }
 
+int randomize_registers(Z80 * z80, Registers * registers)
+{
+   int r = rand();
+
+   z80->r = registers;
+   z80->r->A = rand() % 0xFF;
+   z80->r->B = rand() % 0xFF;
+   z80->r->C = rand() % 0xFF;
+   z80->r->D = rand() % 0xFF;
+   z80->r->E = rand() % 0xFF;
+   z80->r->H = rand() % 0xFF;
+   z80->r->L = rand() % 0xFF;
+   z80->r->F = rand() % 0xFF;
+   z80->r->PC = rand() % 0xFFFF;
+   z80->r->SP = rand() % 0xFFFF;
+
+   return 0;
+}
+
 int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest;
@@ -687,24 +706,35 @@ START_TEST (test_check_OP_21h_LDHLnn)
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   int result = 0, h = 0;
+   int result = 0, h = 0, i = 0;
    z80.r->PC = h;
    uint16_t tmp_z80_PC = z80.r->PC;
 
-   for(h=0;h<256;h++)
+   for(h=0;h<2;h++)
    {
-      tmp_z80_PC = z80.r->PC;
+      for(i=0;i<256;i++)
+      {
+         // One round of sanity, one round of randomness
+         if (h)
+         {
+            randomize_registers(&z80,&registers);
+         } else {
+            z80.r->PC = i;
+         }
 
-      result = OP_21h_LDHLnn(&memory,&z80);
+         tmp_z80_PC = z80.r->PC;
+
+         result = OP_21h_LDHLnn(&memory,&z80);
 //printf("z80.r->PC - 2 == %x\ntmp_z80_PC == %x\n",(z80.r->PC - 2),tmp_z80_PC);
-      fail_unless((uint16_t) (z80.r->PC - 2) == (uint16_t) tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+         fail_unless((uint16_t) (z80.r->PC - 2) == (uint16_t) tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
-      fail_unless(result == 0,"Result was not 0");
-      //tmp_z80_PC is 0, and this byte is treated as an address
-      fail_unless(z80.r->H == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
-      fail_unless(z80.r->L == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
+         fail_unless(result == 0,"Result was not 0");
+         //tmp_z80_PC is 0, and this byte is treated as an address
+         fail_unless(z80.r->H == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
+         fail_unless(z80.r->L == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
 
-      fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+         fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+      }
    }
 }
 END_TEST
@@ -718,30 +748,44 @@ START_TEST (test_check_OP_22h_LDIHLA)
    InitZ80(&z80,&registers);
    InitMemory(&memory);
 
-   //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   int result = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
-   uint8_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+   uint16_t tmp_z80_PC = z80.r->PC;
+   uint16_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+   int result = 0, i = 0, h = 0;
 
-   z80.r->H = 0;
-   z80.r->L = 0x11;
-   z80.r->A = 0xB;
+   for(h=0;h<2;h++)
+   {
+      for(i=0;i<256;i++)
+      {
+         // One round of sanity, one round of randomness
+         if (h)
+         {
+            randomize_registers(&z80,&registers);
+         } else{
+            z80.r->PC = i;
+         }
 
-   printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
+         tmp_z80_PC = z80.r->PC;
+         tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
 
-   result = OP_22h_LDIHLA(&memory,&z80);
+//printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
 
-   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+         result = OP_22h_LDIHLA(&memory,&z80);
 
-   fail_unless(result == 0,"Result was not 0");
-   printf("HL-1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L - 1),z80.r->A);
-   fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L - 1) == z80.r->A,"Content at address pointed by HL (-1 at this point) does not match A register.");
-   fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+//printf("z80.r->PC == %x\ntmp_z80_PC == %x\n",z80.r->PC,tmp_z80_PC);
+         fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+         fail_unless(result == 0,"Result was not 0");
+//printf("HL-1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L - 1),z80.r->A);
+         fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L - 1) == z80.r->A,"Content at address pointed by HL (-1 at this point) does not match A register.");
+         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+      }
+   }
 }
 END_TEST
 
-START_TEST (test_check_OP_31h_JRNCn)
+START_TEST (test_check_OP_31h_LDSPnn)
 {
    Memory memory;
    Registers registers;
@@ -750,17 +794,49 @@ START_TEST (test_check_OP_31h_JRNCn)
    InitZ80(&z80,&registers);
    InitMemory(&memory);
 
-   int result = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   result = OP_31h_JRNCn(&memory,&z80);
+   int result = 0, h = 0, i = 0;
+   uint16_t tmp_z80_PC = z80.r->PC;
 
-   fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+   for(h=0;h<2;h++)
+   {
+      for(i=0;i<256;i++)
+      {
+         // One round of sanity, one round of randomness
+         if (h)
+         {
+            randomize_registers(&z80,&registers);
+         } else{
+            z80.r->PC;
+         }
 
-   fail_unless(result == 0,"Result was not 0");
-   fail_unless(z80.r->SP == (rb(&memory,(tmp_z80_PC + 1)) << 8) + rb(&memory,(tmp_z80_PC)),"SP register incorrect value");
+         tmp_z80_PC = z80.r->PC;
 
-   fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+         result = OP_31h_LDSPnn(&memory,&z80);
+
+         fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+
+         fail_unless(result == 0,"Result was not 0");
+
+         fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+
+         // @TODO
+         // Need to fully complete memory
+         // before this opcode can be tested
+         // Bare in mind, the mock_rb function
+         // needs to work the same as the rb
+         // function. Why do we have the mock?
+         if (tmp_z80_PC > 0xFF)
+         {
+            continue;
+         }
+
+printf("z80.r->SP == %x\n(rb(&memory,(tmp_z80_PC + 1)) << 8) == %x\nrb(&memory,(tmp_z80_PC)) == %x\n",z80.r->SP,(rb(&memory,(tmp_z80_PC + 1)) << 8),rb(&memory,(tmp_z80_PC)));
+printf("tmp_z80_PC == %x\n",tmp_z80_PC);
+         fail_unless((uint16_t) z80.r->SP == (uint16_t) (rb(&memory,((uint16_t) tmp_z80_PC + (uint16_t) 1)) << 8) + (uint16_t) rb(&memory,((uint16_t) tmp_z80_PC)),"SP register incorrect value");
+      }
+   }
 }
 END_TEST
 
@@ -773,7 +849,7 @@ START_TEST (test_check_OP_32h_LDDHLA)
    InitZ80(&z80,&registers);
    InitMemory(&memory);
 
-   //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
    int result = 0;
    uint8_t tmp_z80_PC = z80.r->PC;
@@ -6604,7 +6680,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);
-   tcase_add_test(tc_core,test_check_OP_31h_JRNCn);
+   tcase_add_test(tc_core,test_check_OP_31h_LDSPnn);
    tcase_add_test(tc_core,test_check_OP_32h_LDDHLA);
    tcase_add_test(tc_core,test_check_OP_40h_LDBB);
    tcase_add_test(tc_core,test_check_OP_41h_LDBC);
@@ -6836,6 +6912,10 @@ Suite * add_suite(void)
 
 int main(void)
 {
+   // Random seed
+   int random_seed = time(NULL);
+   srand(random_seed);
+
    int number_failed;
    Suite *s = add_suite();
    SRunner *sr = srunner_create(s);

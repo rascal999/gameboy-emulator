@@ -334,7 +334,7 @@ int Execute(Memory * memory, Z80 * z80)
       case 0x20: OP_20h_JRNZn(memory,z80); break;
       case 0x21: OP_21h_LDHLnn(memory,z80); break;
       case 0x22: OP_22h_LDIHLA(memory,z80); break;
-      case 0x31: OP_31h_JRNCn(memory,z80); break;
+      case 0x31: OP_31h_LDSPnn(memory,z80); break;
       case 0x32: OP_32h_LDDHLA(memory,z80); break;
       case 0x40: OP_40h_LDBB(memory,z80); break;
       case 0x41: OP_41h_LDBC(memory,z80); break;
@@ -587,12 +587,14 @@ int OP_22h_LDIHLA(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_31h_JRNCn(Memory * memory, Z80 * z80)
+int OP_31h_LDSPnn(Memory * memory, Z80 * z80)
 {
    //z80->r->SP = (rb(memory,(z80->r->PC+2)) << 8) + rb(memory,(z80->r->PC+1));
-   z80->r->SP = rw(memory,z80->r->PC);
-   z80->r->PC = z80->r->PC + 2;
+   z80->r->SP = (uint16_t) rw(memory,z80->r->PC);
+   z80->r->PC = (uint16_t) z80->r->PC + (uint16_t) 2;
    z80->ticks = 12;
+
+   printf("SP == %x\nPC-2 content == %x\n",z80->r->SP,rw(memory,z80->r->PC-2));
 
    return 0;
 }

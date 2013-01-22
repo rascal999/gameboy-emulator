@@ -24,6 +24,7 @@ int mock_InitDisplay(Display * display)
 
 int mock_exiterror(Error * err)
 {
+   exit(err);
 }
 
 /* MMU */
