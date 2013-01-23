@@ -86,21 +86,21 @@ int8_t ensure_8b_signed(int8_t value)
 int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
 {
    uint8_t bitTest;
-   uint8_t cpuRegister;
+   uint8_t cpuRegisterBit;
    uint16_t tmp_z80_F = z80->r->F;
-
-   bitTest = (parameters >> 4) & 0xF;
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; break;
+      case 0x0: cpuRegisterBit = (z80->r->A >> ((parameters & 0xF0) >> 4) & 0x1); break;
+      case 0x1: cpuRegisterBit = (z80->r->B >> ((parameters & 0xF0) >> 4) & 0x1); break;
+      case 0x2: cpuRegisterBit = (z80->r->C >> ((parameters & 0xF0) >> 4) & 0x1); break;
+      case 0x3: cpuRegisterBit = (z80->r->D >> ((parameters & 0xF0) >> 4) & 0x1); break;
+      case 0x4: cpuRegisterBit = (z80->r->E >> ((parameters & 0xF0) >> 4) & 0x1); break;
+      case 0x5: cpuRegisterBit = (z80->r->H >> ((parameters & 0xF0) >> 4) & 0x1); break;
+      case 0x6: cpuRegisterBit = (z80->r->L >> ((parameters & 0xF0) >> 4) & 0x1); break;
    }
+
+printf("cpuRegisterBit (z80.c) == %x\n",cpuRegisterBit);
 
    // Zero subtract flag and set half carry
    z80->r->F = 0x20;
@@ -108,7 +108,7 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
    // Preserve carry
    z80->r->F = z80->r->F | (tmp_z80_F & 0x10);
 
-   if (((cpuRegister >> bitTest) & 0x01) == 0x00)
+   if (cpuRegisterBit == 0x0)
    {
       // Zero flag
       z80->r->F = z80->r->F | 0x80;
@@ -594,7 +594,7 @@ int OP_31h_LDSPnn(Memory * memory, Z80 * z80)
    z80->r->PC = (uint16_t) z80->r->PC + (uint16_t) 2;
    z80->ticks = 12;
 
-   printf("SP == %x\nPC-2 content == %x\n",z80->r->SP,rw(memory,z80->r->PC-2));
+//printf("SP == %x\nPC-2 content == %x\n",z80->r->SP,rw(memory,z80->r->PC-2));
 
    return 0;
 }

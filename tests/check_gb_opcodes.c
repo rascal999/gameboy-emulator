@@ -1,6 +1,25 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  check_gb_opcodes.c
+ *
+ *    Description:  Unit tests for opcodes
+ *
+ *        Version:  1.0
+ *        Created:  23/01/13 11:48:51
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Aidan Marlin (aidan.marlin+github@gmail.com), 
+ *   Organization:  None
+ *
+ * =====================================================================================
+ */
+
 #include <stdlib.h>
 #include <check.h>
 #include <stdio.h>
+#include <math.h>
 
 #ifndef _INCL_DEBUG
    #define _INCL_DEBUG
@@ -16,10 +35,18 @@
    #define rb mock_rb
 #endif
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  resetCPURegisters
+ *  Description:  Reset the CPU registers to a predefined state
+ * =====================================================================================
+ */
 int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
 {
    z80->r = registers;
 
+/*
    z80->r->A = 0xA; // 0x0
    z80->r->B = 0xB; // 0x1
    z80->r->C = 0xC; // 0x2
@@ -29,7 +56,6 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
    z80->r->H = 0x8; // 0x6
    z80->r->L = 0x12; // 0x7
 
-/*
    z80->r->A = 0xFF; // 0x0
    z80->r->B = 0xFF; // 0x1
    z80->r->C = 0xFF; // 0x2
@@ -38,6 +64,7 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
    z80->r->F = 0xFF; // 0x5
    z80->r->H = 0xFF; // 0x6
    z80->r->L = 0xFF; // 0x7
+*/
 
    z80->r->A = 0x0; // 0x0
    z80->r->B = 0x0; // 0x1
@@ -47,11 +74,16 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
    z80->r->F = 0x0; // 0x5
    z80->r->H = 0x0; // 0x6
    z80->r->L = 0x0; // 0x7
-*/
 
    z80->r->PC = 0x0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  randomize_registers
+ *  Description:  Randomize the contents of the registers
+ * =====================================================================================
+ */
 int randomize_registers(Z80 * z80, Registers * registers)
 {
    int r = rand();
@@ -65,12 +97,43 @@ int randomize_registers(Z80 * z80, Registers * registers)
    z80->r->H = rand() % 0xFF;
    z80->r->L = rand() % 0xFF;
    z80->r->F = rand() % 0xFF;
-   z80->r->PC = rand() % 0xFFFF;
+   // 0xFF until the memory stuff is working
+   z80->r->PC = rand() % 0xFF;
    z80->r->SP = rand() % 0xFFFF;
 
    return 0;
 }
 
+/*
+ * ===  FUNCTION  ======================================================================
+ *         Name:  pow_uint8
+ *  Description:  Return 8-bit unsigned value of value (power of) pow
+ *                Only works with positive numbers for which the answer
+ *                does not exceed 255
+ * =====================================================================================
+ */
+   uint8_t
+pow_uint8 ( uint8_t value, uint8_t pow )
+{
+   int i;
+   uint8_t tmp = value;
+
+   if ( pow < 1 ) {
+      return 1;
+   }
+
+   for ( i = 1; i < pow ; i++ )
+   {
+      value = value * tmp;
+   }
+}
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  LDXY
+ *  Description:  Load value stored at Y register into X register
+ * =====================================================================================
+ */
 int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest;
@@ -106,6 +169,12 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  ADDXY
+ *  Description:  Add the contents of the Y register to the X register
+ * =====================================================================================
+ */
 int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest, oldDest, oldSrc;
@@ -162,6 +231,13 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  ADCXY
+ *  Description:  Add the contents of the Y register to the X register and set carry
+ *                flag
+ * =====================================================================================
+ */
 int ADCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest, oldDest, oldSrc;
@@ -217,6 +293,12 @@ int ADCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  SUBXY
+ *  Description:  Subtract the contents of the Y register from the X register
+ * =====================================================================================
+ */
 int SUBXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest, oldDest, oldSrc;
@@ -276,6 +358,13 @@ int SUBXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  SBCXY
+ *  Description:  Subtract the contents of the Y register from the X register and set
+ *                the carry flag
+ * =====================================================================================
+ */
 int SBCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest, oldDest, oldSrc;
@@ -335,6 +424,12 @@ int SBCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  ANDXY
+ *  Description:  Bitwise AND the contents of the Y register with the X register
+ * =====================================================================================
+ */
 int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest, oldDest, oldSrc;
@@ -387,23 +482,30 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  CB_BITXY
+ *  Description:  Test bit X of register Y
+ * =====================================================================================
+ */
 int CB_BITXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
-   uint8_t cpuRegister;
+   uint8_t cpuRegisterBit;
    char destName;
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; break;
+      // cpuRegisterBit = (regY & (2 to the power of X) >> X) & 0xF
+      case 0x0: cpuRegisterBit = (((z80->r->A & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x1: cpuRegisterBit = (((z80->r->B & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x2: cpuRegisterBit = (((z80->r->C & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x3: cpuRegisterBit = (((z80->r->D & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x4: cpuRegisterBit = (((z80->r->E & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x5: cpuRegisterBit = ((z80->r->H & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF; break;
+      case 0x6: cpuRegisterBit = ((z80->r->L & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF; break;
    }
-
-   if (cpuRegister == 0x00)
+printf("cpuRegisterBit == %x\n",cpuRegisterBit);
+   if (cpuRegisterBit == 0x0)
    {
       // Zero flag
       fail_unless((z80->r->F & 0x80) == 0x80,"Zero flag not set");
@@ -424,6 +526,12 @@ int CB_BITXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  CB_RESXY
+ *  Description:  Reset bit X of register Y
+ * =====================================================================================
+ */
 int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
@@ -440,7 +548,7 @@ int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
       case 0x6: cpuRegister = z80->r->L; break;
    }
 
-   flagBit = ((parameters & 0xF0) >> 4) & 0xF;
+   flagBit = (((parameters & 0xF0) >> 4) & 0xF);
 
    fail_unless(((cpuRegister >> flagBit) & 0x1) == 0,"Register bit %x should be set to zero",flagBit);
 
@@ -452,6 +560,12 @@ int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  CB_SETXY
+ *  Description:  Set bit X of register Y
+ * =====================================================================================
+ */
 int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
@@ -468,7 +582,7 @@ int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
       case 0x6: cpuRegister = z80->r->L; break;
    }
 
-   flagBit = ((parameters & 0xF0) >> 4) & 0xF;
+   flagBit = (((parameters & 0xF0) >> 4) & 0xF);
 
    fail_unless(((cpuRegister >> flagBit) & 0x1) == 1,"Register bit %x should be set",flagBit);
 
@@ -480,7 +594,12 @@ int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
    return 0;
 }
 
-
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  CB_RLCX
+ *  Description:  
+ * =====================================================================================
+ */
 int CB_RLCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
@@ -498,7 +617,7 @@ int CB_RLCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
    }
 
    // Test rotate left with carry
-   fail_unless((oldCpuRegister << 1) | ((oldCpuRegister >> 7) & 0x1) == cpuRegister,"Rotate left with carry seems to have failed");
+   fail_unless(((oldCpuRegister << 1) | ((oldCpuRegister >> 7) & 0x1)) == cpuRegister,"Rotate left with carry seems to have failed");
 
    // Subtract flag
    fail_unless((z80->r->F & 0x40) == 0,"Subtract flag should be set to zero");
@@ -560,7 +679,7 @@ int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
    }
 
    // Carry flag
-   if ((oldCpuRegister & 0x80) == 1)
+   if ((oldCpuRegister & 0x10) == 1)
    {
       fail_unless((z80->r->F & 0x10) == 1,"Carry flag should be set");
    } else {
@@ -808,7 +927,7 @@ START_TEST (test_check_OP_31h_LDSPnn)
          {
             randomize_registers(&z80,&registers);
          } else{
-            z80.r->PC;
+            z80.r->PC = i;
          }
 
          tmp_z80_PC = z80.r->PC;
@@ -827,10 +946,10 @@ START_TEST (test_check_OP_31h_LDSPnn)
          // Bare in mind, the mock_rb function
          // needs to work the same as the rb
          // function. Why do we have the mock?
-         if (tmp_z80_PC > 0xFF)
+         /*if (tmp_z80_PC > 0xFF)
          {
             continue;
-         }
+         }*/
 
 printf("z80.r->SP == %x\n(rb(&memory,(tmp_z80_PC + 1)) << 8) == %x\nrb(&memory,(tmp_z80_PC)) == %x\n",z80.r->SP,(rb(&memory,(tmp_z80_PC + 1)) << 8),rb(&memory,(tmp_z80_PC)));
 printf("tmp_z80_PC == %x\n",tmp_z80_PC);
@@ -851,24 +970,38 @@ START_TEST (test_check_OP_32h_LDDHLA)
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   int result = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
-   uint8_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+   int result = 0, h = 0, i = 0;
+   uint16_t tmp_z80_PC = z80.r->PC;
+   uint16_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
 
-   z80.r->H = 0;
-   z80.r->L = 0x11;
-   z80.r->A = 0xB;
+   for(h=0;h<2;h++)
+   {
+      for(i=0;i<256;i++)
+      {
+         // One round of sanity, one round of randomness
+         if (h)
+         {
+            randomize_registers(&z80,&registers);
+         } else{
+            z80.r->PC = i;
+         }
 
-   printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
+         tmp_z80_PC = z80.r->PC;
+         tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+         printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
 
-   result = OP_32h_LDDHLA(&memory,&z80);
+         result = OP_32h_LDDHLA(&memory,&z80);
 
-   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+         // opcode should not increment PC because PC is incremented by 1 in the opcode switch
+         fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
-   fail_unless(result == 0,"Result was not 0");
-   printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L + 1),z80.r->A);
-   fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L + 1) == z80.r->A,"Content at address pointed by HL (+1 at this point) does not match A register.");
-   fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+         fail_unless(result == 0,"Result was not 0");
+         printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L + 1),z80.r->A);
+
+         fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L + 1) == z80.r->A,"Content at address pointed by HL (+1 at this point) does not match A register.");
+         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+      }
+   }
 }
 END_TEST
 
@@ -908,6 +1041,7 @@ START_TEST (test_check_OP_41h_LDBC)
 
    result = OP_41h_LDBC(memory,z80);
 
+   // Error checks take place in LDXY() function
    LDXY(memory,z80,0x12,tmp_z80_PC);
 
    free(memory);
@@ -3312,7 +3446,7 @@ START_TEST (test_check_OP_CB_0Fh_RRCA)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_40h_BITB)
+START_TEST (test_check_OP_CB_40h_BIT0B)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -3340,7 +3474,7 @@ START_TEST (test_check_OP_CB_40h_BITB)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_41h_BITC)
+START_TEST (test_check_OP_CB_41h_BIT0C)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -3368,7 +3502,7 @@ START_TEST (test_check_OP_CB_41h_BITC)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_42h_BITD)
+START_TEST (test_check_OP_CB_42h_BIT0D)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -3396,7 +3530,7 @@ START_TEST (test_check_OP_CB_42h_BITD)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_43h_BITE)
+START_TEST (test_check_OP_CB_43h_BIT0E)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -3424,7 +3558,7 @@ START_TEST (test_check_OP_CB_43h_BITE)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_44h_BITH)
+START_TEST (test_check_OP_CB_44h_BIT0H)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -3452,7 +3586,7 @@ START_TEST (test_check_OP_CB_44h_BITH)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_45h_BITL)
+START_TEST (test_check_OP_CB_45h_BIT0L)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -3480,7 +3614,7 @@ START_TEST (test_check_OP_CB_45h_BITL)
 }
 END_TEST
 
-START_TEST (test_check_OP_CB_47h_BITA)
+START_TEST (test_check_OP_CB_47h_BIT0A)
 {
    Memory * memory = malloc(sizeof(Memory));
    Registers * registers = malloc(sizeof(Registers));
@@ -5092,10 +5226,10 @@ START_TEST (test_check_OP_CB_C0h_SET0B)
 
    int result = 0;
    uint16_t tmp_z80_PC = z80->r->PC;
-printf("B == %x\n",z80->r->B);
+printf("CB_SET (pre) B == %x\n",z80->r->B);
    result = CB_SET(memory,z80,0x01);
    CB_SETXY(memory,z80,old_z80,0x01,tmp_z80_PC);
-printf("B == %x\n",z80->r->B);
+printf("CB_SET (post) B == %x\n",z80->r->B);
 
    free(old_z80);
    free(old_registers);
@@ -5122,8 +5256,10 @@ START_TEST (test_check_OP_CB_C1h_SET0C)
    int result = 0;
    uint16_t tmp_z80_PC = z80->r->PC;
 
+printf("CB_SET (pre) C == %x\n",z80->r->C);
    result = CB_SET(memory,z80,0x02);
    CB_SETXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+printf("CB_SET (post) C == %x\n",z80->r->C);
 
    free(old_z80);
    free(old_registers);
@@ -6782,13 +6918,13 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_CB_0Dh_RRCL);
    tcase_add_test(tc_core,test_check_OP_CB_0Fh_RRCA);
 
-   tcase_add_test(tc_core,test_check_OP_CB_40h_BITB);
-   tcase_add_test(tc_core,test_check_OP_CB_41h_BITC);
-   tcase_add_test(tc_core,test_check_OP_CB_42h_BITD);
-   tcase_add_test(tc_core,test_check_OP_CB_43h_BITE);
-   tcase_add_test(tc_core,test_check_OP_CB_44h_BITH);
-   tcase_add_test(tc_core,test_check_OP_CB_45h_BITL);
-   tcase_add_test(tc_core,test_check_OP_CB_47h_BITA);
+   tcase_add_test(tc_core,test_check_OP_CB_40h_BIT0B);
+   tcase_add_test(tc_core,test_check_OP_CB_41h_BIT0C);
+   tcase_add_test(tc_core,test_check_OP_CB_42h_BIT0D);
+   tcase_add_test(tc_core,test_check_OP_CB_43h_BIT0E);
+   tcase_add_test(tc_core,test_check_OP_CB_44h_BIT0H);
+   tcase_add_test(tc_core,test_check_OP_CB_45h_BIT0L);
+   tcase_add_test(tc_core,test_check_OP_CB_47h_BIT0A);
 
    tcase_add_test(tc_core,test_check_OP_CB_80h_RES0B);
    tcase_add_test(tc_core,test_check_OP_CB_81h_RES0C);

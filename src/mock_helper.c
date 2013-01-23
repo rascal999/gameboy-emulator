@@ -2,6 +2,10 @@
    #define _INCL_STDINT
    #include <stdint.h>
 #endif
+#ifndef _INCL_STDLIB
+   #define _INCL_STDLIB
+   #include <stdlib.h>
+#endif
 #include "mock_helper.h"
 //#define rb mock_rb
 //#define wb mock_wb
@@ -24,7 +28,7 @@ int mock_InitDisplay(Display * display)
 
 int mock_exiterror(Error * err)
 {
-   exit(err);
+   exit(err->code);
 }
 
 /* MMU */
