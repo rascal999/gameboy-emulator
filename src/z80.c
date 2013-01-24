@@ -311,7 +311,7 @@ int CB_RRC(Memory * memory, Z80 * z80, uint8_t parameters)
 
 int Execute(Memory * memory, Z80 * z80)
 {
-   int callDebug = 0;
+   int callDebug = 1;
    uint16_t tmp;
 
    Debug debug;
@@ -373,7 +373,7 @@ int Execute(Memory * memory, Z80 * z80)
 
 int ExecuteCB(Memory * memory, Z80 * z80)
 {
-   int callDebug = 0;
+   int callDebug = 1;
    uint16_t tmp;
 
    Debug debug;
@@ -552,12 +552,25 @@ int OP_00h_NOP(Memory * memory, Z80 * z80)
 
 int OP_20h_JRNZn(Memory * memory, Z80 * z80)
 {
+   int8_t i;
+
+   i = (int8_t) rb(memory,(z80->r->PC));
+//printf("PC content == %x\n",(int8_t) i);
+/*   if (i > 0x7F)
+   {
+      // If i is greater than 127, it is a minus number (signed).
+      i = (int8_t) i - (int8_t) (((i ^ 0xFF) + 1) & 0xFF);
+   }*/
+//printf("PC content == %x\n",(int8_t) i);
+
+   z80->r->PC++;
+
    if ((z80->r->F & 0x80) == 0x00)
    {
-      z80->r->PC = z80->r->PC + ensure_8b_signed(rb(memory,(z80->r->PC + 1)));
+      z80->r->PC = z80->r->PC + (int8_t) i;
       z80->ticks = 12;
    } else {
-      z80->r->PC = z80->r->PC + 2;
+//      z80->r->PC = z80->r->PC + 1;
       z80->ticks = 8;
    }
 

@@ -501,8 +501,8 @@ int CB_BITXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
       case 0x2: cpuRegisterBit = (((z80->r->C & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
       case 0x3: cpuRegisterBit = (((z80->r->D & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
       case 0x4: cpuRegisterBit = (((z80->r->E & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x5: cpuRegisterBit = ((z80->r->H & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF; break;
-      case 0x6: cpuRegisterBit = ((z80->r->L & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF; break;
+      case 0x5: cpuRegisterBit = (((z80->r->H & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x6: cpuRegisterBit = (((z80->r->L & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
    }
 printf("cpuRegisterBit == %x\n",cpuRegisterBit);
    if (cpuRegisterBit == 0x0)
@@ -597,7 +597,7 @@ int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  CB_RLCX
- *  Description:  
+ *  Description:  Rotate register X left and add carry
  * =====================================================================================
  */
 int CB_RLCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
@@ -646,6 +646,12 @@ int CB_RLCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  CB_RRCX
+ *  Description:  Rotate register X right and add carry
+ * =====================================================================================
+ */
 int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
@@ -801,10 +807,11 @@ START_TEST (test_check_OP_20h_JRNZn)
          // If last result is non-zero, ticks == 12, else ticks == 8
          if ((z80.r->F & 0x80) == 0x00)
          {
-            fail_unless(((int8_t) z80.r->PC == (int8_t) ensure_8b_signed(tmp_z80_PC + rb(&memory,(tmp_z80_PC + 1)))),"Program Counter should be set to tmp_z80_PC + signed value at (tmp_z80_PC)");
+printf("*** k == %x\nz80.r->PC == %x\nrb(&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.r->PC - 1,rb(&memory,tmp_z80_PC) + tmp_z80_PC);
+            fail_unless(((z80.r->PC - 1) & 0xFF) == ((rb(&memory,tmp_z80_PC) + (int8_t) tmp_z80_PC) & 0xFF));
             fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
          } else {
-            fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+            fail_unless((z80.r->PC - 1) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
             fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
          }
 
