@@ -554,7 +554,7 @@ int OP_20h_JRNZn(Memory * memory, Z80 * z80)
 {
    int8_t i;
 
-   i = (int8_t) rb(memory,(z80->r->PC));
+   i = (int8_t) rb(memory,(z80->r->PC)) & 0xFF;
 //printf("PC content == %x\n",(int8_t) i);
 /*   if (i > 0x7F)
    {
@@ -567,7 +567,7 @@ int OP_20h_JRNZn(Memory * memory, Z80 * z80)
 
    if ((z80->r->F & 0x80) == 0x00)
    {
-      z80->r->PC = z80->r->PC + (int8_t) i;
+      z80->r->PC = (z80->r->PC + (int8_t) i) & 0xFF;
       z80->ticks = 12;
    } else {
 //      z80->r->PC = z80->r->PC + 1;
