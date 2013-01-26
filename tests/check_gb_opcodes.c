@@ -770,6 +770,36 @@ START_TEST (test_check_OP_00h_NOP)
 }
 END_TEST
 
+START_TEST (test_check_OP_0Eh_LDCD8)
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0, i = 0;
+   uint8_t tmp_z80_PC = z80.r->PC;
+
+   for(i=0;i<0xFF;i++)
+   {
+      z80.r->PC = i;
+
+      tmp_z80_PC = (z80.r->PC & 0xFF);
+
+      result = OP_0Eh_LDCD8(&memory,&z80);
+
+printf("*** rb(&memory,(tmp_z80_PC)) == %x\n",rb(&memory,(tmp_z80_PC)));
+      fail_unless(z80.r->C == rb(&memory,(tmp_z80_PC)));
+      fail_unless(z80.r->PC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
+
+      fail_unless(result == 0,"Result was not 0");
+      fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+   }
+}
+END_TEST
+
 START_TEST (test_check_OP_20h_JRNZn)
 {
    Memory memory;
@@ -6820,6 +6850,7 @@ Suite * add_suite(void)
    /* Core test case */
    TCase *tc_core = tcase_create("Core");
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
+   tcase_add_test(tc_core,test_check_OP_0Eh_LDCD8);
    tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);

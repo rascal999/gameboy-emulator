@@ -331,6 +331,7 @@ int Execute(Memory * memory, Z80 * z80)
    switch(rb(memory,(z80->r->PC++)))
    {
       case 0x00: OP_00h_NOP(memory,z80); break;
+      case 0x0E: OP_0Eh_LDCD8(memory,z80); break;
       case 0x20: OP_20h_JRNZn(memory,z80); break;
       case 0x21: OP_21h_LDHLnn(memory,z80); break;
       case 0x22: OP_22h_LDIHLA(memory,z80); break;
@@ -546,6 +547,17 @@ int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
    z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_0Eh_LDCD8(Memory * memory, Z80 * z80)
+{
+//printf("*** PC == %x\nrb(memory,(z80->r->PC)) & 0xFF == %x\n",z80->r->PC,rb(memory,(z80->r->PC)) & 0xFF);
+   z80->r->C = rb(memory,(z80->r->PC + 1)) & 0xFF;
+
+   z80->r->PC = z80->r->PC + 1;
+   z80->ticks = 8;
 
    return 0;
 }
