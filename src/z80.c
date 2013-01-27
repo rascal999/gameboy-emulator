@@ -92,6 +92,30 @@ int Fetch(Memory * memory, Z80 * z80)
    return 0; 
 }
 
+/*
+ * ===  FUNCTION  ======================================================================
+ *         Name:  math_pow_uint8
+ *  Description:  Return 8-bit unsigned value of value (power of) pow
+ *                Only works with positive numbers for which the answer
+ *                does not exceed 255
+ * =====================================================================================
+ */
+   uint8_t
+math_pow_uint8 ( uint8_t value, uint8_t pow )
+{
+   int i;
+   uint8_t tmp = value;
+
+   if ( pow < 1 ) {
+      return 1;
+   }
+
+   for ( i = 1; i < pow ; i++ )
+   {
+      value = value * tmp;
+   }
+}
+
 int8_t ensure_8b_signed(int8_t value)
 {
    return (int8_t) value;
@@ -103,20 +127,7 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
    uint8_t cpuRegisterBit;
    uint16_t tmp_z80_F = z80->regF;
 
-   switch(parameters & 0xF)
-   {
-      case 0x0: cpuRegisterBit = (z80->regA >> ((parameters & 0xF0) >> 4) & 0x1); break;
-      case 0x1: cpuRegisterBit = (z80->regB >> ((parameters & 0xF0) >> 4) & 0x1); break;
-      case 0x2: cpuRegisterBit = (z80->regC >> ((parameters & 0xF0) >> 4) & 0x1); break;
-      case 0x3: cpuRegisterBit = (z80->regD >> ((parameters & 0xF0) >> 4) & 0x1); break;
-      case 0x4: cpuRegisterBit = (z80->regE >> ((parameters & 0xF0) >> 4) & 0x1); break;
-      case 0x5: cpuRegisterBit = (z80->regH >> ((parameters & 0xF0) >> 4) & 0x1); break;
-      case 0x6: cpuRegisterBit = (z80->regL >> ((parameters & 0xF0) >> 4) & 0x1); break;
-   }
-
-   cpuRegisterBit = (((z80->r->r[(parameters & 0xF)] >> ((parameters & 0xF0)) >> 4)) & 0x1);
-
-printf("cpuRegisterBit (z80.c) == %x\n",cpuRegisterBit);
+   cpuRegisterBit = (z80->r->r[(parameters & 0xF)] >> ((parameters & 0xF0) >> 4)) & 0x1;
 
    // Zero subtract flag and set half carry
    z80->regF = 0x20;
@@ -142,41 +153,7 @@ int CB_RES(Memory * memory, Z80 * z80, uint8_t parameters)
    uint8_t cpuRegister;
    uint8_t bitMask;
 
-   switch(parameters & 0xF)
-   {
-      case 0x0: cpuRegister = z80->regA; regName = 'A'; break;
-      case 0x1: cpuRegister = z80->regB; regName = 'B'; break;
-      case 0x2: cpuRegister = z80->regC; regName = 'C'; break;
-      case 0x3: cpuRegister = z80->regD; regName = 'D'; break;
-      case 0x4: cpuRegister = z80->regE; regName = 'E'; break;
-      case 0x5: cpuRegister = z80->regH; regName = 'H'; break;
-      case 0x6: cpuRegister = z80->regL; regName = 'L'; break;
-   }
-
-   bitReset = ((parameters & 0xF0) >> 4) & 0xF;
-
-   switch(bitReset)
-   {
-      case 0x0: bitMask = 0xFE; break;
-      case 0x1: bitMask = 0xFD; break;
-      case 0x2: bitMask = 0xFB; break;
-      case 0x3: bitMask = 0xF7; break;
-      case 0x4: bitMask = 0xEF; break;
-      case 0x5: bitMask = 0xDF; break;
-      case 0x6: bitMask = 0xBF; break;
-      case 0x7: bitMask = 0x7F; break;
-   }
-
-   switch(regName)
-   {
-      case 'A': z80->regA = cpuRegister & bitMask; break;
-      case 'B': z80->regB = cpuRegister & bitMask; break;
-      case 'C': z80->regC = cpuRegister & bitMask; break;
-      case 'D': z80->regD = cpuRegister & bitMask; break;
-      case 'E': z80->regE = cpuRegister & bitMask; break;
-      case 'H': z80->regH = cpuRegister & bitMask; break;
-      case 'L': z80->regL = cpuRegister & bitMask; break;
-   }
+   z80->r->r[(parameters & 0xF)] = z80->r->r[(parameters & 0xF)] & math_pow_uint8(2,(((parameters & 0xF0) >> 4) & 0xF));
 
    z80->ticks = 8; 
 
