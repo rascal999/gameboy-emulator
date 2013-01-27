@@ -35,6 +35,18 @@
    #define rb mock_rb
 #endif
 
+#ifndef Z80_REGISTERS
+   #define regA r->r[0x0]
+   #define regB r->r[0x1] 
+   #define regC r->r[0x2]
+   #define regD r->r[0x3]
+   #define regE r->r[0x4]
+   #define regF r->r[0x5]
+   #define regH r->r[0x6]
+   #define regL r->r[0x7]
+   #define regPC r->r16[0x0]
+   #define regSP r->r16[0x1]
+#endif
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -47,35 +59,35 @@ int resetCPURegisters(Memory * memory, Z80 * z80, Registers * registers)
    z80->r = registers;
 
 /*
-   z80->r->A = 0xA; // 0x0
-   z80->r->B = 0xB; // 0x1
-   z80->r->C = 0xC; // 0x2
-   z80->r->D = 0xD; // 0x3
-   z80->r->E = 0xE; // 0x4
-   z80->r->F = 0xF; // 0x5
-   z80->r->H = 0x8; // 0x6
-   z80->r->L = 0x12; // 0x7
+   z80->regA = 0xA; // 0x0
+   z80->regB = 0xB; // 0x1
+   z80->regC = 0xC; // 0x2
+   z80->regD = 0xD; // 0x3
+   z80->regE = 0xE; // 0x4
+   z80->regF = 0xF; // 0x5
+   z80->regH = 0x8; // 0x6
+   z80->regL = 0x12; // 0x7
 
-   z80->r->A = 0xFF; // 0x0
-   z80->r->B = 0xFF; // 0x1
-   z80->r->C = 0xFF; // 0x2
-   z80->r->D = 0xFF; // 0x3
-   z80->r->E = 0xFF; // 0x4
-   z80->r->F = 0xFF; // 0x5
-   z80->r->H = 0xFF; // 0x6
-   z80->r->L = 0xFF; // 0x7
+   z80->regA = 0xFF; // 0x0
+   z80->regB = 0xFF; // 0x1
+   z80->regC = 0xFF; // 0x2
+   z80->regD = 0xFF; // 0x3
+   z80->regE = 0xFF; // 0x4
+   z80->regF = 0xFF; // 0x5
+   z80->regH = 0xFF; // 0x6
+   z80->regL = 0xFF; // 0x7
 */
 
-   z80->r->A = 0x0; // 0x0
-   z80->r->B = 0x0; // 0x1
-   z80->r->C = 0x0; // 0x2
-   z80->r->D = 0x0; // 0x3
-   z80->r->E = 0x0; // 0x4
-   z80->r->F = 0x0; // 0x5
-   z80->r->H = 0x0; // 0x6
-   z80->r->L = 0x0; // 0x7
+   z80->regA = 0x0; // 0x0
+   z80->regB = 0x0; // 0x1
+   z80->regC = 0x0; // 0x2
+   z80->regD = 0x0; // 0x3
+   z80->regE = 0x0; // 0x4
+   z80->regF = 0x0; // 0x5
+   z80->regH = 0x0; // 0x6
+   z80->regL = 0x0; // 0x7
 
-   z80->r->PC = 0x0;
+   z80->regPC = 0x0;
 }
 
 /* 
@@ -89,17 +101,17 @@ int randomize_registers(Z80 * z80, Registers * registers)
    int r = rand();
 
    z80->r = registers;
-   z80->r->A = rand() % 0xFF;
-   z80->r->B = rand() % 0xFF;
-   z80->r->C = rand() % 0xFF;
-   z80->r->D = rand() % 0xFF;
-   z80->r->E = rand() % 0xFF;
-   z80->r->H = rand() % 0xFF;
-   z80->r->L = rand() % 0xFF;
-   z80->r->F = rand() % 0xFF;
+   z80->regA = rand() % 0xFF;
+   z80->regB = rand() % 0xFF;
+   z80->regC = rand() % 0xFF;
+   z80->regD = rand() % 0xFF;
+   z80->regE = rand() % 0xFF;
+   z80->regH = rand() % 0xFF;
+   z80->regL = rand() % 0xFF;
+   z80->regF = rand() % 0xFF;
    // 0xFF until the memory stuff is working
-   z80->r->PC = rand() % 0xFF;
-   z80->r->SP = rand() % 0xFFFF;
+   z80->regPC = rand() % 0xFF;
+   z80->regSP = rand() % 0xFFFF;
 
    return 0;
 }
@@ -141,29 +153,29 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 
    switch((regOrder >> 4) & 0xF)
    {
-      case 0x0: dest = z80->r->A; destName = 'A'; break;
-      case 0x1: dest = z80->r->B; destName = 'B'; break;
-      case 0x2: dest = z80->r->C; destName = 'C'; break;
-      case 0x3: dest = z80->r->D; destName = 'D'; break;
-      case 0x4: dest = z80->r->E; destName = 'E'; break;
-      case 0x5: dest = z80->r->F; destName = 'F'; break;
-      case 0x6: dest = z80->r->H; destName = 'H'; break;
-      case 0x7: dest = z80->r->L; destName = 'L'; break;
+      case 0x0: dest = z80->regA; destName = 'A'; break;
+      case 0x1: dest = z80->regB; destName = 'B'; break;
+      case 0x2: dest = z80->regC; destName = 'C'; break;
+      case 0x3: dest = z80->regD; destName = 'D'; break;
+      case 0x4: dest = z80->regE; destName = 'E'; break;
+      case 0x5: dest = z80->regF; destName = 'F'; break;
+      case 0x6: dest = z80->regH; destName = 'H'; break;
+      case 0x7: dest = z80->regL; destName = 'L'; break;
    }
 
    switch(regOrder & 0xF)
    {
-      case 0x0: fail_unless(dest == z80->r->A,"Register %c does not equal register A",destName); break;
-      case 0x1: fail_unless(dest == z80->r->B,"Register %c does not equal register B",destName); break;
-      case 0x2: fail_unless(dest == z80->r->C,"Register %c does not equal register C",destName); break;
-      case 0x3: fail_unless(dest == z80->r->D,"Register %c does not equal register D",destName); break;
-      case 0x4: fail_unless(dest == z80->r->E,"Register %c does not equal register E",destName); break;
-      case 0x5: fail_unless(dest == z80->r->F,"Register %c does not equal register F",destName); break;
-      case 0x6: fail_unless(dest == z80->r->H,"Register %c does not equal register H",destName); break;
-      case 0x7: fail_unless(dest == z80->r->L,"Register %c does not equal register L",destName); break;
+      case 0x0: fail_unless(dest == z80->regA,"Register %c does not equal register A",destName); break;
+      case 0x1: fail_unless(dest == z80->regB,"Register %c does not equal register B",destName); break;
+      case 0x2: fail_unless(dest == z80->regC,"Register %c does not equal register C",destName); break;
+      case 0x3: fail_unless(dest == z80->regD,"Register %c does not equal register D",destName); break;
+      case 0x4: fail_unless(dest == z80->regE,"Register %c does not equal register E",destName); break;
+      case 0x5: fail_unless(dest == z80->regF,"Register %c does not equal register F",destName); break;
+      case 0x6: fail_unless(dest == z80->regH,"Register %c does not equal register H",destName); break;
+      case 0x7: fail_unless(dest == z80->regL,"Register %c does not equal register L",destName); break;
    }
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -182,26 +194,26 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
 
    switch((regOrder >> 4) & 0xF)
    {
-      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
-      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
-      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C ;destName = 'C'; break;
-      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
-      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
-      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
-      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
-      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+      case 0x0: dest = z80->regA; oldDest = old_z80->regA; destName = 'A'; break;
+      case 0x1: dest = z80->regB; oldDest = old_z80->regB; destName = 'B'; break;
+      case 0x2: dest = z80->regC; oldDest = old_z80->regC ;destName = 'C'; break;
+      case 0x3: dest = z80->regD; oldDest = old_z80->regD; destName = 'D'; break;
+      case 0x4: dest = z80->regE; oldDest = old_z80->regE; destName = 'E'; break;
+      case 0x5: dest = z80->regF; oldDest = old_z80->regF; destName = 'F'; break;
+      case 0x6: dest = z80->regH; oldDest = old_z80->regH; destName = 'H'; break;
+      case 0x7: dest = z80->regL; oldDest = old_z80->regL; destName = 'L'; break;
    }
 
    switch(regOrder & 0xF)
    {
-      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register A",destName,destName); break;
-      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register B",destName,destName); break;
-      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register C",destName,destName); break;
-      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register D",destName,destName); break;
-      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register E",destName,destName); break;
-      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register F",destName,destName); break;
-      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register H",destName,destName); break;
-      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register L",destName,destName); break;
+      case 0x0: oldSrc = old_z80->regA; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register A",destName,destName); break;
+      case 0x1: oldSrc = old_z80->regB; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register B",destName,destName); break;
+      case 0x2: oldSrc = old_z80->regC; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register C",destName,destName); break;
+      case 0x3: oldSrc = old_z80->regD; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register D",destName,destName); break;
+      case 0x4: oldSrc = old_z80->regE; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register E",destName,destName); break;
+      case 0x5: oldSrc = old_z80->regF; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register F",destName,destName); break;
+      case 0x6: oldSrc = old_z80->regH; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register H",destName,destName); break;
+      case 0x7: oldSrc = old_z80->regL; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register L",destName,destName); break;
    }
 
    //dest = (oldDest + oldSrc) & 0xFF;
@@ -210,22 +222,22 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    if ((dest < oldDest) | (dest < oldSrc))
    {
       // Carry
-      fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set %x",z80->r->F & 0x10);
+      fail_unless((z80->regF & 0x10) == 0x10,"Carry flag should be set %x",z80->regF & 0x10);
    }
 
    if ((dest & 0xFF) == 0x00)
    {
       // Zero flag
-      fail_unless(z80->r->F & 0x80,"Zero flag should be set");
+      fail_unless(z80->regF & 0x80,"Zero flag should be set");
    }
 
    if (((oldSrc & 0xF) + (oldDest & 0xF)) & 0x10)
    {
       // Half-carry
-      fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
+      fail_unless(z80->regF == z80->regF | 0x20,"Half-carry flag should be set");
    }
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -245,26 +257,26 @@ int ADCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
 
    switch((regOrder >> 4) & 0xF)
    {
-      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
-      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
-      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C ;destName = 'C'; break;
-      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
-      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
-      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
-      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
-      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+      case 0x0: dest = z80->regA; oldDest = old_z80->regA; destName = 'A'; break;
+      case 0x1: dest = z80->regB; oldDest = old_z80->regB; destName = 'B'; break;
+      case 0x2: dest = z80->regC; oldDest = old_z80->regC ;destName = 'C'; break;
+      case 0x3: dest = z80->regD; oldDest = old_z80->regD; destName = 'D'; break;
+      case 0x4: dest = z80->regE; oldDest = old_z80->regE; destName = 'E'; break;
+      case 0x5: dest = z80->regF; oldDest = old_z80->regF; destName = 'F'; break;
+      case 0x6: dest = z80->regH; oldDest = old_z80->regH; destName = 'H'; break;
+      case 0x7: dest = z80->regL; oldDest = old_z80->regL; destName = 'L'; break;
    }
 
    switch(regOrder & 0xF)
    {
-      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register A + carry flag",destName,destName); break;
-      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register B + carry flag",destName,destName); break;
-      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register C + carry flag",destName,destName); break;
-      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register D + carry flag",destName,destName); break;
-      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register E + carry flag",destName,destName); break;
-      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register F + carry flag",destName,destName); break;
-      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register H + carry flag",destName,destName); break;
-      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest + oldSrc + ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register L + carry flag",destName,destName); break;
+      case 0x0: oldSrc = old_z80->regA; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register A + carry flag",destName,destName); break;
+      case 0x1: oldSrc = old_z80->regB; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register B + carry flag",destName,destName); break;
+      case 0x2: oldSrc = old_z80->regC; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register C + carry flag",destName,destName); break;
+      case 0x3: oldSrc = old_z80->regD; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register D + carry flag",destName,destName); break;
+      case 0x4: oldSrc = old_z80->regE; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register E + carry flag",destName,destName); break;
+      case 0x5: oldSrc = old_z80->regF; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register F + carry flag",destName,destName); break;
+      case 0x6: oldSrc = old_z80->regH; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register H + carry flag",destName,destName); break;
+      case 0x7: oldSrc = old_z80->regL; fail_unless(dest == ((oldDest + oldSrc + ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c + register L + carry flag",destName,destName); break;
    }
    //dest = (oldDest + oldSrc) & 0xFF;
 
@@ -272,22 +284,22 @@ int ADCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    if ((dest < oldDest) | (dest < oldSrc))
    {
       // Carry
-      fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set");
+      fail_unless((z80->regF & 0x10) == 0x10,"Carry flag should be set");
    }
 
    if ((dest & 0xFF) == 0x00)
    {
       // Zero flag
-      fail_unless(z80->r->F & 0x80,"Zero flag should be set");
+      fail_unless(z80->regF & 0x80,"Zero flag should be set");
    }
 
    if (((oldSrc & 0xF) + (oldDest & 0xF)) & 0x10)
    {
       // Half-carry
-      fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
+      fail_unless(z80->regF == z80->regF | 0x20,"Half-carry flag should be set");
    }
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -306,26 +318,26 @@ int SUBXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
 
    switch((regOrder >> 4) & 0xF)
    {
-      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
-      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
-      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C; destName = 'C'; break;
-      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
-      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
-      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
-      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
-      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+      case 0x0: dest = z80->regA; oldDest = old_z80->regA; destName = 'A'; break;
+      case 0x1: dest = z80->regB; oldDest = old_z80->regB; destName = 'B'; break;
+      case 0x2: dest = z80->regC; oldDest = old_z80->regC; destName = 'C'; break;
+      case 0x3: dest = z80->regD; oldDest = old_z80->regD; destName = 'D'; break;
+      case 0x4: dest = z80->regE; oldDest = old_z80->regE; destName = 'E'; break;
+      case 0x5: dest = z80->regF; oldDest = old_z80->regF; destName = 'F'; break;
+      case 0x6: dest = z80->regH; oldDest = old_z80->regH; destName = 'H'; break;
+      case 0x7: dest = z80->regL; oldDest = old_z80->regL; destName = 'L'; break;
    }
 
    switch(regOrder & 0xF)
    {
-      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register A",destName,destName); break;
-      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register B",destName,destName); break;
-      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register C",destName,destName); break;
-      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register D",destName,destName); break;
-      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register E",destName,destName); break;
-      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register F",destName,destName); break;
-      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register H",destName,destName); break;
-      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register L",destName,destName); break;
+      case 0x0: oldSrc = old_z80->regA; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register A",destName,destName); break;
+      case 0x1: oldSrc = old_z80->regB; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register B",destName,destName); break;
+      case 0x2: oldSrc = old_z80->regC; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register C",destName,destName); break;
+      case 0x3: oldSrc = old_z80->regD; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register D",destName,destName); break;
+      case 0x4: oldSrc = old_z80->regE; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register E",destName,destName); break;
+      case 0x5: oldSrc = old_z80->regF; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register F",destName,destName); break;
+      case 0x6: oldSrc = old_z80->regH; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register H",destName,destName); break;
+      case 0x7: oldSrc = old_z80->regL; fail_unless(dest == ((oldDest - oldSrc) & 0xFF),"Register %c does not equal register %c - register L",destName,destName); break;
    }
 
    //dest = (oldDest - oldSrc) & 0xFF;
@@ -334,25 +346,25 @@ int SUBXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    if (dest > oldDest)
    {
       // Carry
-      fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set %x",z80->r->F & 0x10);
+      fail_unless((z80->regF & 0x10) == 0x10,"Carry flag should be set %x",z80->regF & 0x10);
    }
 
    if ((dest & 0xFF) == 0x00)
    {
       // Zero flag
-      fail_unless(z80->r->F & 0x80,"Zero flag should be set");
+      fail_unless(z80->regF & 0x80,"Zero flag should be set");
    }
 
    if (((oldSrc & 0xF) - (oldDest & 0xF)) & 0x10)
    {
       // Half-carry
-      fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
+      fail_unless(z80->regF == z80->regF | 0x20,"Half-carry flag should be set");
    }
 
    //Subtract flag
-   fail_unless((z80->r->F & 0x40) == 0x40,"Subtract flag not set");
+   fail_unless((z80->regF & 0x40) == 0x40,"Subtract flag not set");
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -372,53 +384,53 @@ int SBCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
 
    switch((regOrder >> 4) & 0xF)
    {
-      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
-      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
-      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C; destName = 'C'; break;
-      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
-      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
-      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
-      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
-      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+      case 0x0: dest = z80->regA; oldDest = old_z80->regA; destName = 'A'; break;
+      case 0x1: dest = z80->regB; oldDest = old_z80->regB; destName = 'B'; break;
+      case 0x2: dest = z80->regC; oldDest = old_z80->regC; destName = 'C'; break;
+      case 0x3: dest = z80->regD; oldDest = old_z80->regD; destName = 'D'; break;
+      case 0x4: dest = z80->regE; oldDest = old_z80->regE; destName = 'E'; break;
+      case 0x5: dest = z80->regF; oldDest = old_z80->regF; destName = 'F'; break;
+      case 0x6: dest = z80->regH; oldDest = old_z80->regH; destName = 'H'; break;
+      case 0x7: dest = z80->regL; oldDest = old_z80->regL; destName = 'L'; break;
    }
 
    switch(regOrder & 0xF)
    {
-      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register A - carry flag dest = %x oldDest = %x oldSrc = %x carry flag = %x",destName,destName,dest,oldDest,oldSrc,((z80->r->F & 0x10) >> 4)); break;
-      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register B - carry flag",destName,destName); break;
-      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register C - carry flag",destName,destName); break;
-      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register D - carry flag",destName,destName); break;
-      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register E - carry flag",destName,destName); break;
-      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register F - carry flag",destName,destName); break;
-      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register H - carry flag",destName,destName); break;
-      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register L - carry flag",destName,destName); break;
+      case 0x0: oldSrc = old_z80->regA; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register A - carry flag dest = %x oldDest = %x oldSrc = %x carry flag = %x",destName,destName,dest,oldDest,oldSrc,((z80->regF & 0x10) >> 4)); break;
+      case 0x1: oldSrc = old_z80->regB; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register B - carry flag",destName,destName); break;
+      case 0x2: oldSrc = old_z80->regC; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register C - carry flag",destName,destName); break;
+      case 0x3: oldSrc = old_z80->regD; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register D - carry flag",destName,destName); break;
+      case 0x4: oldSrc = old_z80->regE; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register E - carry flag",destName,destName); break;
+      case 0x5: oldSrc = old_z80->regF; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register F - carry flag",destName,destName); break;
+      case 0x6: oldSrc = old_z80->regH; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register H - carry flag",destName,destName); break;
+      case 0x7: oldSrc = old_z80->regL; fail_unless(dest == ((oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF),"Register %c does not equal register %c - register L - carry flag",destName,destName); break;
    }
 
-   //dest = (oldDest - oldSrc - ((z80->r->F & 0x10) >> 4)) & 0xFF;
+   //dest = (oldDest - oldSrc - ((z80->regF & 0x10) >> 4)) & 0xFF;
 
    // Flags
    if (dest > oldDest)
    {
       // Carry
-      fail_unless((z80->r->F & 0x10) == 0x10,"Carry flag should be set %x",z80->r->F & 0x10);
+      fail_unless((z80->regF & 0x10) == 0x10,"Carry flag should be set %x",z80->regF & 0x10);
    }
 
    if ((dest & 0xFF) == 0x00)
    {
       // Zero flag
-      fail_unless(z80->r->F & 0x80,"Zero flag should be set");
+      fail_unless(z80->regF & 0x80,"Zero flag should be set");
    }
 
    if (((oldSrc & 0xF) - (oldDest & 0xF)) & 0x10)
    {
       // Half-carry
-      fail_unless(z80->r->F == z80->r->F | 0x20,"Half-carry flag should be set");
+      fail_unless(z80->regF == z80->regF | 0x20,"Half-carry flag should be set");
    }
 
    //Subtract flag
-   fail_unless((z80->r->F & 0x40) == 0x40,"Subtract flag not set");
+   fail_unless((z80->regF & 0x40) == 0x40,"Subtract flag not set");
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -437,26 +449,26 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
 
    switch((regOrder >> 4) & 0xF)
    {
-      case 0x0: dest = z80->r->A; oldDest = old_z80->r->A; destName = 'A'; break;
-      case 0x1: dest = z80->r->B; oldDest = old_z80->r->B; destName = 'B'; break;
-      case 0x2: dest = z80->r->C; oldDest = old_z80->r->C ;destName = 'C'; break;
-      case 0x3: dest = z80->r->D; oldDest = old_z80->r->D; destName = 'D'; break;
-      case 0x4: dest = z80->r->E; oldDest = old_z80->r->E; destName = 'E'; break;
-      case 0x5: dest = z80->r->F; oldDest = old_z80->r->F; destName = 'F'; break;
-      case 0x6: dest = z80->r->H; oldDest = old_z80->r->H; destName = 'H'; break;
-      case 0x7: dest = z80->r->L; oldDest = old_z80->r->L; destName = 'L'; break;
+      case 0x0: dest = z80->regA; oldDest = old_z80->regA; destName = 'A'; break;
+      case 0x1: dest = z80->regB; oldDest = old_z80->regB; destName = 'B'; break;
+      case 0x2: dest = z80->regC; oldDest = old_z80->regC ;destName = 'C'; break;
+      case 0x3: dest = z80->regD; oldDest = old_z80->regD; destName = 'D'; break;
+      case 0x4: dest = z80->regE; oldDest = old_z80->regE; destName = 'E'; break;
+      case 0x5: dest = z80->regF; oldDest = old_z80->regF; destName = 'F'; break;
+      case 0x6: dest = z80->regH; oldDest = old_z80->regH; destName = 'H'; break;
+      case 0x7: dest = z80->regL; oldDest = old_z80->regL; destName = 'L'; break;
    }
 
    switch(regOrder & 0xF)
    {
-      case 0x0: oldSrc = old_z80->r->A; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register A",destName,destName); break;
-      case 0x1: oldSrc = old_z80->r->B; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register B",destName,destName); break;
-      case 0x2: oldSrc = old_z80->r->C; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register C dest = %x oldDest = %x oldSrc = %x",destName,destName,dest,oldDest,oldSrc); break;
-      case 0x3: oldSrc = old_z80->r->D; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register D",destName,destName); break;
-      case 0x4: oldSrc = old_z80->r->E; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register E",destName,destName); break;
-      case 0x5: oldSrc = old_z80->r->F; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register F",destName,destName); break;
-      case 0x6: oldSrc = old_z80->r->H; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register H",destName,destName); break;
-      case 0x7: oldSrc = old_z80->r->L; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register L",destName,destName); break;
+      case 0x0: oldSrc = old_z80->regA; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register A",destName,destName); break;
+      case 0x1: oldSrc = old_z80->regB; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register B",destName,destName); break;
+      case 0x2: oldSrc = old_z80->regC; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register C dest = %x oldDest = %x oldSrc = %x",destName,destName,dest,oldDest,oldSrc); break;
+      case 0x3: oldSrc = old_z80->regD; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register D",destName,destName); break;
+      case 0x4: oldSrc = old_z80->regE; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register E",destName,destName); break;
+      case 0x5: oldSrc = old_z80->regF; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register F",destName,destName); break;
+      case 0x6: oldSrc = old_z80->regH; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register H",destName,destName); break;
+      case 0x7: oldSrc = old_z80->regL; fail_unless(dest == ((oldDest & oldSrc) & 0xFF),"Register %c does not equal register %c AND register L",destName,destName); break;
    }
 
    //dest = (oldDest + oldSrc) & 0xFF;
@@ -464,19 +476,19 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    if ((dest & 0xFF) == 0x00)
    {
       // Zero flag
-      fail_unless((z80->r->F & 0x80) == 0x80,"Zero flag not set");
+      fail_unless((z80->regF & 0x80) == 0x80,"Zero flag not set");
    }
 
    //Subtract
-   fail_unless((z80->r->F & 0x40) != 0x40,"Subtract flag should not be set");
+   fail_unless((z80->regF & 0x40) != 0x40,"Subtract flag should not be set");
 
    // Half-carry
-   fail_unless((z80->r->F & 0x20) == 0x20,"Half carry flag not set");
+   fail_unless((z80->regF & 0x20) == 0x20,"Half carry flag not set");
 
    // Carry
-   fail_unless((z80->r->F & 0x10) != 0x10,"Carry flag should not be set");
+   fail_unless((z80->regF & 0x10) != 0x10,"Carry flag should not be set");
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -496,31 +508,31 @@ int CB_BITXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
    switch(parameters & 0xF)
    {
       // cpuRegisterBit = (regY & (2 to the power of X) >> X) & 0xF
-      case 0x0: cpuRegisterBit = (((z80->r->A & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x1: cpuRegisterBit = (((z80->r->B & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x2: cpuRegisterBit = (((z80->r->C & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x3: cpuRegisterBit = (((z80->r->D & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x4: cpuRegisterBit = (((z80->r->E & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x5: cpuRegisterBit = (((z80->r->H & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
-      case 0x6: cpuRegisterBit = (((z80->r->L & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x0: cpuRegisterBit = (((z80->regA & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x1: cpuRegisterBit = (((z80->regB & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x2: cpuRegisterBit = (((z80->regC & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x3: cpuRegisterBit = (((z80->regD & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x4: cpuRegisterBit = (((z80->regE & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x5: cpuRegisterBit = (((z80->regH & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
+      case 0x6: cpuRegisterBit = (((z80->regL & (pow_uint8(2,(parameters & 0xF0) >> 4))) >> ((parameters & 0xF0) >> 4)) & 0xF); break;
    }
 printf("cpuRegisterBit == %x\n",cpuRegisterBit);
    if (cpuRegisterBit == 0x0)
    {
       // Zero flag
-      fail_unless((z80->r->F & 0x80) == 0x80,"Zero flag not set");
+      fail_unless((z80->regF & 0x80) == 0x80,"Zero flag not set");
    }
 
    //Subtract
-   fail_unless((z80->r->F & 0x40) != 0x40,"Subtract flag should not be set");
+   fail_unless((z80->regF & 0x40) != 0x40,"Subtract flag should not be set");
 
    // Half-carry
-   fail_unless((z80->r->F & 0x20) == 0x20,"Half carry flag not set");
+   fail_unless((z80->regF & 0x20) == 0x20,"Half carry flag not set");
 
    // Carry
-   fail_unless((z80->r->F & 0x10) == (old_z80->r->F & 0x10),"Carry flag should have been preserved");
+   fail_unless((z80->regF & 0x10) == (old_z80->regF & 0x10),"Carry flag should have been preserved");
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -539,22 +551,22 @@ int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; break;
+      case 0x0: cpuRegister = z80->regA; break;
+      case 0x1: cpuRegister = z80->regB; break;
+      case 0x2: cpuRegister = z80->regC; break;
+      case 0x3: cpuRegister = z80->regD; break;
+      case 0x4: cpuRegister = z80->regE; break;
+      case 0x5: cpuRegister = z80->regH; break;
+      case 0x6: cpuRegister = z80->regL; break;
    }
 
    flagBit = (((parameters & 0xF0) >> 4) & 0xF);
 
    fail_unless(((cpuRegister >> flagBit) & 0x1) == 0,"Register bit %x should be set to zero",flagBit);
 
-   fail_unless(z80->r->F == old_z80->r->F,"Flags should not have been changed");
+   fail_unless(z80->regF == old_z80->regF,"Flags should not have been changed");
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -573,22 +585,22 @@ int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; break;
+      case 0x0: cpuRegister = z80->regA; break;
+      case 0x1: cpuRegister = z80->regB; break;
+      case 0x2: cpuRegister = z80->regC; break;
+      case 0x3: cpuRegister = z80->regD; break;
+      case 0x4: cpuRegister = z80->regE; break;
+      case 0x5: cpuRegister = z80->regH; break;
+      case 0x6: cpuRegister = z80->regL; break;
    }
 
    flagBit = (((parameters & 0xF0) >> 4) & 0xF);
 
    fail_unless(((cpuRegister >> flagBit) & 0x1) == 1,"Register bit %x should be set",flagBit);
 
-   fail_unless(z80->r->F == old_z80->r->F,"Flags should not have been changed");
+   fail_unless(z80->regF == old_z80->regF,"Flags should not have been changed");
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -607,40 +619,40 @@ int CB_RLCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; oldCpuRegister = old_z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; oldCpuRegister = old_z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; oldCpuRegister = old_z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; oldCpuRegister = old_z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; oldCpuRegister = old_z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; oldCpuRegister = old_z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; oldCpuRegister = old_z80->r->L; break;
+      case 0x0: cpuRegister = z80->regA; oldCpuRegister = old_z80->regA; break;
+      case 0x1: cpuRegister = z80->regB; oldCpuRegister = old_z80->regB; break;
+      case 0x2: cpuRegister = z80->regC; oldCpuRegister = old_z80->regC; break;
+      case 0x3: cpuRegister = z80->regD; oldCpuRegister = old_z80->regD; break;
+      case 0x4: cpuRegister = z80->regE; oldCpuRegister = old_z80->regE; break;
+      case 0x5: cpuRegister = z80->regH; oldCpuRegister = old_z80->regH; break;
+      case 0x6: cpuRegister = z80->regL; oldCpuRegister = old_z80->regL; break;
    }
 
    // Test rotate left with carry
    fail_unless(((oldCpuRegister << 1) | ((oldCpuRegister >> 7) & 0x1)) == cpuRegister,"Rotate left with carry seems to have failed");
 
    // Subtract flag
-   fail_unless((z80->r->F & 0x40) == 0,"Subtract flag should be set to zero");
+   fail_unless((z80->regF & 0x40) == 0,"Subtract flag should be set to zero");
    // Half-carry flag
-   fail_unless((z80->r->F & 0x20) == 0,"Half-carry flag should be set to zero");
+   fail_unless((z80->regF & 0x20) == 0,"Half-carry flag should be set to zero");
 
    // Zero flag
    if (cpuRegister == 0x0)
    {
-      fail_unless((z80->r->F & 0x80) == 0x80,"Zero flag should be set");
+      fail_unless((z80->regF & 0x80) == 0x80,"Zero flag should be set");
    } else {
-      fail_unless((z80->r->F & 0x80) == 0x0,"Zero flag should not be set");
+      fail_unless((z80->regF & 0x80) == 0x0,"Zero flag should not be set");
    }
 
    // Carry flag
    if ((oldCpuRegister & 0x80) == 1)
    {
-      fail_unless((z80->r->F & 0x10) == 1,"Carry flag should be set");
+      fail_unless((z80->regF & 0x10) == 1,"Carry flag should be set");
    } else {
-      fail_unless((z80->r->F & 0x10) == 0,"Carry flag should not be set");
+      fail_unless((z80->regF & 0x10) == 0,"Carry flag should not be set");
    }
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -659,40 +671,40 @@ int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; oldCpuRegister = old_z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; oldCpuRegister = old_z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; oldCpuRegister = old_z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; oldCpuRegister = old_z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; oldCpuRegister = old_z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; oldCpuRegister = old_z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; oldCpuRegister = old_z80->r->L; break;
+      case 0x0: cpuRegister = z80->regA; oldCpuRegister = old_z80->regA; break;
+      case 0x1: cpuRegister = z80->regB; oldCpuRegister = old_z80->regB; break;
+      case 0x2: cpuRegister = z80->regC; oldCpuRegister = old_z80->regC; break;
+      case 0x3: cpuRegister = z80->regD; oldCpuRegister = old_z80->regD; break;
+      case 0x4: cpuRegister = z80->regE; oldCpuRegister = old_z80->regE; break;
+      case 0x5: cpuRegister = z80->regH; oldCpuRegister = old_z80->regH; break;
+      case 0x6: cpuRegister = z80->regL; oldCpuRegister = old_z80->regL; break;
    }
 
    // Test rotate right with carry
    fail_unless((oldCpuRegister >> 1) | ((oldCpuRegister & 0x1) << 7) == cpuRegister,"Rotate right with carry seems to have failed %x %x",oldCpuRegister,cpuRegister);
 
    // Subtract flag
-   fail_unless((z80->r->F & 0x40) == 0,"Subtract flag should be set to zero");
+   fail_unless((z80->regF & 0x40) == 0,"Subtract flag should be set to zero");
    // Half-carry flag
-   fail_unless((z80->r->F & 0x20) == 0,"Half-carry flag should be set to zero");
+   fail_unless((z80->regF & 0x20) == 0,"Half-carry flag should be set to zero");
 
    // Zero flag
    if (cpuRegister == 0x0)
    {
-      fail_unless((z80->r->F & 0x80) == 0x80,"Zero flag should be set");
+      fail_unless((z80->regF & 0x80) == 0x80,"Zero flag should be set");
    } else {
-      fail_unless((z80->r->F & 0x80) == 0x0,"Zero flag should not be set");
+      fail_unless((z80->regF & 0x80) == 0x0,"Zero flag should not be set");
    }
 
    // Carry flag
    if ((oldCpuRegister & 0x10) == 1)
    {
-      fail_unless((z80->r->F & 0x10) == 1,"Carry flag should be set");
+      fail_unless((z80->regF & 0x10) == 1,"Carry flag should be set");
    } else {
-      fail_unless((z80->r->F & 0x10) == 0,"Carry flag should not be set");
+      fail_unless((z80->regF & 0x10) == 0,"Carry flag should not be set");
    }
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -711,40 +723,40 @@ int CB_RRX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16
 
    switch(parameters & 0xF)
    {
-      case 0x0: cpuRegister = z80->r->A; oldCpuRegister = old_z80->r->A; break;
-      case 0x1: cpuRegister = z80->r->B; oldCpuRegister = old_z80->r->B; break;
-      case 0x2: cpuRegister = z80->r->C; oldCpuRegister = old_z80->r->C; break;
-      case 0x3: cpuRegister = z80->r->D; oldCpuRegister = old_z80->r->D; break;
-      case 0x4: cpuRegister = z80->r->E; oldCpuRegister = old_z80->r->E; break;
-      case 0x5: cpuRegister = z80->r->H; oldCpuRegister = old_z80->r->H; break;
-      case 0x6: cpuRegister = z80->r->L; oldCpuRegister = old_z80->r->L; break;
+      case 0x0: cpuRegister = z80->regA; oldCpuRegister = old_z80->regA; break;
+      case 0x1: cpuRegister = z80->regB; oldCpuRegister = old_z80->regB; break;
+      case 0x2: cpuRegister = z80->regC; oldCpuRegister = old_z80->regC; break;
+      case 0x3: cpuRegister = z80->regD; oldCpuRegister = old_z80->regD; break;
+      case 0x4: cpuRegister = z80->regE; oldCpuRegister = old_z80->regE; break;
+      case 0x5: cpuRegister = z80->regH; oldCpuRegister = old_z80->regH; break;
+      case 0x6: cpuRegister = z80->regL; oldCpuRegister = old_z80->regL; break;
    }
 
    // Test rotate right with carry
    fail_unless((oldCpuRegister >> 1) | ((oldCpuRegister & 0x1) << 7) == cpuRegister,"Rotate right with carry seems to have failed %x %x",oldCpuRegister,cpuRegister);
 
    // Subtract flag
-   fail_unless((z80->r->F & 0x40) == 0,"Subtract flag should be set to zero");
+   fail_unless((z80->regF & 0x40) == 0,"Subtract flag should be set to zero");
    // Half-carry flag
-   fail_unless((z80->r->F & 0x20) == 0,"Half-carry flag should be set to zero");
+   fail_unless((z80->regF & 0x20) == 0,"Half-carry flag should be set to zero");
 
    // Zero flag
    if (cpuRegister == 0x0)
    {
-      fail_unless((z80->r->F & 0x80) == 0x80,"Zero flag should be set");
+      fail_unless((z80->regF & 0x80) == 0x80,"Zero flag should be set");
    } else {
-      fail_unless((z80->r->F & 0x80) == 0x0,"Zero flag should not be set");
+      fail_unless((z80->regF & 0x80) == 0x0,"Zero flag should not be set");
    }
 
    // Carry flag
    if ((oldCpuRegister & 0x80) == 1)
    {
-      fail_unless((z80->r->F & 0x10) == 1,"Carry flag should be set");
+      fail_unless((z80->regF & 0x10) == 1,"Carry flag should be set");
    } else {
-      fail_unless((z80->r->F & 0x10) == 0,"Carry flag should not be set");
+      fail_unless((z80->regF & 0x10) == 0,"Carry flag should not be set");
    }
 
-   fail_unless(z80->r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
@@ -760,17 +772,17 @@ START_TEST (test_check_OP_00h_NOP)
    InitMemory(&memory);
 
    int result = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
+   uint8_t tmp_z80_PC = z80.regPC;
 
    result = OP_00h_NOP(&memory,&z80);
 
-   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
    fail_unless(result == 0,"Result was not 0");
    fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
 }
 END_TEST
 
-START_TEST (test_check_OP_0Eh_LDCD8)
+/*START_TEST (test_check_OP_LDXD8)
 {
    Memory memory;
    Registers registers;
@@ -779,26 +791,30 @@ START_TEST (test_check_OP_0Eh_LDCD8)
    InitZ80(&z80,&registers);
    InitMemory(&memory);
 
-   int result = 0, i = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
+   int result = 0, h = 0, i = 0;
+   uint8_t tmp_z80_PC = z80.regPC;
 
-   for(i=0;i<0xFF;i++)
+   
+   for ( h=0 ; h<0x7; h++ )
    {
-      z80.r->PC = i;
+      for(i=0;i<0xFF;i++)
+      {
+         z80.regPC = i;
 
-      tmp_z80_PC = (z80.r->PC & 0xFF);
+         tmp_z80_PC = (z80.regPC & 0xFF);
 
-      result = OP_0Eh_LDCD8(&memory,&z80);
+         result = OP_LDXD8(&memory,&z80);
 
 printf("*** rb(&memory,(tmp_z80_PC)) == %x\n",rb(&memory,(tmp_z80_PC)));
-      fail_unless(z80.r->C == rb(&memory,(tmp_z80_PC)));
-      fail_unless(z80.r->PC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
+         fail_unless(z80.regC == rb(&memory,(tmp_z80_PC)));
+         fail_unless(z80.regPC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
 
-      fail_unless(result == 0,"Result was not 0");
-      fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+         fail_unless(result == 0,"Result was not 0");
+         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+      }
    }
 }
-END_TEST
+END_TEST*/
 
 START_TEST (test_check_OP_20h_JRNZn)
 {
@@ -813,35 +829,35 @@ START_TEST (test_check_OP_20h_JRNZn)
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
    int result = 0, i = 0, k = 0;
-   z80.r->PC = k;
-   uint16_t tmp_z80_PC = z80.r->PC;
+   z80.regPC = k;
+   uint16_t tmp_z80_PC = z80.regPC;
 
    for(k=0;k<0xFF;k++)
    {
       for(i=0;i<0x2;i++)
       {
-         z80.r->PC = k;
+         z80.regPC = k;
 
          if (i == 0x0)
          {
-            z80.r->F = 0x80;
+            z80.regF = 0x80;
          } else {
-            z80.r->F = 0x00;
+            z80.regF = 0x00;
          }
 
-         tmp_z80_PC = z80.r->PC;
+         tmp_z80_PC = z80.regPC;
 
          result = OP_20h_JRNZn(&memory,&z80);
 
          // Relative jump if last result is non-zero
          // If last result is non-zero, ticks == 12, else ticks == 8
-         if ((z80.r->F & 0x80) == 0x00)
+         if ((z80.regF & 0x80) == 0x00)
          {
-printf("*** k == %x\nz80.r->PC == %x\nrb(&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.r->PC - 1,rb(&memory,tmp_z80_PC) + tmp_z80_PC);
-            fail_unless(((z80.r->PC - 1) & 0xFF) == ((rb(&memory,tmp_z80_PC) + (int8_t) tmp_z80_PC) & 0xFF));
+printf("*** k == %x\nz80.regPC == %x\nrb(&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.regPC - 1,rb(&memory,tmp_z80_PC) + tmp_z80_PC);
+            fail_unless(((z80.regPC - 1) & 0xFF) == ((rb(&memory,tmp_z80_PC) + (int8_t) tmp_z80_PC) & 0xFF));
             fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
          } else {
-            fail_unless((z80.r->PC - 1) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+            fail_unless((z80.regPC - 1) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
             fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
          }
 
@@ -863,8 +879,8 @@ START_TEST (test_check_OP_21h_LDHLnn)
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
    int result = 0, h = 0, i = 0;
-   z80.r->PC = h;
-   uint16_t tmp_z80_PC = z80.r->PC;
+   z80.regPC = h;
+   uint16_t tmp_z80_PC = z80.regPC;
 
    for(h=0;h<2;h++)
    {
@@ -875,19 +891,19 @@ START_TEST (test_check_OP_21h_LDHLnn)
          {
             randomize_registers(&z80,&registers);
          } else {
-            z80.r->PC = i;
+            z80.regPC = i;
          }
 
-         tmp_z80_PC = z80.r->PC;
+         tmp_z80_PC = z80.regPC;
 
          result = OP_21h_LDHLnn(&memory,&z80);
-//printf("z80.r->PC - 2 == %x\ntmp_z80_PC == %x\n",(z80.r->PC - 2),tmp_z80_PC);
-         fail_unless((uint16_t) (z80.r->PC - 2) == (uint16_t) tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+//printf("z80.regPC - 2 == %x\ntmp_z80_PC == %x\n",(z80.regPC - 2),tmp_z80_PC);
+         fail_unless((uint16_t) (z80.regPC - 2) == (uint16_t) tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
          //tmp_z80_PC is 0, and this byte is treated as an address
-         fail_unless(z80.r->H == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
-         fail_unless(z80.r->L == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
+         fail_unless(z80.regH == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
+         fail_unless(z80.regL == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
 
          fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
       }
@@ -906,8 +922,8 @@ START_TEST (test_check_OP_22h_LDIHLA)
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
-   uint16_t tmp_z80_PC = z80.r->PC;
-   uint16_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+   uint16_t tmp_z80_PC = z80.regPC;
+   uint16_t tmp_z80_HL = (z80.regH << 8) + z80.regL;
    int result = 0, i = 0, h = 0;
 
    for(h=0;h<2;h++)
@@ -919,22 +935,22 @@ START_TEST (test_check_OP_22h_LDIHLA)
          {
             randomize_registers(&z80,&registers);
          } else{
-            z80.r->PC = i;
+            z80.regPC = i;
          }
 
-         tmp_z80_PC = z80.r->PC;
-         tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+         tmp_z80_PC = z80.regPC;
+         tmp_z80_HL = (z80.regH << 8) + z80.regL;
 
-//printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
+//printf("HL = %x\n",(z80.regH << 8) + z80.regL);
 
          result = OP_22h_LDIHLA(&memory,&z80);
 
-//printf("z80.r->PC == %x\ntmp_z80_PC == %x\n",z80.r->PC,tmp_z80_PC);
-         fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+//printf("z80.regPC == %x\ntmp_z80_PC == %x\n",z80.regPC,tmp_z80_PC);
+         fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-//printf("HL-1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L - 1),z80.r->A);
-         fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L - 1) == z80.r->A,"Content at address pointed by HL (-1 at this point) does not match A register.");
+//printf("HL-1 addr content = %x\nA = %x\n",rb(&memory,(z80.regH << 8) + z80.regL - 1),z80.regA);
+         fail_unless(rb(&memory,(z80.regH << 8) + z80.regL - 1) == z80.regA,"Content at address pointed by HL (-1 at this point) does not match A register.");
          fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
@@ -953,7 +969,7 @@ START_TEST (test_check_OP_31h_LDSPnn)
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
    int result = 0, h = 0, i = 0;
-   uint16_t tmp_z80_PC = z80.r->PC;
+   uint16_t tmp_z80_PC = z80.regPC;
 
    for(h=0;h<2;h++)
    {
@@ -964,14 +980,14 @@ START_TEST (test_check_OP_31h_LDSPnn)
          {
             randomize_registers(&z80,&registers);
          } else{
-            z80.r->PC = i;
+            z80.regPC = i;
          }
 
-         tmp_z80_PC = z80.r->PC;
+         tmp_z80_PC = z80.regPC;
 
          result = OP_31h_LDSPnn(&memory,&z80);
 
-         fail_unless((z80.r->PC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
+         fail_unless((z80.regPC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
 
@@ -988,9 +1004,9 @@ START_TEST (test_check_OP_31h_LDSPnn)
             continue;
          }*/
 
-printf("z80.r->SP == %x\n(rb(&memory,(tmp_z80_PC + 1)) << 8) == %x\nrb(&memory,(tmp_z80_PC)) == %x\n",z80.r->SP,(rb(&memory,(tmp_z80_PC + 1)) << 8),rb(&memory,(tmp_z80_PC)));
+printf("z80.regSP == %x\n(rb(&memory,(tmp_z80_PC + 1)) << 8) == %x\nrb(&memory,(tmp_z80_PC)) == %x\n",z80.regSP,(rb(&memory,(tmp_z80_PC + 1)) << 8),rb(&memory,(tmp_z80_PC)));
 printf("tmp_z80_PC == %x\n",tmp_z80_PC);
-         fail_unless((uint16_t) z80.r->SP == (uint16_t) (rb(&memory,((uint16_t) tmp_z80_PC + (uint16_t) 1)) << 8) + (uint16_t) rb(&memory,((uint16_t) tmp_z80_PC)),"SP register incorrect value");
+         fail_unless((uint16_t) z80.regSP == (uint16_t) (rb(&memory,((uint16_t) tmp_z80_PC + (uint16_t) 1)) << 8) + (uint16_t) rb(&memory,((uint16_t) tmp_z80_PC)),"SP register incorrect value");
       }
    }
 }
@@ -1008,8 +1024,8 @@ START_TEST (test_check_OP_32h_LDDHLA)
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
 
    int result = 0, h = 0, i = 0;
-   uint16_t tmp_z80_PC = z80.r->PC;
-   uint16_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+   uint16_t tmp_z80_PC = z80.regPC;
+   uint16_t tmp_z80_HL = (z80.regH << 8) + z80.regL;
 
    for(h=0;h<2;h++)
    {
@@ -1020,22 +1036,22 @@ START_TEST (test_check_OP_32h_LDDHLA)
          {
             randomize_registers(&z80,&registers);
          } else{
-            z80.r->PC = i;
+            z80.regPC = i;
          }
 
-         tmp_z80_PC = z80.r->PC;
-         tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
-         printf("HL = %x\n",(z80.r->H << 8) + z80.r->L);
+         tmp_z80_PC = z80.regPC;
+         tmp_z80_HL = (z80.regH << 8) + z80.regL;
+         printf("HL = %x\n",(z80.regH << 8) + z80.regL);
 
          result = OP_32h_LDDHLA(&memory,&z80);
 
          // opcode should not increment PC because PC is incremented by 1 in the opcode switch
-         fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+         fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-         printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.r->H << 8) + z80.r->L + 1),z80.r->A);
+         printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.regH << 8) + z80.regL + 1),z80.regA);
 
-         fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L + 1) == z80.r->A,"Content at address pointed by HL (+1 at this point) does not match A register.");
+         fail_unless(rb(&memory,(z80.regH << 8) + z80.regL + 1) == z80.regA,"Content at address pointed by HL (+1 at this point) does not match A register.");
          fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
@@ -1052,7 +1068,7 @@ START_TEST (test_check_OP_40h_LDBB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_40h_LDBB(memory,z80);
 
@@ -1074,7 +1090,7 @@ START_TEST (test_check_OP_41h_LDBC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_41h_LDBC(memory,z80);
 
@@ -1097,7 +1113,7 @@ START_TEST (test_check_OP_42h_LDBD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_42h_LDBD(memory,z80);
 
@@ -1119,7 +1135,7 @@ START_TEST (test_check_OP_43h_LDBE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_43h_LDBE(memory,z80);
 
@@ -1141,7 +1157,7 @@ START_TEST (test_check_OP_44h_LDBH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_44h_LDBH(memory,z80);
 
@@ -1163,7 +1179,7 @@ START_TEST (test_check_OP_45h_LDBL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_45h_LDBL(memory,z80);
 
@@ -1186,7 +1202,7 @@ START_TEST (test_check_OP_48h_LDCB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_48h_LDCB(memory,z80);
 
@@ -1209,7 +1225,7 @@ START_TEST (test_check_OP_49h_LDCC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_49h_LDCC(memory,z80);
 
@@ -1232,7 +1248,7 @@ START_TEST (test_check_OP_4Ah_LDCD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_4Ah_LDCD(memory,z80);
 
@@ -1255,7 +1271,7 @@ START_TEST (test_check_OP_4Bh_LDCE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_4Bh_LDCE(memory,z80);
 
@@ -1278,7 +1294,7 @@ START_TEST (test_check_OP_4Ch_LDCH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_4Ch_LDCH(memory,z80);
 
@@ -1301,7 +1317,7 @@ START_TEST (test_check_OP_4Dh_LDCL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_4Dh_LDCL(memory,z80);
 
@@ -1324,7 +1340,7 @@ START_TEST (test_check_OP_4Fh_LDCA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_4Fh_LDCA(memory,z80);
 
@@ -1346,7 +1362,7 @@ START_TEST (test_check_OP_50h_LDDB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_50h_LDDB(memory,z80);
 
@@ -1368,7 +1384,7 @@ START_TEST (test_check_OP_51h_LDDC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_51h_LDDC(memory,z80);
 
@@ -1390,7 +1406,7 @@ START_TEST (test_check_OP_52h_LDDD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_52h_LDDD(memory,z80);
 
@@ -1412,7 +1428,7 @@ START_TEST (test_check_OP_53h_LDDE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_53h_LDDE(memory,z80);
 
@@ -1434,7 +1450,7 @@ START_TEST (test_check_OP_54h_LDDH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_54h_LDDH(memory,z80);
 
@@ -1456,7 +1472,7 @@ START_TEST (test_check_OP_55h_LDDL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_55h_LDDL(memory,z80);
 
@@ -1479,7 +1495,7 @@ START_TEST (test_check_OP_58h_LDEB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_58h_LDEB(memory,z80);
 
@@ -1502,7 +1518,7 @@ START_TEST (test_check_OP_59h_LDEC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_59h_LDEC(memory,z80);
 
@@ -1525,7 +1541,7 @@ START_TEST (test_check_OP_5Ah_LDED)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_5Ah_LDED(memory,z80);
 
@@ -1548,7 +1564,7 @@ START_TEST (test_check_OP_5Bh_LDEE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_5Bh_LDEE(memory,z80);
 
@@ -1571,7 +1587,7 @@ START_TEST (test_check_OP_5Ch_LDEH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_5Ch_LDEH(memory,z80);
 
@@ -1594,7 +1610,7 @@ START_TEST (test_check_OP_5Dh_LDEL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_5Dh_LDEL(memory,z80);
 
@@ -1617,7 +1633,7 @@ START_TEST (test_check_OP_5Fh_LDEA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_5Fh_LDEA(memory,z80);
 
@@ -1639,7 +1655,7 @@ START_TEST (test_check_OP_60h_LDHB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_60h_LDHB(memory,z80);
 
@@ -1661,7 +1677,7 @@ START_TEST (test_check_OP_61h_LDHC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_61h_LDHC(memory,z80);
 
@@ -1683,7 +1699,7 @@ START_TEST (test_check_OP_62h_LDHD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_62h_LDHD(memory,z80);
 
@@ -1705,7 +1721,7 @@ START_TEST (test_check_OP_63h_LDHE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_63h_LDHE(memory,z80);
 
@@ -1727,7 +1743,7 @@ START_TEST (test_check_OP_64h_LDHH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_64h_LDHH(memory,z80);
 
@@ -1749,7 +1765,7 @@ START_TEST (test_check_OP_65h_LDHL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_65h_LDHL(memory,z80);
 
@@ -1772,7 +1788,7 @@ START_TEST (test_check_OP_68h_LDLB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_68h_LDLB(memory,z80);
 
@@ -1795,7 +1811,7 @@ START_TEST (test_check_OP_69h_LDLC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_69h_LDLC(memory,z80);
 
@@ -1818,7 +1834,7 @@ START_TEST (test_check_OP_6Ah_LDLD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_6Ah_LDLD(memory,z80);
 
@@ -1841,7 +1857,7 @@ START_TEST (test_check_OP_6Bh_LDLE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_6Bh_LDLE(memory,z80);
 
@@ -1864,7 +1880,7 @@ START_TEST (test_check_OP_6Ch_LDLH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_6Ch_LDLH(memory,z80);
 
@@ -1887,7 +1903,7 @@ START_TEST (test_check_OP_6Dh_LDLL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_6Dh_LDLL(memory,z80);
 
@@ -1910,7 +1926,7 @@ START_TEST (test_check_OP_6Fh_LDLA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_6Fh_LDLA(memory,z80);
 
@@ -1932,19 +1948,19 @@ START_TEST (test_check_OP_72h_LDHLD)
    InitMemory(&memory);
 
    int result = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
-   uint8_t tmp_z80_HL = (z80.r->H << 8) + z80.r->L;
+   uint8_t tmp_z80_PC = z80.regPC;
+   uint8_t tmp_z80_HL = (z80.regH << 8) + z80.regL;
 
-   z80.r->D = 0xD;
-   z80.r->H = 0x8;
-   z80.r->L = 0x8;
+   z80.regD = 0xD;
+   z80.regH = 0x8;
+   z80.regL = 0x8;
 
    result = OP_72h_LDHLD(&memory,&z80);
 
-   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
    fail_unless(result == 0,"Result was not 0");
-   fail_unless(rb(&memory,(z80.r->H << 8) + z80.r->L) == z80.r->D,"Content of address held in HL register does not equal register D");
+   fail_unless(rb(&memory,(z80.regH << 8) + z80.regL) == z80.regD,"Content of address held in HL register does not equal register D");
    fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
 }
 END_TEST
@@ -1960,7 +1976,7 @@ START_TEST (test_check_OP_78h_LDAB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_78h_LDAB(memory,z80);
 
@@ -1983,7 +1999,7 @@ START_TEST (test_check_OP_79h_LDAC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_79h_LDAC(memory,z80);
 
@@ -2006,7 +2022,7 @@ START_TEST (test_check_OP_7Ah_LDAD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_7Ah_LDAD(memory,z80);
 
@@ -2029,7 +2045,7 @@ START_TEST (test_check_OP_7Bh_LDAE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_7Bh_LDAE(memory,z80);
 
@@ -2052,7 +2068,7 @@ START_TEST (test_check_OP_7Ch_LDAH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_7Ch_LDAH(memory,z80);
 
@@ -2075,7 +2091,7 @@ START_TEST (test_check_OP_7Dh_LDAL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_7Dh_LDAL(memory,z80);
 
@@ -2098,7 +2114,7 @@ START_TEST (test_check_OP_7Fh_LDAA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_7Fh_LDAA(memory,z80);
 
@@ -2125,7 +2141,7 @@ START_TEST (test_check_OP_80h_ADDAB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_80h_ADDAB(memory,z80);
    ADDXY(memory,z80,old_z80,0x01,tmp_z80_PC);
@@ -2153,7 +2169,7 @@ START_TEST (test_check_OP_81h_ADDAC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_81h_ADDAC(memory,z80);
    ADDXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -2181,7 +2197,7 @@ START_TEST (test_check_OP_82h_ADDAD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_82h_ADDAD(memory,z80);
    ADDXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -2209,7 +2225,7 @@ START_TEST (test_check_OP_83h_ADDAE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_83h_ADDAE(memory,z80);
    ADDXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -2237,7 +2253,7 @@ START_TEST (test_check_OP_84h_ADDAH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_84h_ADDAH(memory,z80);
    ADDXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -2265,7 +2281,7 @@ START_TEST (test_check_OP_85h_ADDAL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_85h_ADDAL(memory,z80);
    ADDXY(memory,z80,old_z80,0x07,tmp_z80_PC);
@@ -2293,7 +2309,7 @@ START_TEST (test_check_OP_87h_ADDAA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_87h_ADDAA(memory,z80);
    ADDXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -2321,7 +2337,7 @@ START_TEST (test_check_OP_88h_ADCAB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_88h_ADCAB(memory,z80);
    ADCXY(memory,z80,old_z80,0x01,tmp_z80_PC);
@@ -2349,7 +2365,7 @@ START_TEST (test_check_OP_89h_ADCAC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_89h_ADCAC(memory,z80);
    ADCXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -2377,7 +2393,7 @@ START_TEST (test_check_OP_8Ah_ADCAD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_8Ah_ADCAD(memory,z80);
    ADCXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -2405,7 +2421,7 @@ START_TEST (test_check_OP_8Bh_ADCAE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_8Bh_ADCAE(memory,z80);
    ADCXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -2433,7 +2449,7 @@ START_TEST (test_check_OP_8Ch_ADCAH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_8Ch_ADCAH(memory,z80);
    ADCXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -2461,7 +2477,7 @@ START_TEST (test_check_OP_8Dh_ADCAL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_8Dh_ADCAL(memory,z80);
    ADCXY(memory,z80,old_z80,0x07,tmp_z80_PC);
@@ -2489,7 +2505,7 @@ START_TEST (test_check_OP_8Fh_ADCAA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_8Fh_ADCAA(memory,z80);
    ADCXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -2517,7 +2533,7 @@ START_TEST (test_check_OP_90h_SUBB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_90h_SUBB(memory,z80);
    SUBXY(memory,z80,old_z80,0x01,tmp_z80_PC);
@@ -2545,7 +2561,7 @@ START_TEST (test_check_OP_91h_SUBC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_91h_SUBC(memory,z80);
    SUBXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -2573,7 +2589,7 @@ START_TEST (test_check_OP_92h_SUBD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_92h_SUBD(memory,z80);
    SUBXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -2601,7 +2617,7 @@ START_TEST (test_check_OP_93h_SUBE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_93h_SUBE(memory,z80);
    SUBXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -2629,7 +2645,7 @@ START_TEST (test_check_OP_94h_SUBH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_94h_SUBH(memory,z80);
    SUBXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -2657,7 +2673,7 @@ START_TEST (test_check_OP_95h_SUBL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_95h_SUBL(memory,z80);
    SUBXY(memory,z80,old_z80,0x07,tmp_z80_PC);
@@ -2685,7 +2701,7 @@ START_TEST (test_check_OP_97h_SUBA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_97h_SUBA(memory,z80);
    SUBXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -2713,7 +2729,7 @@ START_TEST (test_check_OP_98h_SBCAB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_98h_SBCAB(memory,z80);
    SBCXY(memory,z80,old_z80,0x01,tmp_z80_PC);
@@ -2741,7 +2757,7 @@ START_TEST (test_check_OP_99h_SBCAC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_99h_SBCAC(memory,z80);
    SBCXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -2769,7 +2785,7 @@ START_TEST (test_check_OP_9Ah_SBCAD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_9Ah_SBCAD(memory,z80);
    SBCXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -2797,7 +2813,7 @@ START_TEST (test_check_OP_9Bh_SBCAE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_9Bh_SBCAE(memory,z80);
    SBCXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -2825,7 +2841,7 @@ START_TEST (test_check_OP_9Ch_SBCAH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_9Ch_SBCAH(memory,z80);
    SBCXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -2853,7 +2869,7 @@ START_TEST (test_check_OP_9Dh_SBCAL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_9Dh_SBCAL(memory,z80);
    SBCXY(memory,z80,old_z80,0x07,tmp_z80_PC);
@@ -2881,7 +2897,7 @@ START_TEST (test_check_OP_9Fh_SBCAA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_9Fh_SBCAA(memory,z80);
    SBCXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -2909,7 +2925,7 @@ START_TEST (test_check_OP_A0h_ANDB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A0h_ANDB(memory,z80);
    ANDXY(memory,z80,old_z80,0x01,tmp_z80_PC);
@@ -2937,7 +2953,7 @@ START_TEST (test_check_OP_A1h_ANDC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A1h_ANDC(memory,z80);
    ANDXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -2965,7 +2981,7 @@ START_TEST (test_check_OP_A2h_ANDD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A2h_ANDD(memory,z80);
    ANDXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -2993,7 +3009,7 @@ START_TEST (test_check_OP_A3h_ANDE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A3h_ANDE(memory,z80);
    ANDXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -3021,7 +3037,7 @@ START_TEST (test_check_OP_A4h_ANDH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A4h_ANDH(memory,z80);
    ANDXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -3049,7 +3065,7 @@ START_TEST (test_check_OP_A5h_ANDL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A5h_ANDL(memory,z80);
    ANDXY(memory,z80,old_z80,0x07,tmp_z80_PC);
@@ -3077,7 +3093,7 @@ START_TEST (test_check_OP_A7h_ANDA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = OP_A7h_ANDA(memory,z80);
    ANDXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -3105,7 +3121,7 @@ START_TEST (test_check_OP_CB_00h_RLCB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x1);
    CB_RLCX(memory,z80,old_z80,0x1,tmp_z80_PC);
@@ -3133,7 +3149,7 @@ START_TEST (test_check_OP_CB_01h_RLCC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x2);
    CB_RLCX(memory,z80,old_z80,0x2,tmp_z80_PC);
@@ -3161,7 +3177,7 @@ START_TEST (test_check_OP_CB_02h_RLCD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x3);
    CB_RLCX(memory,z80,old_z80,0x3,tmp_z80_PC);
@@ -3189,7 +3205,7 @@ START_TEST (test_check_OP_CB_03h_RLCE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x4);
    CB_RLCX(memory,z80,old_z80,0x4,tmp_z80_PC);
@@ -3217,7 +3233,7 @@ START_TEST (test_check_OP_CB_04h_RLCH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x5);
    CB_RLCX(memory,z80,old_z80,0x5,tmp_z80_PC);
@@ -3245,7 +3261,7 @@ START_TEST (test_check_OP_CB_05h_RLCL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x6);
    CB_RLCX(memory,z80,old_z80,0x6,tmp_z80_PC);
@@ -3273,7 +3289,7 @@ START_TEST (test_check_OP_CB_07h_RLCA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x0);
    CB_RLCX(memory,z80,old_z80,0x0,tmp_z80_PC);
@@ -3301,7 +3317,7 @@ START_TEST (test_check_OP_CB_08h_RRCB)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x1);
    CB_RRCX(memory,z80,old_z80,0x1,tmp_z80_PC);
@@ -3329,7 +3345,7 @@ START_TEST (test_check_OP_CB_09h_RRCC)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x2);
    CB_RRCX(memory,z80,old_z80,0x2,tmp_z80_PC);
@@ -3357,7 +3373,7 @@ START_TEST (test_check_OP_CB_0Ah_RRCD)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x3);
    CB_RRCX(memory,z80,old_z80,0x3,tmp_z80_PC);
@@ -3385,7 +3401,7 @@ START_TEST (test_check_OP_CB_0Bh_RRCE)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x4);
    CB_RRCX(memory,z80,old_z80,0x4,tmp_z80_PC);
@@ -3413,7 +3429,7 @@ START_TEST (test_check_OP_CB_0Ch_RRCH)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x5);
    CB_RRCX(memory,z80,old_z80,0x5,tmp_z80_PC);
@@ -3441,7 +3457,7 @@ START_TEST (test_check_OP_CB_0Dh_RRCL)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x6);
    CB_RRCX(memory,z80,old_z80,0x6,tmp_z80_PC);
@@ -3469,7 +3485,7 @@ START_TEST (test_check_OP_CB_0Fh_RRCA)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x0);
    CB_RRCX(memory,z80,old_z80,0x0,tmp_z80_PC);
@@ -3497,7 +3513,7 @@ START_TEST (test_check_OP_CB_40h_BIT0B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x01);
    CB_BITXY(memory,z80,old_z80,0x01,tmp_z80_PC);
@@ -3525,7 +3541,7 @@ START_TEST (test_check_OP_CB_41h_BIT0C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x02);
    CB_BITXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -3553,7 +3569,7 @@ START_TEST (test_check_OP_CB_42h_BIT0D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x03);
    CB_BITXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -3581,7 +3597,7 @@ START_TEST (test_check_OP_CB_43h_BIT0E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x04);
    CB_BITXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -3609,7 +3625,7 @@ START_TEST (test_check_OP_CB_44h_BIT0H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x05);
    CB_BITXY(memory,z80,old_z80,0x05,tmp_z80_PC);
@@ -3637,7 +3653,7 @@ START_TEST (test_check_OP_CB_45h_BIT0L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x06);
    CB_BITXY(memory,z80,old_z80,0x6,tmp_z80_PC);
@@ -3665,7 +3681,7 @@ START_TEST (test_check_OP_CB_47h_BIT0A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x00);
    CB_BITXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -3693,11 +3709,11 @@ START_TEST (test_check_OP_CB_80h_RES0B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
-printf("B == %x\n",z80->r->B);
+   uint16_t tmp_z80_PC = z80->regPC;
+printf("B == %x\n",z80->regB);
    result = CB_RES(memory,z80,0x01);
    CB_RESXY(memory,z80,old_z80,0x01,tmp_z80_PC);
-printf("B == %x\n",z80->r->B);
+printf("B == %x\n",z80->regB);
 
    free(old_z80);
    free(old_registers);
@@ -3722,7 +3738,7 @@ START_TEST (test_check_OP_CB_81h_RES0C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x02);
    CB_RESXY(memory,z80,old_z80,0x02,tmp_z80_PC);
@@ -3750,7 +3766,7 @@ START_TEST (test_check_OP_CB_82h_RES0D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x03);
    CB_RESXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -3778,7 +3794,7 @@ START_TEST (test_check_OP_CB_83h_RES0E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x04);
    CB_RESXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -3806,7 +3822,7 @@ START_TEST (test_check_OP_CB_84h_RES0H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x05);
    CB_RESXY(memory,z80,old_z80,0x05,tmp_z80_PC);
@@ -3834,7 +3850,7 @@ START_TEST (test_check_OP_CB_85h_RES0L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x06);
    CB_RESXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -3862,7 +3878,7 @@ START_TEST (test_check_OP_CB_87h_RES0A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x00);
    CB_RESXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -3890,7 +3906,7 @@ START_TEST (test_check_OP_CB_88h_RES1B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x11);
    CB_RESXY(memory,z80,old_z80,0x11,tmp_z80_PC);
@@ -3918,7 +3934,7 @@ START_TEST (test_check_OP_CB_89h_RES1C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x12);
    CB_RESXY(memory,z80,old_z80,0x12,tmp_z80_PC);
@@ -3946,7 +3962,7 @@ START_TEST (test_check_OP_CB_8Ah_RES1D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x13);
    CB_RESXY(memory,z80,old_z80,0x13,tmp_z80_PC);
@@ -3974,7 +3990,7 @@ START_TEST (test_check_OP_CB_8Bh_RES1E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x14);
    CB_RESXY(memory,z80,old_z80,0x14,tmp_z80_PC);
@@ -4002,7 +4018,7 @@ START_TEST (test_check_OP_CB_8Ch_RES1H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x15);
    CB_RESXY(memory,z80,old_z80,0x15,tmp_z80_PC);
@@ -4030,7 +4046,7 @@ START_TEST (test_check_OP_CB_8Dh_RES1L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x16);
    CB_RESXY(memory,z80,old_z80,0x16,tmp_z80_PC);
@@ -4058,7 +4074,7 @@ START_TEST (test_check_OP_CB_8Fh_RES1A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x10);
    CB_RESXY(memory,z80,old_z80,0x10,tmp_z80_PC);
@@ -4086,7 +4102,7 @@ START_TEST (test_check_OP_CB_90h_RES2B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x21);
    CB_RESXY(memory,z80,old_z80,0x21,tmp_z80_PC);
@@ -4114,7 +4130,7 @@ START_TEST (test_check_OP_CB_91h_RES2C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x22);
    CB_RESXY(memory,z80,old_z80,0x22,tmp_z80_PC);
@@ -4142,7 +4158,7 @@ START_TEST (test_check_OP_CB_92h_RES2D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x23);
    CB_RESXY(memory,z80,old_z80,0x23,tmp_z80_PC);
@@ -4170,7 +4186,7 @@ START_TEST (test_check_OP_CB_93h_RES2E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x24);
    CB_RESXY(memory,z80,old_z80,0x24,tmp_z80_PC);
@@ -4198,7 +4214,7 @@ START_TEST (test_check_OP_CB_94h_RES2H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x25);
    CB_RESXY(memory,z80,old_z80,0x25,tmp_z80_PC);
@@ -4226,7 +4242,7 @@ START_TEST (test_check_OP_CB_95h_RES2L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x26);
    CB_RESXY(memory,z80,old_z80,0x26,tmp_z80_PC);
@@ -4254,7 +4270,7 @@ START_TEST (test_check_OP_CB_97h_RES2A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x20);
    CB_RESXY(memory,z80,old_z80,0x20,tmp_z80_PC);
@@ -4282,7 +4298,7 @@ START_TEST (test_check_OP_CB_98h_RES3B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x31);
    CB_RESXY(memory,z80,old_z80,0x31,tmp_z80_PC);
@@ -4310,7 +4326,7 @@ START_TEST (test_check_OP_CB_99h_RES3C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x32);
    CB_RESXY(memory,z80,old_z80,0x32,tmp_z80_PC);
@@ -4338,7 +4354,7 @@ START_TEST (test_check_OP_CB_9Ah_RES3D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x33);
    CB_RESXY(memory,z80,old_z80,0x33,tmp_z80_PC);
@@ -4366,7 +4382,7 @@ START_TEST (test_check_OP_CB_9Bh_RES3E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x34);
    CB_RESXY(memory,z80,old_z80,0x34,tmp_z80_PC);
@@ -4394,7 +4410,7 @@ START_TEST (test_check_OP_CB_9Ch_RES3H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x35);
    CB_RESXY(memory,z80,old_z80,0x35,tmp_z80_PC);
@@ -4422,7 +4438,7 @@ START_TEST (test_check_OP_CB_9Dh_RES3L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x36);
    CB_RESXY(memory,z80,old_z80,0x36,tmp_z80_PC);
@@ -4450,7 +4466,7 @@ START_TEST (test_check_OP_CB_9Fh_RES3A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x30);
    CB_RESXY(memory,z80,old_z80,0x30,tmp_z80_PC);
@@ -4478,7 +4494,7 @@ START_TEST (test_check_OP_CB_A0h_RES4B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x41);
    CB_RESXY(memory,z80,old_z80,0x41,tmp_z80_PC);
@@ -4506,7 +4522,7 @@ START_TEST (test_check_OP_CB_A1h_RES4C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x42);
    CB_RESXY(memory,z80,old_z80,0x42,tmp_z80_PC);
@@ -4534,7 +4550,7 @@ START_TEST (test_check_OP_CB_A2h_RES4D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x43);
    CB_RESXY(memory,z80,old_z80,0x43,tmp_z80_PC);
@@ -4562,7 +4578,7 @@ START_TEST (test_check_OP_CB_A3h_RES4E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x44);
    CB_RESXY(memory,z80,old_z80,0x44,tmp_z80_PC);
@@ -4590,7 +4606,7 @@ START_TEST (test_check_OP_CB_A4h_RES4H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x45);
    CB_RESXY(memory,z80,old_z80,0x45,tmp_z80_PC);
@@ -4618,7 +4634,7 @@ START_TEST (test_check_OP_CB_A5h_RES4L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x46);
    CB_RESXY(memory,z80,old_z80,0x46,tmp_z80_PC);
@@ -4646,7 +4662,7 @@ START_TEST (test_check_OP_CB_A7h_RES4A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x40);
    CB_RESXY(memory,z80,old_z80,0x40,tmp_z80_PC);
@@ -4674,7 +4690,7 @@ START_TEST (test_check_OP_CB_A8h_RES5B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x51);
    CB_RESXY(memory,z80,old_z80,0x51,tmp_z80_PC);
@@ -4702,7 +4718,7 @@ START_TEST (test_check_OP_CB_A9h_RES5C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x52);
    CB_RESXY(memory,z80,old_z80,0x52,tmp_z80_PC);
@@ -4730,7 +4746,7 @@ START_TEST (test_check_OP_CB_AAh_RES5D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x53);
    CB_RESXY(memory,z80,old_z80,0x53,tmp_z80_PC);
@@ -4758,7 +4774,7 @@ START_TEST (test_check_OP_CB_ABh_RES5E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x54);
    CB_RESXY(memory,z80,old_z80,0x54,tmp_z80_PC);
@@ -4786,7 +4802,7 @@ START_TEST (test_check_OP_CB_ACh_RES5H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x55);
    CB_RESXY(memory,z80,old_z80,0x55,tmp_z80_PC);
@@ -4814,7 +4830,7 @@ START_TEST (test_check_OP_CB_ADh_RES5L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x56);
    CB_RESXY(memory,z80,old_z80,0x56,tmp_z80_PC);
@@ -4842,7 +4858,7 @@ START_TEST (test_check_OP_CB_AFh_RES5A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x50);
    CB_RESXY(memory,z80,old_z80,0x50,tmp_z80_PC);
@@ -4870,7 +4886,7 @@ START_TEST (test_check_OP_CB_B0h_RES6B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x61);
    CB_RESXY(memory,z80,old_z80,0x61,tmp_z80_PC);
@@ -4898,7 +4914,7 @@ START_TEST (test_check_OP_CB_B1h_RES6C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x62);
    CB_RESXY(memory,z80,old_z80,0x62,tmp_z80_PC);
@@ -4926,7 +4942,7 @@ START_TEST (test_check_OP_CB_B2h_RES6D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x63);
    CB_RESXY(memory,z80,old_z80,0x63,tmp_z80_PC);
@@ -4954,7 +4970,7 @@ START_TEST (test_check_OP_CB_B3h_RES6E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x64);
    CB_RESXY(memory,z80,old_z80,0x64,tmp_z80_PC);
@@ -4982,7 +4998,7 @@ START_TEST (test_check_OP_CB_B4h_RES6H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x65);
    CB_RESXY(memory,z80,old_z80,0x65,tmp_z80_PC);
@@ -5010,7 +5026,7 @@ START_TEST (test_check_OP_CB_B5h_RES6L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x66);
    CB_RESXY(memory,z80,old_z80,0x66,tmp_z80_PC);
@@ -5038,7 +5054,7 @@ START_TEST (test_check_OP_CB_B7h_RES6A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x60);
    CB_RESXY(memory,z80,old_z80,0x60,tmp_z80_PC);
@@ -5066,7 +5082,7 @@ START_TEST (test_check_OP_CB_B8h_RES7B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x71);
    CB_RESXY(memory,z80,old_z80,0x71,tmp_z80_PC);
@@ -5094,7 +5110,7 @@ START_TEST (test_check_OP_CB_B9h_RES7C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x72);
    CB_RESXY(memory,z80,old_z80,0x72,tmp_z80_PC);
@@ -5122,7 +5138,7 @@ START_TEST (test_check_OP_CB_BAh_RES7D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x73);
    CB_RESXY(memory,z80,old_z80,0x73,tmp_z80_PC);
@@ -5150,7 +5166,7 @@ START_TEST (test_check_OP_CB_BBh_RES7E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x74);
    CB_RESXY(memory,z80,old_z80,0x74,tmp_z80_PC);
@@ -5178,7 +5194,7 @@ START_TEST (test_check_OP_CB_BCh_RES7H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x75);
    CB_RESXY(memory,z80,old_z80,0x75,tmp_z80_PC);
@@ -5206,7 +5222,7 @@ START_TEST (test_check_OP_CB_BDh_RES7L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x76);
    CB_RESXY(memory,z80,old_z80,0x76,tmp_z80_PC);
@@ -5234,7 +5250,7 @@ START_TEST (test_check_OP_CB_BFh_RES7A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x70);
    CB_RESXY(memory,z80,old_z80,0x70,tmp_z80_PC);
@@ -5262,11 +5278,11 @@ START_TEST (test_check_OP_CB_C0h_SET0B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
-printf("CB_SET (pre) B == %x\n",z80->r->B);
+   uint16_t tmp_z80_PC = z80->regPC;
+printf("CB_SET (pre) B == %x\n",z80->regB);
    result = CB_SET(memory,z80,0x01);
    CB_SETXY(memory,z80,old_z80,0x01,tmp_z80_PC);
-printf("CB_SET (post) B == %x\n",z80->r->B);
+printf("CB_SET (post) B == %x\n",z80->regB);
 
    free(old_z80);
    free(old_registers);
@@ -5291,12 +5307,12 @@ START_TEST (test_check_OP_CB_C1h_SET0C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
-printf("CB_SET (pre) C == %x\n",z80->r->C);
+printf("CB_SET (pre) C == %x\n",z80->regC);
    result = CB_SET(memory,z80,0x02);
    CB_SETXY(memory,z80,old_z80,0x02,tmp_z80_PC);
-printf("CB_SET (post) C == %x\n",z80->r->C);
+printf("CB_SET (post) C == %x\n",z80->regC);
 
    free(old_z80);
    free(old_registers);
@@ -5321,7 +5337,7 @@ START_TEST (test_check_OP_CB_C2h_SET0D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x03);
    CB_SETXY(memory,z80,old_z80,0x03,tmp_z80_PC);
@@ -5349,7 +5365,7 @@ START_TEST (test_check_OP_CB_C3h_SET0E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x04);
    CB_SETXY(memory,z80,old_z80,0x04,tmp_z80_PC);
@@ -5377,7 +5393,7 @@ START_TEST (test_check_OP_CB_C4h_SET0H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x05);
    CB_SETXY(memory,z80,old_z80,0x05,tmp_z80_PC);
@@ -5405,7 +5421,7 @@ START_TEST (test_check_OP_CB_C5h_SET0L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x06);
    CB_SETXY(memory,z80,old_z80,0x06,tmp_z80_PC);
@@ -5433,7 +5449,7 @@ START_TEST (test_check_OP_CB_C7h_SET0A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x00);
    CB_SETXY(memory,z80,old_z80,0x00,tmp_z80_PC);
@@ -5461,7 +5477,7 @@ START_TEST (test_check_OP_CB_C8h_SET1B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x11);
    CB_SETXY(memory,z80,old_z80,0x11,tmp_z80_PC);
@@ -5489,7 +5505,7 @@ START_TEST (test_check_OP_CB_C9h_SET1C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x12);
    CB_SETXY(memory,z80,old_z80,0x12,tmp_z80_PC);
@@ -5517,7 +5533,7 @@ START_TEST (test_check_OP_CB_CAh_SET1D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x13);
    CB_SETXY(memory,z80,old_z80,0x13,tmp_z80_PC);
@@ -5545,7 +5561,7 @@ START_TEST (test_check_OP_CB_CBh_SET1E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x14);
    CB_SETXY(memory,z80,old_z80,0x14,tmp_z80_PC);
@@ -5573,7 +5589,7 @@ START_TEST (test_check_OP_CB_CCh_SET1H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x15);
    CB_SETXY(memory,z80,old_z80,0x15,tmp_z80_PC);
@@ -5601,7 +5617,7 @@ START_TEST (test_check_OP_CB_CDh_SET1L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x16);
    CB_SETXY(memory,z80,old_z80,0x16,tmp_z80_PC);
@@ -5629,7 +5645,7 @@ START_TEST (test_check_OP_CB_CFh_SET1A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x10);
    CB_SETXY(memory,z80,old_z80,0x10,tmp_z80_PC);
@@ -5657,7 +5673,7 @@ START_TEST (test_check_OP_CB_D0h_SET2B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x21);
    CB_SETXY(memory,z80,old_z80,0x21,tmp_z80_PC);
@@ -5685,7 +5701,7 @@ START_TEST (test_check_OP_CB_D1h_SET2C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x22);
    CB_SETXY(memory,z80,old_z80,0x22,tmp_z80_PC);
@@ -5713,7 +5729,7 @@ START_TEST (test_check_OP_CB_D2h_SET2D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x23);
    CB_SETXY(memory,z80,old_z80,0x23,tmp_z80_PC);
@@ -5741,7 +5757,7 @@ START_TEST (test_check_OP_CB_D3h_SET2E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x24);
    CB_SETXY(memory,z80,old_z80,0x24,tmp_z80_PC);
@@ -5769,7 +5785,7 @@ START_TEST (test_check_OP_CB_D4h_SET2H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x25);
    CB_SETXY(memory,z80,old_z80,0x25,tmp_z80_PC);
@@ -5797,7 +5813,7 @@ START_TEST (test_check_OP_CB_D5h_SET2L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x26);
    CB_SETXY(memory,z80,old_z80,0x26,tmp_z80_PC);
@@ -5825,7 +5841,7 @@ START_TEST (test_check_OP_CB_D7h_SET2A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x20);
    CB_SETXY(memory,z80,old_z80,0x20,tmp_z80_PC);
@@ -5853,7 +5869,7 @@ START_TEST (test_check_OP_CB_D8h_SET3B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x31);
    CB_SETXY(memory,z80,old_z80,0x31,tmp_z80_PC);
@@ -5881,7 +5897,7 @@ START_TEST (test_check_OP_CB_D9h_SET3C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x32);
    CB_SETXY(memory,z80,old_z80,0x32,tmp_z80_PC);
@@ -5909,7 +5925,7 @@ START_TEST (test_check_OP_CB_DAh_SET3D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x33);
    CB_SETXY(memory,z80,old_z80,0x33,tmp_z80_PC);
@@ -5937,7 +5953,7 @@ START_TEST (test_check_OP_CB_DBh_SET3E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x34);
    CB_SETXY(memory,z80,old_z80,0x34,tmp_z80_PC);
@@ -5965,7 +5981,7 @@ START_TEST (test_check_OP_CB_DCh_SET3H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x35);
    CB_SETXY(memory,z80,old_z80,0x35,tmp_z80_PC);
@@ -5993,7 +6009,7 @@ START_TEST (test_check_OP_CB_DDh_SET3L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x36);
    CB_SETXY(memory,z80,old_z80,0x36,tmp_z80_PC);
@@ -6021,7 +6037,7 @@ START_TEST (test_check_OP_CB_DFh_SET3A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x30);
    CB_SETXY(memory,z80,old_z80,0x30,tmp_z80_PC);
@@ -6049,7 +6065,7 @@ START_TEST (test_check_OP_CB_E0h_SET4B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x41);
    CB_SETXY(memory,z80,old_z80,0x41,tmp_z80_PC);
@@ -6077,7 +6093,7 @@ START_TEST (test_check_OP_CB_E1h_SET4C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x42);
    CB_SETXY(memory,z80,old_z80,0x42,tmp_z80_PC);
@@ -6105,7 +6121,7 @@ START_TEST (test_check_OP_CB_E2h_SET4D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x43);
    CB_SETXY(memory,z80,old_z80,0x43,tmp_z80_PC);
@@ -6133,7 +6149,7 @@ START_TEST (test_check_OP_CB_E3h_SET4E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x44);
    CB_SETXY(memory,z80,old_z80,0x44,tmp_z80_PC);
@@ -6161,7 +6177,7 @@ START_TEST (test_check_OP_CB_E4h_SET4H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x45);
    CB_SETXY(memory,z80,old_z80,0x45,tmp_z80_PC);
@@ -6189,7 +6205,7 @@ START_TEST (test_check_OP_CB_E5h_SET4L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x46);
    CB_SETXY(memory,z80,old_z80,0x46,tmp_z80_PC);
@@ -6217,7 +6233,7 @@ START_TEST (test_check_OP_CB_E7h_SET4A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x40);
    CB_SETXY(memory,z80,old_z80,0x40,tmp_z80_PC);
@@ -6245,7 +6261,7 @@ START_TEST (test_check_OP_CB_E8h_SET5B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x51);
    CB_SETXY(memory,z80,old_z80,0x51,tmp_z80_PC);
@@ -6273,7 +6289,7 @@ START_TEST (test_check_OP_CB_E9h_SET5C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x52);
    CB_SETXY(memory,z80,old_z80,0x52,tmp_z80_PC);
@@ -6301,7 +6317,7 @@ START_TEST (test_check_OP_CB_EAh_SET5D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x53);
    CB_SETXY(memory,z80,old_z80,0x53,tmp_z80_PC);
@@ -6329,7 +6345,7 @@ START_TEST (test_check_OP_CB_EBh_SET5E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x54);
    CB_SETXY(memory,z80,old_z80,0x54,tmp_z80_PC);
@@ -6357,7 +6373,7 @@ START_TEST (test_check_OP_CB_ECh_SET5H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x55);
    CB_SETXY(memory,z80,old_z80,0x55,tmp_z80_PC);
@@ -6385,7 +6401,7 @@ START_TEST (test_check_OP_CB_EDh_SET5L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x56);
    CB_SETXY(memory,z80,old_z80,0x56,tmp_z80_PC);
@@ -6413,7 +6429,7 @@ START_TEST (test_check_OP_CB_EFh_SET5A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x50);
    CB_SETXY(memory,z80,old_z80,0x50,tmp_z80_PC);
@@ -6441,7 +6457,7 @@ START_TEST (test_check_OP_CB_F0h_SET6B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x61);
    CB_SETXY(memory,z80,old_z80,0x61,tmp_z80_PC);
@@ -6469,7 +6485,7 @@ START_TEST (test_check_OP_CB_F1h_SET6C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x62);
    CB_SETXY(memory,z80,old_z80,0x62,tmp_z80_PC);
@@ -6497,7 +6513,7 @@ START_TEST (test_check_OP_CB_F2h_SET6D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x63);
    CB_SETXY(memory,z80,old_z80,0x63,tmp_z80_PC);
@@ -6525,7 +6541,7 @@ START_TEST (test_check_OP_CB_F3h_SET6E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x64);
    CB_SETXY(memory,z80,old_z80,0x64,tmp_z80_PC);
@@ -6553,7 +6569,7 @@ START_TEST (test_check_OP_CB_F4h_SET6H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x65);
    CB_SETXY(memory,z80,old_z80,0x65,tmp_z80_PC);
@@ -6581,7 +6597,7 @@ START_TEST (test_check_OP_CB_F5h_SET6L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x66);
    CB_SETXY(memory,z80,old_z80,0x66,tmp_z80_PC);
@@ -6609,7 +6625,7 @@ START_TEST (test_check_OP_CB_F7h_SET6A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x60);
    CB_SETXY(memory,z80,old_z80,0x60,tmp_z80_PC);
@@ -6637,7 +6653,7 @@ START_TEST (test_check_OP_CB_F8h_SET7B)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x71);
    CB_SETXY(memory,z80,old_z80,0x71,tmp_z80_PC);
@@ -6665,7 +6681,7 @@ START_TEST (test_check_OP_CB_F9h_SET7C)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x72);
    CB_SETXY(memory,z80,old_z80,0x72,tmp_z80_PC);
@@ -6693,7 +6709,7 @@ START_TEST (test_check_OP_CB_FAh_SET7D)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x73);
    CB_SETXY(memory,z80,old_z80,0x73,tmp_z80_PC);
@@ -6721,7 +6737,7 @@ START_TEST (test_check_OP_CB_FBh_SET7E)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x74);
    CB_SETXY(memory,z80,old_z80,0x74,tmp_z80_PC);
@@ -6749,7 +6765,7 @@ START_TEST (test_check_OP_CB_FCh_SET7H)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x75);
    CB_SETXY(memory,z80,old_z80,0x75,tmp_z80_PC);
@@ -6777,7 +6793,7 @@ START_TEST (test_check_OP_CB_FDh_SET7L)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x76);
    CB_SETXY(memory,z80,old_z80,0x76,tmp_z80_PC);
@@ -6805,7 +6821,7 @@ START_TEST (test_check_OP_CB_FFh_SET7A)
    InitMemory(memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->r->PC;
+   uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x70);
    CB_SETXY(memory,z80,old_z80,0x70,tmp_z80_PC);
@@ -6829,17 +6845,17 @@ START_TEST (test_check_OP_AFh_XORA)
    InitMemory(&memory);
 
    int result = 0;
-   uint8_t tmp_z80_PC = z80.r->PC;
+   uint8_t tmp_z80_PC = z80.regPC;
 
    result = OP_AFh_XORA(&memory,&z80);
 
-   fail_unless(z80.r->PC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+   fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
    fail_unless(result == 0,"Result was not 0");
 
    fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
-   fail_unless(z80.r->A == 0,"A register should be 0");
-   fail_unless(z80.r->F == 0x80,"Zero flag should be set and all others reset");
+   fail_unless(z80.regA == 0,"A register should be 0");
+   fail_unless(z80.regF == 0x80,"Zero flag should be set and all others reset");
 }
 END_TEST
 
@@ -6850,7 +6866,7 @@ Suite * add_suite(void)
    /* Core test case */
    TCase *tc_core = tcase_create("Core");
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
-   tcase_add_test(tc_core,test_check_OP_0Eh_LDCD8);
+//   tcase_add_test(tc_core,test_check_OP_LDCD8);
    tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);

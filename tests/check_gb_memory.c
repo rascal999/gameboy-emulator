@@ -16,6 +16,19 @@
    #undef rb
 #endif
 
+#ifndef Z80_REGISTERS
+   #define regA r->r[0x0]
+   #define regB r->r[0x1] 
+   #define regC r->r[0x2]
+   #define regD r->r[0x3]
+   #define regE r->r[0x4]
+   #define regF r->r[0x5]
+   #define regH r->r[0x6]
+   #define regL r->r[0x7]
+   #define regPC r->r16[0x0]
+   #define regSP r->r16[0x1]
+#endif
+
 /*
    uint8_t bios_rom[0xFF];
    uint8_t bank0[0x3FFF];
@@ -53,7 +66,7 @@ START_TEST (test_check_rb) //0x00 1     4
    memory.bios_rom_loaded = 1;
 
    int result = 0;
-   int tmp_z80_PC = z80.r->PC;
+   int tmp_z80_PC = z80.regPC;
 
    // Bios ROM
    result = rb(&memory,0x00);

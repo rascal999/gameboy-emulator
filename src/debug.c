@@ -14,15 +14,28 @@
    #include "debug.h"
 #endif
 
+#ifndef Z80_REGISTERS
+   #define regA r->r[0x0]
+   #define regB r->r[0x1] 
+   #define regC r->r[0x2]
+   #define regD r->r[0x3]
+   #define regE r->r[0x4]
+   #define regF r->r[0x5]
+   #define regH r->r[0x6]
+   #define regL r->r[0x7]
+   #define regPC r->r16[0x0]
+   #define regSP r->r16[0x1]
+#endif
+
 int DebugFullInstruction(Z80 * z80, Memory * memory)
 {
    int i;
-   int k = DebugNextInstructionSize(rb(memory,z80->r->PC));
+   int k = DebugNextInstructionSize(rb(memory,z80->regPC));
 
    printf("FULL = ");
    for(i=0;i<k;i++)
    {
-      printf("%x",rb(memory,(z80->r->PC + i)));
+      printf("%x",rb(memory,(z80->regPC + i)));
    }
    printf("\n");
 
@@ -35,13 +48,13 @@ int DebugAll(Z80 * z80, Memory * memory, Debug * debug)
    /*printf("-------------\n");
    printf("| D E B U G |\n");
    printf("-------------\n");*/
-   printf("OPCODE = %x\n",rb(memory,(z80->r->PC)));
+   printf("OPCODE = %x\n",rb(memory,(z80->regPC)));
    DebugFullInstruction(z80,memory);
    printf("\n");
-   printf("A = %x\tB = %x\tC = %x\n",z80->r->A,z80->r->B,z80->r->C);
-   printf("D = %x\tE = %x\tF = %x\n",z80->r->D,z80->r->E,z80->r->F);
-   printf("H = %x\tL = %x\tSP = %x\n",z80->r->H,z80->r->L,z80->r->SP);
-   printf("PC = %x\n",z80->r->PC);
+   printf("A = %x\tB = %x\tC = %x\n",z80->regA,z80->regB,z80->regC);
+   printf("D = %x\tE = %x\tF = %x\n",z80->regD,z80->regE,z80->regF);
+   printf("H = %x\tL = %x\tSP = %x\n",z80->regH,z80->regL,z80->regSP);
+   printf("PC = %x\n",z80->regPC);
    /*printf("-------------\n");
    printf("| E   N   D |\n");
    printf("-------------\n");*/
