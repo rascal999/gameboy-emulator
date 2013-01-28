@@ -35,7 +35,7 @@ int mock_exiterror(Error * err)
 /* Read byte */
 uint8_t mock_rb(Memory * mem, uint16_t addr)
 {
-   printf("mock rb addr = %x\n",addr);
+   //printf("mock rb addr = %x\n",addr);
    return mem->bios_rom[addr];
 }
 
