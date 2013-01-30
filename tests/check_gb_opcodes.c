@@ -784,7 +784,7 @@ START_TEST (test_check_OP_00h_NOP)
 }
 END_TEST
 
-/*START_TEST (test_check_OP_LDXD8)
+START_TEST (test_check_OP_INCX)
 {
    Memory memory;
    Registers registers;
@@ -794,8 +794,60 @@ END_TEST
    InitMemory(&memory);
 
    int result = 0, h = 0, i = 0;
-   uint8_t tmp_z80_PC = z80.regPC;
+   uint8_t tmp_z80_PC = z80.regPC, oldRegValue, tmp_z80_F;
+   
+   for ( h=0 ; h<0x7; h++ )
+   {
+      for(i=0;i<0xFF;i++)
+      {
+         oldRegValue = z80.r->r[h];
+         tmp_z80_F = z80.regF;
 
+         z80.regPC = i;
+
+         tmp_z80_PC = (z80.regPC & 0xFF);
+
+         result = OP_INCX(&memory,&z80,h);
+
+         // Half carry
+         if ((((oldRegValue & 0xF) + 0x1) & 0xF) == 0xF)
+         {
+            fail_unless((z80.regF & 0x20) == 0x20);
+         }
+
+         // Zero flag
+         if (z80.r->r[h] == 0x0)
+         {
+            fail_unless((z80.regF & 0x80) == 0x80);
+         }
+
+         // Negate flag
+         fail_unless((z80.regF & 0x40) == 0x0);
+
+         // Carry flag
+         fail_unless((z80.regF & 0x10) == (tmp_z80_F & 0x10));
+
+         fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+         fail_unless(result == 0,"Result was not 0");
+         fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
+      }
+   }
+}
+END_TEST
+
+START_TEST (test_check_OP_LDXD8)
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+
+   int result = 0, h = 0, i = 0;
+   uint8_t tmp_z80_PC = z80.regPC;
    
    for ( h=0 ; h<0x7; h++ )
    {
@@ -805,10 +857,9 @@ END_TEST
 
          tmp_z80_PC = (z80.regPC & 0xFF);
 
-         result = OP_LDXD8(&memory,&z80);
+         result = OP_LDXD8(&memory,&z80,h);
 
-printf("*** rb(&memory,(tmp_z80_PC)) == %x\n",rb(&memory,(tmp_z80_PC)));
-         fail_unless(z80.regC == rb(&memory,(tmp_z80_PC)));
+         fail_unless((z80.r->r[h] & 0xFF) == rb(&memory,(tmp_z80_PC)) & 0xFF);
          fail_unless(z80.regPC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
@@ -816,7 +867,7 @@ printf("*** rb(&memory,(tmp_z80_PC)) == %x\n",rb(&memory,(tmp_z80_PC)));
       }
    }
 }
-END_TEST*/
+END_TEST
 
 START_TEST (test_check_OP_20h_JRNZn)
 {
@@ -6861,6 +6912,29 @@ START_TEST (test_check_OP_AFh_XORA)
 }
 END_TEST
 
+START_TEST (test_check_OP_E2h_LDHCA)
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0;
+   uint8_t tmp_z80_PC = z80.regPC;
+
+   result = OP_E2h_LDHCA(&memory,&z80);
+
+   fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+   fail_unless(result == 0,"Result was not 0");
+
+   fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+   fail_unless(z80.regA == rb(&memory,(0xff00 + z80.regC)));
+}
+END_TEST
+
 Suite * add_suite(void)
 {
    Suite * s = suite_create("Add");
@@ -6868,7 +6942,19 @@ Suite * add_suite(void)
    /* Core test case */
    TCase *tc_core = tcase_create("Core");
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
-//   tcase_add_test(tc_core,test_check_OP_LDCD8);
+   tcase_add_test(tc_core,test_check_OP_INCX);
+
+   tcase_add_test(tc_core,test_check_OP_LDXD8);
+   /*
+   tcase_add_test(tc_core,test_check_OP_06h_LDBD8);
+   tcase_add_test(tc_core,test_check_OP_0Eh_LDCD8);
+   tcase_add_test(tc_core,test_check_OP_16h_LDDD8);
+   tcase_add_test(tc_core,test_check_OP_1Eh_LDED8);
+   tcase_add_test(tc_core,test_check_OP_26h_LDHD8);
+   tcase_add_test(tc_core,test_check_OP_2Eh_LDLD8);
+   tcase_add_test(tc_core,test_check_OP_3Eh_LDAD8);
+   */
+
    tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);
@@ -7097,6 +7183,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_CB_FFh_SET7A);
 
    tcase_add_test(tc_core,test_check_OP_AFh_XORA);
+   tcase_add_test(tc_core,test_check_OP_E2h_LDHCA);
    suite_add_tcase(s,tc_core);
 
    return s;

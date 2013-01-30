@@ -326,11 +326,9 @@ int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
  *  Description:  Load immediate into register X
  * =====================================================================================
  */
-int OP_LDXD8(Memory * memory, Z80 * z80, uint8_t parameters)
+int OP_LDXD8(Memory * memory, Z80 * z80, uint8_t x)
 {
-//printf("*** PC == %x\nrb(memory,(z80->regPC)) & 0xFF == %x\n",z80->regPC,rb(memory,(z80->regPC)) & 0xFF);
-
-   z80->r->r[(parameters & 0xF)] = rb(memory,(z80->regPC + 1)) & 0xFF;
+   z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC)) & 0xFF;
 
    z80->regPC = z80->regPC + 1;
    z80->ticks = 8;
@@ -347,158 +345,11 @@ int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x)
    return 0;
 }
 
-int Execute(Memory * memory, Z80 * z80)
+int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x)
 {
-   int callDebug = 1;
-   uint16_t tmp;
+   wb(memory,(z80->regH << 8) + z80->regL,z80->r->r[x & 0xF]);
 
-   Debug debug;
-   Error err;
-
-   //usleep(50000);
-
-   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->regPC)));
-
-   if (callDebug == 1)
-   {
-      debug.instructionSize = 1;
-      DebugAll(z80, memory, &debug);
-   }
-
-   /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
-   switch(rb(memory,(z80->regPC++)))
-   {
-      case 0x00: OP_00h_NOP(memory,z80); break;
-      case 0x0E: OP_LDXD8(memory,z80,(uint8_t) 0x2); break;
-      case 0x20: OP_20h_JRNZn(memory,z80); break;
-      case 0x21: OP_21h_LDHLnn(memory,z80); break;
-      case 0x22: OP_22h_LDIHLA(memory,z80); break;
-      case 0x31: OP_31h_LDSPnn(memory,z80); break;
-      case 0x32: OP_32h_LDDHLA(memory,z80); break;
-
-      case 0x40: OP_LDXY(memory,z80,0x11); break;
-      case 0x41: OP_LDXY(memory,z80,0x12); break;
-      case 0x42: OP_LDXY(memory,z80,0x13); break;
-      case 0x43: OP_LDXY(memory,z80,0x14); break;
-      case 0x44: OP_LDXY(memory,z80,0x16); break;
-      case 0x45: OP_LDXY(memory,z80,0x17); break;
-      case 0x50: OP_LDXY(memory,z80,0x31); break;
-      case 0x51: OP_LDXY(memory,z80,0x32); break;
-      case 0x52: OP_LDXY(memory,z80,0x33); break;
-      case 0x53: OP_LDXY(memory,z80,0x34); break;
-      case 0x54: OP_LDXY(memory,z80,0x36); break;
-      case 0x55: OP_LDXY(memory,z80,0x37); break;
-      case 0x60: OP_LDXY(memory,z80,0x61); break;
-      case 0x61: OP_LDXY(memory,z80,0x62); break;
-      case 0x62: OP_LDXY(memory,z80,0x63); break;
-      case 0x63: OP_LDXY(memory,z80,0x64); break;
-      case 0x64: OP_LDXY(memory,z80,0x66); break;
-      case 0x65: OP_LDXY(memory,z80,0x67); break;
-
-/*
-      case 0x40: OP_40h_LDBB(memory,z80); break;
-      case 0x41: OP_41h_LDBC(memory,z80); break;
-      case 0x42: OP_42h_LDBD(memory,z80); break;
-      case 0x43: OP_43h_LDBE(memory,z80); break;
-      case 0x44: OP_44h_LDBH(memory,z80); break;
-      case 0x45: OP_45h_LDBL(memory,z80); break;
-      case 0x50: OP_50h_LDDB(memory,z80); break;
-      case 0x51: OP_51h_LDDC(memory,z80); break;
-      case 0x52: OP_52h_LDDD(memory,z80); break;
-      case 0x53: OP_53h_LDDE(memory,z80); break;
-      case 0x54: OP_54h_LDDH(memory,z80); break;
-      case 0x55: OP_55h_LDDL(memory,z80); break;
-      case 0x60: OP_60h_LDHB(memory,z80); break;
-      case 0x61: OP_61h_LDHC(memory,z80); break;
-      case 0x62: OP_62h_LDHD(memory,z80); break;
-      case 0x63: OP_63h_LDHE(memory,z80); break;
-      case 0x64: OP_64h_LDHH(memory,z80); break;
-      case 0x65: OP_65h_LDHL(memory,z80); break;
-*/
-
-      case 0xAF: OP_AFh_XORA(memory,z80); break;
-      // CB prefixed opcodes
-      case 0xCB: OP_CBh_PREFIXCB(memory,z80); break;
-      case 0xFF: OP_FFh_RST38h(memory,z80); break;
-
-      default:
-         err.code = 20;
-         exiterror(&err);
-      break;
-   }
-
-   // Reset after acting on ticks
-   z80->ticks = 0;
-
-   return 0;
-}
-
-int ExecuteCB(Memory * memory, Z80 * z80)
-{
-   int callDebug = 1;
-   uint16_t tmp;
-
-   Debug debug;
-   Error err;
-
-   //usleep(50000);
-
-   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->regPC)));
-
-   if (callDebug == 1)
-   {
-      debug.instructionSize = 1;
-      DebugAll(z80, memory, &debug);
-   }
-
-   /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
-   switch(rb(memory,(z80->regPC++)))
-   {
-      // NEED TO DEVELOP TEST CODE AND SORT OUT
-      /*case 0x00: OP_CB_00h_RLCB(memory,z80); break;
-      case 0x21: OP_CB_21h_SLAC(memory,z80); break;
-      case 0x22: OP_CB_22h_SLAD(memory,z80); break;
-      case 0x31: OP_CB_31h_SLAPB(memory,z80); break;*/
-      // a = 0 b = 1 c = 2 d = 3 e = 4 f = 5 h = 6 l = 7
-      //case 0x40: OP_CB_40h_BIT0B(memory,z80); break;
-      case 0x40: CB_BIT(memory,z80,0x01); break;
-      case 0x41: CB_BIT(memory,z80,0x02); break;
-      case 0x42: CB_BIT(memory,z80,0x03); break;
-      case 0x43: CB_BIT(memory,z80,0x04); break;
-      case 0x44: CB_BIT(memory,z80,0x06); break;
-      case 0x45: CB_BIT(memory,z80,0x07); break;
-      case 0x47: CB_BIT(memory,z80,0x00); break;
-      case 0x7c: CB_BIT(memory,z80,0x76); break;
-      /*case 0x40: CB_BIT(memory,z80,0x01); break;
-      case 0x40: CB_BIT(memory,z80,0x01); break;
-      case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
-      case 0x42: OP_CB_42h_BIT0D(memory,z80); break;
-      case 0x43: OP_CB_43h_BIT0E(memory,z80); break;
-      case 0x44: OP_CB_44h_BIT0H(memory,z80); break;
-      case 0x45: OP_CB_45h_BIT0L(memory,z80); break;
-      case 0x50: OP_CB_50h_BIT2B(memory,z80); break;
-      case 0x51: OP_CB_51h_BIT2C(memory,z80); break;
-      case 0x52: OP_CB_52h_BIT2D(memory,z80); break;
-      case 0x53: OP_CB_53h_BIT2E(memory,z80); break;
-      case 0x54: OP_CB_54h_BIT2H(memory,z80); break;
-      case 0x55: OP_CB_55h_L(memory,z80); break;
-      case 0x60: OP_CB_60h_LDHB(memory,z80); break;
-      case 0x61: OP_CB_61h_LDHC(memory,z80); break;
-      case 0x62: OP_CB_62h_LDHD(memory,z80); break;
-      case 0x63: OP_CB_63h_LDHE(memory,z80); break;
-      case 0x64: OP_CB_64h_LDHH(memory,z80); break;
-      case 0x65: OP_CB_65h_LDHL(memory,z80); break;
-      case 0xAF: OP_CB_AFh_XORA(memory,z80); break;
-      case 0xFF: OP_CB_FFh_RST38h(memory,z80); break;*/
-
-      default:
-         err.code = 20;
-         exiterror(&err);
-      break;
-   }
-
-   // Reset after acting on ticks
-   z80->ticks = 0;
+   z80->ticks = 8;
 
    return 0;
 }
@@ -506,6 +357,33 @@ int ExecuteCB(Memory * memory, Z80 * z80)
 /* OPCODES */
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
+{
+   uint8_t oldRegValue = z80->r->r[x & 0xF];
+
+   z80->r->r[x & 0xF]++;
+
+   // Zero flag
+   if (z80->r->r[x & 0xF] == 0x0)
+   {
+      z80->regF = z80->regF | 0x80;
+   }
+
+   // Half carry
+   // If 0xF on oldRegValue, then set H flag
+   if ((oldRegValue & 0xF) & 0xF)
+   {
+      z80->regF = z80->regF | 0x20;
+   }
+
+   // Set N flag to 0x0;
+   z80->regF = z80->regF & 0xB0;
+
    z80->ticks = 4;
 
    return 0;
@@ -1154,6 +1032,14 @@ int OP_AFh_XORA(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
+{
+   wb(memory,(0xff00 + z80->regC),z80->regA);
+   z80->ticks = 8;
+
+   return 0;
+}
+
 int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
 {
    ExecuteCB(memory,z80);
@@ -1171,3 +1057,164 @@ int OP_FFh_RST38h(Memory * memory, Z80 * z80)
 
    return 0;
 }
+
+int Execute(Memory * memory, Z80 * z80)
+{
+   int callDebug = 1;
+   uint16_t tmp;
+
+   Debug debug;
+   Error err;
+
+   //usleep(50000);
+
+   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->regPC)));
+
+   if (callDebug == 1)
+   {
+      debug.instructionSize = 1;
+      DebugAll(z80, memory, &debug);
+   }
+
+   /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
+   switch(rb(memory,(z80->regPC++)))
+   {
+      case 0x00: OP_00h_NOP(memory,z80); break;
+
+      case 0x04: OP_INCX(memory,z80,(uint8_t) 0x1); break;
+      case 0x06: OP_LDXD8(memory,z80,(uint8_t) 0x1); break;
+      case 0x0C: OP_INCX(memory,z80,(uint8_t) 0x2); break;
+      case 0x0E: OP_LDXD8(memory,z80,(uint8_t) 0x2); break;
+      case 0x14: OP_INCX(memory,z80,(uint8_t) 0x3); break;
+      case 0x16: OP_LDXD8(memory,z80,(uint8_t) 0x3); break;
+      case 0x1C: OP_INCX(memory,z80,(uint8_t) 0x4); break;
+      case 0x1E: OP_LDXD8(memory,z80,(uint8_t) 0x4); break;
+      case 0x26: OP_LDXD8(memory,z80,(uint8_t) 0x6); break;
+      case 0x2E: OP_LDXD8(memory,z80,(uint8_t) 0x7); break;
+      case 0x3E: OP_LDXD8(memory,z80,(uint8_t) 0x0); break;
+
+      case 0x20: OP_20h_JRNZn(memory,z80); break;
+      case 0x21: OP_21h_LDHLnn(memory,z80); break;
+      case 0x22: OP_22h_LDIHLA(memory,z80); break;
+      case 0x24: OP_INCX(memory,z80,(uint8_t) 0x6); break;
+      case 0x2C: OP_INCX(memory,z80,(uint8_t) 0x7); break;
+      case 0x31: OP_31h_LDSPnn(memory,z80); break;
+      case 0x32: OP_32h_LDDHLA(memory,z80); break;
+
+      case 0x40: OP_LDXY(memory,z80,0x11); break;
+      case 0x41: OP_LDXY(memory,z80,0x12); break;
+      case 0x42: OP_LDXY(memory,z80,0x13); break;
+      case 0x43: OP_LDXY(memory,z80,0x14); break;
+      case 0x44: OP_LDXY(memory,z80,0x16); break;
+      case 0x45: OP_LDXY(memory,z80,0x17); break;
+      case 0x50: OP_LDXY(memory,z80,0x31); break;
+      case 0x51: OP_LDXY(memory,z80,0x32); break;
+      case 0x52: OP_LDXY(memory,z80,0x33); break;
+      case 0x53: OP_LDXY(memory,z80,0x34); break;
+      case 0x54: OP_LDXY(memory,z80,0x36); break;
+      case 0x55: OP_LDXY(memory,z80,0x37); break;
+      case 0x60: OP_LDXY(memory,z80,0x61); break;
+      case 0x61: OP_LDXY(memory,z80,0x62); break;
+      case 0x62: OP_LDXY(memory,z80,0x63); break;
+      case 0x63: OP_LDXY(memory,z80,0x64); break;
+      case 0x64: OP_LDXY(memory,z80,0x66); break;
+      case 0x65: OP_LDXY(memory,z80,0x67); break;
+
+      case 0x70: OP_LDHLX(memory,z80,0x1); break;
+      case 0x71: OP_LDHLX(memory,z80,0x2); break;
+      case 0x72: OP_LDHLX(memory,z80,0x3); break;
+      case 0x73: OP_LDHLX(memory,z80,0x4); break;
+      case 0x74: OP_LDHLX(memory,z80,0x6); break;
+      case 0x75: OP_LDHLX(memory,z80,0x7); break;
+      case 0x77: OP_LDHLX(memory,z80,0x0); break;
+
+      case 0xAF: OP_AFh_XORA(memory,z80); break;
+
+      case 0xE2: OP_E2h_LDHCA(memory,z80); break;
+
+      // CB prefixed opcodes
+      case 0xCB: OP_CBh_PREFIXCB(memory,z80); break;
+      case 0xFF: OP_FFh_RST38h(memory,z80); break;
+
+      default:
+         err.code = 20;
+         exiterror(&err);
+      break;
+   }
+
+   // Reset after acting on ticks
+   z80->ticks = 0;
+
+   return 0;
+}
+
+int ExecuteCB(Memory * memory, Z80 * z80)
+{
+   int callDebug = 1;
+   uint16_t tmp;
+
+   Debug debug;
+   Error err;
+
+   //usleep(50000);
+
+   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->regPC)));
+
+   if (callDebug == 1)
+   {
+      debug.instructionSize = 1;
+      DebugAll(z80, memory, &debug);
+   }
+
+   /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
+   switch(rb(memory,(z80->regPC++)))
+   {
+      // NEED TO DEVELOP TEST CODE AND SORT OUT
+      /*case 0x00: OP_CB_00h_RLCB(memory,z80); break;
+      case 0x21: OP_CB_21h_SLAC(memory,z80); break;
+      case 0x22: OP_CB_22h_SLAD(memory,z80); break;
+      case 0x31: OP_CB_31h_SLAPB(memory,z80); break;*/
+      // a = 0 b = 1 c = 2 d = 3 e = 4 f = 5 h = 6 l = 7
+      //case 0x40: OP_CB_40h_BIT0B(memory,z80); break;
+      case 0x40: CB_BIT(memory,z80,0x01); break;
+      case 0x41: CB_BIT(memory,z80,0x02); break;
+      case 0x42: CB_BIT(memory,z80,0x03); break;
+      case 0x43: CB_BIT(memory,z80,0x04); break;
+      case 0x44: CB_BIT(memory,z80,0x06); break;
+      case 0x45: CB_BIT(memory,z80,0x07); break;
+      case 0x47: CB_BIT(memory,z80,0x00); break;
+      case 0x7c: CB_BIT(memory,z80,0x76); break;
+      /*case 0x40: CB_BIT(memory,z80,0x01); break;
+      case 0x40: CB_BIT(memory,z80,0x01); break;
+      case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
+      case 0x42: OP_CB_42h_BIT0D(memory,z80); break;
+      case 0x43: OP_CB_43h_BIT0E(memory,z80); break;
+      case 0x44: OP_CB_44h_BIT0H(memory,z80); break;
+      case 0x45: OP_CB_45h_BIT0L(memory,z80); break;
+      case 0x50: OP_CB_50h_BIT2B(memory,z80); break;
+      case 0x51: OP_CB_51h_BIT2C(memory,z80); break;
+      case 0x52: OP_CB_52h_BIT2D(memory,z80); break;
+      case 0x53: OP_CB_53h_BIT2E(memory,z80); break;
+      case 0x54: OP_CB_54h_BIT2H(memory,z80); break;
+      case 0x55: OP_CB_55h_L(memory,z80); break;
+      case 0x60: OP_CB_60h_LDHB(memory,z80); break;
+      case 0x61: OP_CB_61h_LDHC(memory,z80); break;
+      case 0x62: OP_CB_62h_LDHD(memory,z80); break;
+      case 0x63: OP_CB_63h_LDHE(memory,z80); break;
+      case 0x64: OP_CB_64h_LDHH(memory,z80); break;
+      case 0x65: OP_CB_65h_LDHL(memory,z80); break;
+      case 0xAF: OP_CB_AFh_XORA(memory,z80); break;
+      case 0xFF: OP_CB_FFh_RST38h(memory,z80); break;*/
+
+      default:
+         err.code = 20;
+         exiterror(&err);
+      break;
+   }
+
+   // Reset after acting on ticks
+   z80->ticks = 0;
+
+   return 0;
+}
+
