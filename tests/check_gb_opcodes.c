@@ -21,18 +21,26 @@
 #include <stdio.h>
 #include <math.h>
 
-#ifndef _INCL_DEBUG
-   #define _INCL_DEBUG
-   #include "../src/debug.h"
-#endif
-#ifndef _INCL_Z80
-   #define _INCL_Z80
-   #include "../src/z80.h"
-#endif
-#include "../src/error.h"
 #ifdef UNITTEST_OPCODES
-   #define wb mock_wb
-   #define rb mock_rb
+   #ifndef _INCL_DEBUG
+      #define _INCL_DEBUG
+      #include "../src/mock_debug.h"
+   #endif
+   #ifndef _INCL_Z80
+      #define _INCL_Z80
+      #include "../src/mock_z80.h"
+   #endif
+   #include "../src/mock_error.h"
+#else
+   #ifndef _INCL_DEBUG
+      #define _INCL_DEBUG
+      #include "../src/debug.h"
+   #endif
+   #ifndef _INCL_Z80
+      #define _INCL_Z80
+      #include "../src/z80.h"
+   #endif
+   #include "../src/error.h"
 #endif
 
 #ifndef Z80_REGISTERS
@@ -863,6 +871,60 @@ START_TEST (test_check_OP_LDXD8)
          fail_unless(z80.regPC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
+         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
+      }
+   }
+}
+END_TEST
+
+START_TEST (test_check_OP_LDHLX)
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+
+   uint16_t tmp_z80_PC = z80.regPC;
+   uint16_t tmp_z80_HL = (z80.regH << 8) + z80.regL;
+   int result = 0, i = 0, h = 0;
+   uint8_t reg = 0x0;
+
+   for(h=0;h<2;h++)
+   {
+      for(i=0;i<256;i++)
+      {
+         // One round of sanity, one round of randomness
+         if (h)
+         {
+            randomize_registers(&z80,&registers);
+
+            reg = (rand() % 0xF) + 0x1;
+            // Shouldn't be F register
+            while(reg == 0x5)
+            {
+               reg = (rand() % 0xF) + 0x1;
+            }
+         } else{
+            z80.regPC = i;
+         }
+
+         tmp_z80_PC = z80.regPC;
+         tmp_z80_HL = (z80.regH << 8) + z80.regL;
+
+//printf("HL = %x\n",(z80.regH << 8) + z80.regL);
+
+         result = OP_LDHLX(&memory,&z80,reg);
+
+//printf("z80.regPC == %x\ntmp_z80_PC == %x\n",z80.regPC,tmp_z80_PC);
+         fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
+
+         fail_unless(result == 0,"Result was not 0");
+printf("HERE -- HL addr content = %x\nHERE reg = %x\n",rb(&memory,(z80.regH << 8) + z80.regL),z80.r->r[reg]);
+         fail_unless(rb(&memory,(z80.regH << 8) + z80.regL) == z80.r->r[reg],"Content at address pointed by HL does not match register.");
          fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
@@ -6912,6 +6974,38 @@ START_TEST (test_check_OP_AFh_XORA)
 }
 END_TEST
 
+START_TEST (test_check_OP_E0h_LDHAn)
+{
+   Memory memory;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers);
+   InitMemory(&memory);
+
+   int result = 0, i;
+   uint8_t tmp_z80_PC = z80.regPC;
+
+   for(i=0;i<0xFF;i++)
+   {
+      z80.regA = i;
+
+      tmp_z80_PC = (z80.regPC & 0xFF);
+
+      result = OP_E0h_LDHAn(&memory,&z80);
+
+      fail_unless(z80.regPC == tmp_z80_PC + 0x1,"Program Counter should have been incremented by opcode function");
+
+      fail_unless(result == 0,"Result was not 0");
+printf("SEG PC == %x\nSEG rb == %x\nSEG addr == %x\n",z80.regPC & 0xFF,0xff00 + z80.regPC);
+printf("fuck\n");
+fflush( stdout );
+      fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
+      fail_unless(z80.regA == rb(&memory,(0xff00 + (rb(&memory,(z80.regPC & 0xFF)) & 0xFF))));
+   }
+}
+END_TEST
+
 START_TEST (test_check_OP_E2h_LDHCA)
 {
    Memory memory;
@@ -6945,6 +7039,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_INCX);
 
    tcase_add_test(tc_core,test_check_OP_LDXD8);
+   tcase_add_test(tc_core,test_check_OP_LDHLX);
    /*
    tcase_add_test(tc_core,test_check_OP_06h_LDBD8);
    tcase_add_test(tc_core,test_check_OP_0Eh_LDCD8);
@@ -7183,6 +7278,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_CB_FFh_SET7A);
 
    tcase_add_test(tc_core,test_check_OP_AFh_XORA);
+   tcase_add_test(tc_core,test_check_OP_E0h_LDHAn);
    tcase_add_test(tc_core,test_check_OP_E2h_LDHCA);
    suite_add_tcase(s,tc_core);
 

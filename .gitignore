@@ -27,4 +27,5 @@ libtool
 *.gcda
 app.info
 coverage_report
-tests/check_gb
+tests/check_gb*
+gb

@@ -1,3 +1,21 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  mock_helper.h
+ *
+ *    Description:  Deprecated mock file, will be removed after function pull
+ *
+ *        Version:  1.0
+ *        Created:  31/01/13 17:23:13
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Aidan Marlin (aidan.marlin+github@gmail.com) , 
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+
 #ifndef _INCL_STDINT
    #define _INCL_STDINT
    #include <stdint.h>
@@ -26,14 +44,18 @@ typedef struct
    char str[512];
 } Error;
 
+typedef struct
+{
+   uint8_t addr[0x10000];
+} Memory;
 
 typedef struct Z80 Z80;
 
-typedef struct
+/* typedef struct
 {
-   uint8_t addr[0x10000]; /* 16 bit address buffer. Mem size of 65 536 */
+   uint8_t addr[0x10000]; * 16 bit address buffer. Mem size of 65 536 *
 
-   /*
+   *
       0000-3FFF   16KB ROM Bank 00     (in cartridge, fixed at bank 00)
       4000-7FFF   16KB ROM Bank 01..NN (in cartridge, switchable bank number)
       8000-9FFF   8KB Video RAM (VRAM) (switchable bank 0-1 in CGB Mode)
@@ -46,7 +68,7 @@ typedef struct
       FF00-FF7F   I/O Ports
       FF80-FFFE   High RAM (HRAM)
       FFFF        Interrupt Enable Register
-   */
+   *
 
    uint8_t bios_rom[0x100];
    uint8_t bank0[0x4000];
@@ -60,14 +82,14 @@ typedef struct
    uint8_t io_ports[0x80];
    uint8_t hram[0x80];
 
-   uint8_t div; /* Divider */
-   uint8_t tima; /* Timer Counter */
-   uint8_t tma; /* Timer Modulo */
-   uint8_t tac; /* Control */
+   uint8_t div; // Divider
+   uint8_t tima; // Timer Counter
+   uint8_t tma; // Timer Modulo
+   uint8_t tac; // Control
 
    int bios_rom_loaded;
    int tmp;
-} Memory;
+} Memory; */
 
 /* MMU */
 /* Read byte */
@@ -143,7 +165,7 @@ uint8_t mock_rb(Memory * mem, uint16_t addr);
 int mock_wb(Memory * mem, uint16_t addr, uint8_t value);
 uint16_t mock_rw(Memory * mem, uint16_t addr);
 int mock_ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value);
-int mock_InitMemory(Memory * memory);
+int mockInitMemory(Memory * memory);
 int mock_LoadGBROM(Memory * memory, char * GBROM);
 unsigned short mock_rb_timer(Timers * timer, unsigned short addr);
 int mock_wb_timer(Timers * timer, unsigned short addr, unsigned char value);

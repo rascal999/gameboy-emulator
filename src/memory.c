@@ -5,9 +5,17 @@
 #endif
 
 #ifdef UNITTEST_OPCODES
-   #ifndef _INCL_MOCK_HELPER
-      #define _INCL_MOCK_HELPER
-      #include "mock_helper.h"
+   #ifndef _INCL_ERROR
+      #define _INCL_ERROR
+      #include "mock_error.h"
+   #endif
+   #ifndef _INCL_MEMORY
+      #define _INCL_MEMORY
+      #include "mock_memory.h"
+   #endif
+   #ifndef _INCL_Z80
+      #define _INCL_Z80
+      #include "mock_z80.h"
    #endif
 #else
    #ifndef _INCL_ERROR
@@ -172,11 +180,37 @@ int wb(Memory * mem, uint16_t addr, uint8_t value)
       case 0xFF07:
          mem->tac = value;
       break;
+   }
 
-      default:
+   // Working RAM shadow and sat
+   switch(addr & 0xFF00)
+   {
+      case 0xF000: case 0xF100: case 0xF200: case 0xF300:
+      case 0xF400: case 0xF500: case 0xF600: case 0xF700:
+      case 0xF800: case 0xF900: case 0xFA00: case 0xFB00:
+      case 0xFC00: case 0xFD00:
+         mem->wram_shadow[addr & 0x1FFF] = value;
       break;
 
-      return 0;
+      case 0xFE00:
+         if (addr < 0xFFA0)
+         {
+            mem->sat[addr & 0xFF] = value;
+         } else {
+            // Unaddressable memory region
+            err.code = 30;
+            exiterror(&err);
+         }
+      break;
+
+      case 0xFF00:
+         if (addr < 0xFF80)
+         {
+            mem->io_ports[addr & 0xFF] = value;
+         } else {
+            mem->hram[addr & 0x7F] = value;
+         }
+      break;
    }
 
    return 0;
