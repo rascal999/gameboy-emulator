@@ -44,13 +44,14 @@
 
 int DebugFullInstruction(Z80 * z80, Memory * memory)
 {
-   int i;
-   int k = DebugNextInstructionSize(rb(memory,z80->regPC));
+   uint8_t i;
+   //DebugNextInstructionSize(rb(memory,z80->regPC));
+   uint8_t k = z80->op[rb(memory,z80->regPC)].size;
 
    printf("FULL = ");
    for(i=0;i<k;i++)
    {
-      printf("%x",rb(memory,(z80->regPC + i)));
+      printf("%x ",rb(memory,(z80->regPC + i)));
    }
    printf("\n");
 
@@ -63,7 +64,7 @@ int DebugAll(Z80 * z80, Memory * memory, Debug * debug)
    /*printf("-------------\n");
    printf("| D E B U G |\n");
    printf("-------------\n");*/
-   printf("OPCODE = %x\n",rb(memory,(z80->regPC)));
+   printf("OPCODE = %x ( %s )\n",rb(memory,(z80->regPC)),z80->op[rb(memory,(z80->regPC))].name);
    DebugFullInstruction(z80,memory);
    printf("\n");
    printf("A = %x\tB = %x\tC = %x\n",z80->regA,z80->regB,z80->regC);
@@ -82,20 +83,47 @@ int DebugNextInstructionSize(uint8_t opcode)
 {
    switch(opcode)
    {
-      case 0x00:
-      case 0x32:
-      case 0xAF:
-      case 0xFF:
-         return 1;
-      break;
-
       case 0x21:
       case 0x31:
          return 3;
       break;
 
+      case 0x01:
+      case 0x06:
+      case 0x0e:
+
+      case 0x10:
+      case 0x16:
+      case 0x18:
+      case 0x1e:
+
+      case 0x20:
+      case 0x26:
+      case 0x2e:
+
+      case 0x30:
+      case 0x36:
+      case 0x3e:
+
+      case 0xd6:
+      case 0xde:
+
+      case 0xe0:
+      case 0xe2:
+      case 0xe6:
+      case 0xe8:
+      case 0xee:
+
+      case 0xf0:
+      case 0xf2:
+      case 0xf6:
+      case 0xf8:
+      case 0xfe:
+         return 2;
+      break;
+
       default:
-         return 0;
+         return 1;
       break;
    }
 }

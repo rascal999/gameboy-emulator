@@ -23,6 +23,13 @@
 
 typedef struct
 {
+   uint8_t size;
+   uint8_t ticks;
+   char name[1024];
+} Opcodes;
+
+typedef struct
+{
    uint8_t r[0x8];
 /*   uint8_t A;
    uint8_t B;
@@ -39,14 +46,18 @@ typedef struct
 
 struct Z80
 {
+   Opcodes * op;
+   Opcodes * cb_op;
+
    Registers * r;
 
    /* CPU ticks of last instruction */
    uint16_t ticks;
 };
 
-int InitZ80(Z80 * z80, Registers * registers);
-int ResetZ80(Z80 * z80, Registers * registers);
+int InitZ80(Z80 * z80, Registers * registers, Opcodes * cb, Opcodes * cb_op);
+int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op);
+int ResetZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op);
 int Dispatch(Memory * memory, Z80 * z80);
 int Fetch(Memory * memory, Z80 * z80);
 int8_t ensure_8b_signed(int8_t value);
@@ -99,8 +110,6 @@ int OP_97h_SUBA(Memory * memory, Z80 * z80);
 
 int OP_98h_SBCAB(Memory * memory, Z80 * z80);
 
-int InitZ80(Z80 * z80, Registers * registers);
-int ResetZ80(Z80 * z80, Registers * registers);
 int Dispatch(Memory * memory, Z80 * z80);
 int Fetch(Memory * memory, Z80 * z80);
 int8_t ensure_8b_signed(int8_t value);

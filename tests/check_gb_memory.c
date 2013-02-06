@@ -49,10 +49,12 @@
 START_TEST (test_check_rb) //0x00 1     4
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    //memset(memory.bios_rom,0x1,0xFF);

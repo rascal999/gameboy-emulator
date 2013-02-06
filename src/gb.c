@@ -47,10 +47,12 @@ int main()
    //Display display;
    //Error error;
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");

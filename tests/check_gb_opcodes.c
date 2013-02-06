@@ -775,10 +775,12 @@ int CB_RRX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16
 START_TEST (test_check_OP_00h_NOP)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    int result = 0;
@@ -795,10 +797,12 @@ END_TEST
 START_TEST (test_check_OP_INCX)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    int result = 0, h = 0, i = 0;
@@ -846,10 +850,12 @@ END_TEST
 START_TEST (test_check_OP_LDXD8)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
@@ -880,10 +886,12 @@ END_TEST
 START_TEST (test_check_OP_LDHLX)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
@@ -934,10 +942,12 @@ END_TEST
 START_TEST (test_check_OP_20h_JRNZn)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    // Perhaps it would be worth setting the PC to be at the 0x20 opcode?
@@ -985,10 +995,12 @@ END_TEST
 START_TEST (test_check_OP_21h_LDHLnn)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
@@ -1029,10 +1041,12 @@ END_TEST
 START_TEST (test_check_OP_22h_LDIHLA)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
@@ -1075,10 +1089,12 @@ END_TEST
 START_TEST (test_check_OP_31h_LDSPnn)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
@@ -1130,10 +1146,12 @@ END_TEST
 START_TEST (test_check_OP_32h_LDDHLA)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
@@ -2056,10 +2074,12 @@ END_TEST
 START_TEST (test_check_OP_72h_LDHLD)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    int result = 0;
@@ -6953,10 +6973,12 @@ END_TEST
 START_TEST (test_check_OP_AFh_XORA)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    int result = 0;
@@ -6977,10 +6999,12 @@ END_TEST
 START_TEST (test_check_OP_E0h_LDHAn)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    int result = 0, i;
@@ -7009,10 +7033,12 @@ END_TEST
 START_TEST (test_check_OP_E2h_LDHCA)
 {
    Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers);
+   InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    int result = 0;
