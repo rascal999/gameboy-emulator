@@ -1,18 +1,32 @@
-#ifndef _INCL_STRING
-   #define _INCL_STRING
-   #include <string.h>
-#endif
+#include <fcntl.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "mock_z80.h"
-   #endif
+   #include "mock_cartridge.h"
+   #include "mock_debug.h"
+   #include "mock_display.h"
+   #include "mock_error.h"
+   #include "mock_memory.h"
+   #include "mock_opcode_attributes.h"
+   #include "mock_opcode_wrappers.h"
+   #include "mock_z80.h"
 #else
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "z80.h"
-   #endif
+   #include "cartridge.h"
+   #include "debug.h"
+   #include "display.h"
+   #include "error.h"
+   #include "memory.h"
+   #include "opcode_attributes.h"
+   #include "opcode_wrappers.h"
+   #include "rom.h"
+   #include "timer.h"
+   #include "z80.h"
 #endif
 
 #ifndef Z80_REGISTERS
@@ -84,7 +98,8 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0x2e].size = 0x2; z80->op[0x2e].ticks = 0x8; strncpy(z80->op[0x2e].name,"LD L,d8",1023);
    z80->op[0x2f].size = 0x1; z80->op[0x2f].ticks = 0x4; strncpy(z80->op[0x2f].name,"CPL",1023);
    z80->op[0x30].size = 0x2; z80->op[0x30].ticks = 0x0; strncpy(z80->op[0x30].name,"JR NC,r8",1023);
-   z80->op[0x31].size = 0x3; z80->op[0x31].ticks = 0xc; strncpy(z80->op[0x31].name,"LD SP,d16",1023);
+   z80->op[0x31].size = 0x3; z80->op[0x31].ticks = 0xc;
+   strncpy(z80->op[0x31].name,"LD SP,d16",1023); z80->op[0x31].call = OP_31h_LDSPnn_wrapper;
    z80->op[0x32].size = 0x1; z80->op[0x32].ticks = 0x8; strncpy(z80->op[0x32].name,"LD (HL-),A",1023);
    z80->op[0x33].size = 0x1; z80->op[0x33].ticks = 0x8; strncpy(z80->op[0x33].name,"INC SP",1023);
    z80->op[0x34].size = 0x1; z80->op[0x34].ticks = 0xc; strncpy(z80->op[0x34].name,"INC (HL)",1023);
@@ -210,7 +225,8 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0xac].size = 0x1; z80->op[0xac].ticks = 0x4; strncpy(z80->op[0xac].name,"XOR H",1023);
    z80->op[0xad].size = 0x1; z80->op[0xad].ticks = 0x4; strncpy(z80->op[0xad].name,"XOR L",1023);
    z80->op[0xae].size = 0x1; z80->op[0xae].ticks = 0x8; strncpy(z80->op[0xae].name,"XOR (HL)",1023);
-   z80->op[0xaf].size = 0x1; z80->op[0xaf].ticks = 0x4; strncpy(z80->op[0xaf].name,"XOR A",1023);
+   z80->op[0xaf].size = 0x1; z80->op[0xaf].ticks = 0x4;
+   strncpy(z80->op[0xaf].name,"XOR A",1023); z80->op[0xaf].call = OP_AFh_XORA_wrapper;
    z80->op[0xb0].size = 0x1; z80->op[0xb0].ticks = 0x4; strncpy(z80->op[0xb0].name,"OR B",1023);
    z80->op[0xb1].size = 0x1; z80->op[0xb1].ticks = 0x4; strncpy(z80->op[0xb1].name,"OR C",1023);
    z80->op[0xb2].size = 0x1; z80->op[0xb2].ticks = 0x4; strncpy(z80->op[0xb2].name,"OR D",1023);

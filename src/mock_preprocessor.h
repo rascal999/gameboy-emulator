@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
@@ -28,6 +30,8 @@
    #include "opcode_wrappers.h"
    #include "rom.h"
    #include "timer.h"
+   #include "rom.h"
+   #include "timer.h"
    #include "z80.h"
 #endif
 
@@ -43,34 +47,3 @@
    #define regPC r->r16[0x0]
    #define regSP r->r16[0x1]
 #endif
-
-/* Timers */
-/* Read byte */
-unsigned short rb_timer(Timers * timer, unsigned short addr)
-{
-   return 0;
-}
-
-/* Write byte */
-int wb_timer(Timers * timer, unsigned short addr, unsigned char value)
-{
-   return 0;
-}
-
-/* Read word */
-unsigned short rw_timer(Timers * timer, unsigned short addr)
-{
-   return 0;
-}
-
-/* Write word */
-int ww_timer(Timers * timer, unsigned short addr, unsigned short value)
-{
-   return 0;
-}
-/* END Timers */
-
-int InitTimers(Timers * timer)
-{
-   return 0;
-}

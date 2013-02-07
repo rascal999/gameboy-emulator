@@ -1,49 +1,32 @@
+#include <fcntl.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#ifndef _INCL_STDINT
-   #define _INCL_STDINT
-   #include <stdint.h>
-#endif
-#ifndef _INCL_STRING
-   #define _INCL_STRING
-   #include <string.h>
-#endif
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #ifndef _INCL_DEBUG
-      #define _INCL_DEBUG
-      #include "mock_debug.h"
-   #endif
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "mock_z80.h"
-   #endif
-   #ifndef _INCL_ERROR
-      #define _INCL_ERROR
-      #include "mock_error.h"
-   #endif
-   #ifndef _INCL_OPCODE_ATTRIBUTES
-      #define _INCL_OPCODE_ATTRIBUTES
-      #include "mock_opcode_attributes.h"
-   #endif
+   #include "mock_cartridge.h"
+   #include "mock_debug.h"
+   #include "mock_display.h"
+   #include "mock_error.h"
+   #include "mock_memory.h"
+   #include "mock_opcode_attributes.h"
+   #include "mock_opcode_wrappers.h"
+   #include "mock_z80.h"
 #else
-   #ifndef _INCL_DEBUG
-      #define _INCL_DEBUG
-      #include "debug.h"
-   #endif
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "z80.h"
-   #endif
-   #ifndef _INCL_ERROR
-      #define _INCL_ERROR
-      #include "error.h"
-   #endif
-   #ifndef _INCL_OPCODE_ATTRIBUTES
-      #define _INCL_OPCODEATTRIBUTES
-      #include "opcode_attributes.h"
-   #endif
+   #include "cartridge.h"
+   #include "debug.h"
+   #include "display.h"
+   #include "error.h"
+   #include "memory.h"
+   #include "opcode_attributes.h"
+   #include "opcode_wrappers.h"
+   #include "rom.h"
+   #include "timer.h"
+   #include "z80.h"
 #endif
 
 #ifndef Z80_REGISTERS
@@ -1101,16 +1084,16 @@ int Execute(Memory * memory, Z80 * z80)
 
    //usleep(50000);
 
-   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->regPC)));
-
    if (callDebug == 1)
    {
+      printf("rb %x\n",rb(memory,(z80->regPC)));
       debug.instructionSize = 1;
       DebugAll(z80, memory, &debug);
    }
 
+   z80->op[rb(memory,(z80->regPC++))].call(memory,z80);
    /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
-   switch(rb(memory,(z80->regPC++)))
+   /* switch(rb(memory,(z80->regPC++)))
    {
       case 0x00: OP_00h_NOP(memory,z80); break;
 
@@ -1174,7 +1157,7 @@ int Execute(Memory * memory, Z80 * z80)
          err.code = 20;
          exiterror(&err);
       break;
-   }
+   } */
 
    // Reset after acting on ticks
    z80->ticks = 0;

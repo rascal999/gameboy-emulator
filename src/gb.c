@@ -1,31 +1,32 @@
+#include <fcntl.h>
+#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <string.h>
 
 #ifdef UNITTEST_OPCODES
    #include "mock_cartridge.h"
+   #include "mock_debug.h"
    #include "mock_display.h"
    #include "mock_error.h"
-   #ifndef _INCL_MEMORY
-      #define _INCL_MEMORY
-      #include "mock_memory.h"
-   #endif
-   #include "mock_rom.h"
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "mock_z80.h"
-   #endif
+   #include "mock_memory.h"
+   #include "mock_opcode_attributes.h"
+   #include "mock_opcode_wrappers.h"
+   #include "mock_z80.h"
 #else
    #include "cartridge.h"
+   #include "debug.h"
    #include "display.h"
    #include "error.h"
-   #ifndef _INCL_MEMORY
-      #define _INCL_MEMORY
-      #include "memory.h"
-   #endif
+   #include "memory.h"
+   #include "opcode_attributes.h"
+   #include "opcode_wrappers.h"
    #include "rom.h"
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "z80.h"
-   #endif
+   #include "timer.h"
+   #include "z80.h"
 #endif
 
 #ifndef Z80_REGISTERS

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
@@ -14,9 +16,7 @@
    #include "mock_error.h"
    #include "mock_memory.h"
    #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-   #include "mock_rom.h"
-   #include "mock_timer.h"
+//   #include "mock_opcode_wrappers.h"
    #include "mock_z80.h"
 #else
    #include "cartridge.h"
@@ -25,7 +25,7 @@
    #include "error.h"
    #include "memory.h"
    #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
+//   #include "opcode_wrappers.h"
    #include "rom.h"
    #include "timer.h"
    #include "z80.h"
@@ -44,33 +44,5 @@
    #define regSP r->r16[0x1]
 #endif
 
-/* Timers */
-/* Read byte */
-unsigned short rb_timer(Timers * timer, unsigned short addr)
-{
-   return 0;
-}
-
-/* Write byte */
-int wb_timer(Timers * timer, unsigned short addr, unsigned char value)
-{
-   return 0;
-}
-
-/* Read word */
-unsigned short rw_timer(Timers * timer, unsigned short addr)
-{
-   return 0;
-}
-
-/* Write word */
-int ww_timer(Timers * timer, unsigned short addr, unsigned short value)
-{
-   return 0;
-}
-/* END Timers */
-
-int InitTimers(Timers * timer)
-{
-   return 0;
-}
+int OP_31h_LDSPnn_wrapper(Memory * memory, Z80 * z80);
+int OP_AFh_XORA_wrapper(Memory * memory, Z80 * z80);
