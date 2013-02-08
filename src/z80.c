@@ -361,13 +361,6 @@ int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x)
 }
 
 /* OPCODES */
-int OP_00h_NOP(Memory * memory, Z80 * z80)
-{
-   z80->ticks = 4;
-
-   return 0;
-}
-
 int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
 {
    uint8_t oldRegValue = z80->r->r[x & 0xF];
@@ -394,6 +387,232 @@ int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
 
    return 0;
 }
+
+int OP_00h_NOP(Memory * memory, Z80 * z80)
+{
+   z80->ticks = 4;
+
+   return 0;
+}
+
+int OP_01h_LDBCnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_02h_LDBCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_03h_INCBC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_04h_INCB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_05h_DECB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_06h_LDBn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_07h_RLCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_08h_LDnnSP(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_09h_ADDHLBC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_0Ah_LDABC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_0Bh_DECBC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_0Ch_INCC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_0Dh_DECC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_0Eh_LDCn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_0Fh_RRCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_10h_STOP0(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_11h_LDDEnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_12h_LDDEA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_13h_INCDE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_14h_INCD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_15h_DECD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_16h_LDn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_17h_RLA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_18h_JRn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_19h_ADDHLDE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_1Ah_LDADE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_1Bh_DECDE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_1Ch_INCE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_1Dh_DECE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_1Eh_LDEn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_1Fh_RRA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 
 int OP_20h_JRNZn(Memory * memory, Z80 * z80)
 {
@@ -437,6 +656,105 @@ int OP_22h_LDIHLA(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_23h_INCHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_24h_INCH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_25h_DECH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_26h_LDHn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_27h_DAA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_28h_JRZn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_29h_ADDHLHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_2Ah_LDIAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_2Bh_DECHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_2Ch_INCL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_2Dh_DECL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_2Eh_LDLn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_2Fh_CPL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_30h_JRNCn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 int OP_31h_LDSPnn(Memory * memory, Z80 * z80)
 {
    z80->regSP = (uint16_t) rw(memory,z80->regPC);
@@ -460,6 +778,451 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_33h_INCSP(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_34h_INCHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_35h_DECHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_36h_LDHLn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_37h_SCF(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_38h_JRCn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_39h_ADDHLSP(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_3Ah_LDDAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_3Bh_DECSP(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_3Ch_INCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_3Dh_DECA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_3Eh_LDAn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_3Fh_CCF(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_40h_LDBB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_41h_LDBC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_42h_LDBD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_43h_LDBE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_44h_LDBH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_45h_LDBL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_46h_LDBHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_47h_LDBA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_48h_LDCB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_49h_LDC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_4Ah_LDCD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_4Bh_LDCE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_4Ch_LDCH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_4Dh_LDCL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_4Eh_LDCHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_4Fh_LDCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_50h_LDDB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_51h_LDDC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_52h_LDDD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_53h_LDDE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_54h_LDDH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_55h_LDDL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_56h_LDDHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_57h_LDDA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_58h_LDEB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_59h_LDEC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_5Ah_LDED(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_5Bh_LDEE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_5Ch_LDEH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_5Dh_LDEL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_5Eh_LDEHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_5Fh_LDEA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_60h_LDHB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_61h_LDHC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_62h_LDHD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_63h_LDHE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_64h_LDHH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_65h_LDHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_66h_LDHHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_67h_LDHA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_68h_LDLB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_69h_LDLC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_6Ah_LDLD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_6Bh_LDLE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_6Ch_LDLH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_6Dh_LDLL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_6Eh_LDLHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_6Fh_LDLA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_70h_LDHLB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_71h_LDHLC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 int OP_72h_LDHLD(Memory * memory, Z80 * z80)
 {
    wb(memory,(z80->regH << 8) + z80->regL,z80->regD);
@@ -467,6 +1230,97 @@ int OP_72h_LDHLD(Memory * memory, Z80 * z80)
    z80->ticks = 8;
 
    return 0;
+}
+
+int OP_73h_LDHLE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_74h_LDHLH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_75h_LDHLL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_76h_HALT(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_77h_LDHLA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_78h_LDAB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_79h_LDAC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_7Ah_LDAD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_7Bh_LDAE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_7Ch_LDAH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_7Dh_LDAL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_7Eh_LDAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_7Fh_LDAA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
 }
 
 int OP_80h_ADDAB(Memory * memory, Z80 * z80)
@@ -487,18 +1341,9 @@ int OP_80h_ADDAB(Memory * memory, Z80 * z80)
 
 int OP_81h_ADDAC(Memory * memory, Z80 * z80)
 {
-   uint8_t oldDest = z80->regA;
-   uint8_t oldSrc = z80->regC;
+   
 
-   z80->regA = z80->regA + z80->regC;
-
-   uint8_t dest = z80->regA;
-
-   calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
-
-   z80->ticks = 4;
-
-   return 0;
+   return 1;
 }
 
 int OP_82h_ADDAD(Memory * memory, Z80 * z80)
@@ -563,6 +1408,13 @@ int OP_85h_ADDAL(Memory * memory, Z80 * z80)
    z80->ticks = 4;
 
    return 0;
+}
+
+int OP_86h_ADDAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
 }
 
 int OP_87h_ADDAA(Memory * memory, Z80 * z80)
@@ -689,6 +1541,13 @@ int OP_8Dh_ADCAL(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_8Eh_ADCAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 int OP_8Fh_ADCAA(Memory * memory, Z80 * z80)
 {
    uint8_t oldDest = z80->regA;
@@ -801,6 +1660,13 @@ int OP_95h_SUBL(Memory * memory, Z80 * z80)
    z80->ticks = 4;
 
    return 0;
+}
+
+int OP_96h_SUBHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
 }
 
 int OP_97h_SUBA(Memory * memory, Z80 * z80)
@@ -921,6 +1787,13 @@ int OP_9Dh_SBCAL(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_9Eh_SBCAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 int OP_9Fh_SBCAA(Memory * memory, Z80 * z80)
 {
    uint8_t oldDest = z80->regA;
@@ -1016,6 +1889,13 @@ int OP_A5h_ANDL(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_A6h_ANDHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 int OP_A7h_ANDA(Memory * memory, Z80 * z80)
 {
    z80->regA = (z80->regA & z80->regA) & 0xFF;
@@ -1029,6 +1909,55 @@ int OP_A7h_ANDA(Memory * memory, Z80 * z80)
    return 0;
 }
 
+int OP_A8h_XORB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_A9h_XORC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_AAh_XORD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_ABh_XORE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_ACh_XORH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_ADh_XORL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_AEh_XORHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
 int OP_AFh_XORA(Memory * memory, Z80 * z80)
 {
    z80->regA = 0;
@@ -1038,7 +1967,346 @@ int OP_AFh_XORA(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_E0h_LDHAn(Memory * memory, Z80 * z80)
+int OP_B0h_ORB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B1h_ORC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B2h_ORD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B3h_ORE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B4h_ORH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B5h_ORL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B6h_ORHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B7h_ORA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B8h_CPB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_B9h_CPC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_BAh_CPD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_BBh_CPE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_BCh_CPH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_BDh_CPL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_BEh_CPHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_BFh_CPA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_C0h_RETNZ(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C1h_POPBC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C2h_JPNZnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C3h_JPnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C4h_CALLNZnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C5h_PUSHBC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C6h_ADDAn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C7h_RST00H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C8h_RETZ(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_C9h_RET(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_CAh_JPZnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
+{
+   ExecuteCB(memory,z80);
+
+   // Maybe return value specific to CB prefix?
+   return 0;
+}
+
+int OP_CCh_CALLZnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_CDh_CALLnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_CEh_ADCAn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_CFh_RST08H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_D0h_RETNC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D1h_POPDE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D2h_JPNCnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D3h_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D4h_CALLNCnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D5h_PUSHDE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D6h_SUBn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D7h_RST10H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D8h_RETC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_D9h_RETI(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_DAh_JPCnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_DBh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_DCh_CALLCnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_DDh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_DEh_SBCAn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_DFh_RST18H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E0h_LDHnA(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + rb(memory,z80->regPC)),z80->regA);
 
@@ -1048,7 +2316,14 @@ int OP_E0h_LDHAn(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
+int OP_E1h_POPHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E2h_LDCA(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + z80->regC),z80->regA);
    z80->ticks = 8;
@@ -1056,14 +2331,204 @@ int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
+int OP_E3h_INVALID(Memory * memory, Z80 * z80)
 {
-   ExecuteCB(memory,z80);
+   
 
-   return 0;
+   return 1;
 }
 
-int OP_FFh_RST38h(Memory * memory, Z80 * z80)
+int OP_E4h_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E5h_PUSHHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E6h_ANDn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E7h_RST20H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E8h_ADDSPn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_E9h_JPHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_EAh_LDnnA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_EBh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_ECh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_EDh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_EEh_XORn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_EFh_RST28H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int OP_F0h_LDHAn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F1h_POPAF(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F2h_LDAC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F3h_DI(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F4h_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F5h_PUSHAF(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F6h_ORn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F7h_RST30H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F8h_LDHLSPn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_F9h_LDSPHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_FAh_LDAnn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_FBh_EI(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_FCh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_FDh_INVALID(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_FEh_CPn(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int OP_FFh_RST38H(Memory * memory, Z80 * z80)
 {
    z80->regSP--;
    z80->regSP = z80->regPC;
@@ -1091,6 +2556,13 @@ int Execute(Memory * memory, Z80 * z80)
       DebugAll(z80, memory, &debug);
    }
 
+   // This line has replaced the commented out
+   // switch statement, but the switch is still here
+   // so I can set appropriate values in the wrapper
+   // opcode functions which use a 'common' opcode
+   // function (for example, LDXY)
+   //
+   // Return 1 if the opcode has not been implemented
    z80->op[rb(memory,(z80->regPC++))].call(memory,z80);
    /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
    /* switch(rb(memory,(z80->regPC++)))
@@ -1234,3 +2706,4 @@ int ExecuteCB(Memory * memory, Z80 * z80)
 
    return 0;
 }
+
