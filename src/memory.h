@@ -10,25 +10,9 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-//   #include "mock_cartridge.h"
-//   #include "mock_debug.h"
-//   #include "mock_display.h"
-//   #include "mock_error.h"
-//   #include "mock_memory.h"
-//   #include "mock_opcode_attributes.h"
-//   #include "mock_opcode_wrappers.h"
-//   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-//   #include "cartridge.h"
-//   #include "debug.h"
-//   #include "display.h"
-//   #include "error.h"
-//   #include "memory.h"
-//   #include "opcode_attributes.h"
-//   #include "opcode_wrappers.h"
-//   #include "rom.h"
-//   #include "timer.h"
-//   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
 
 #ifndef Z80_REGISTERS
@@ -85,6 +69,12 @@ typedef struct
    int bios_rom_loaded;
    int tmp;
 } Memory;
+
+// Mock functions
+uint8_t mock_rb(Memory * mem, uint16_t addr);
+int mock_wb(Memory * mem, uint16_t addr, uint8_t value);
+uint16_t mock_rw(Memory * mem, uint16_t addr);
+int mock_ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value);
 
 /* MMU */
 /* Read byte */

@@ -26,26 +26,21 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-   #include "mock_display.h"
-   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-   #include "cartridge.h"
-   #include "debug.h"
-   #include "display.h"
-   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
-   #include "rom.h"
-   #include "timer.h"
-   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
+
+#include "cartridge.h"
+#include "debug.h"
+#include "display.h"
+#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+#include "opcode_wrappers.h"
+#include "rom.h"
+#include "timer.h"
+#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -75,6 +70,7 @@ int OP_invalid(Memory * memory, Z80 * z80)
 
    return 2;
 }
+
 int OP_00h_NOP_wrapper(Memory * memory, Z80 * z80)
 {
    int retValue = OP_00h_NOP(memory,z80);
@@ -82,9 +78,9 @@ int OP_00h_NOP_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_01h_LDBCnn_wrapper(Memory * memory, Z80 * z80)
+int OP_01h_LDBCa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_01h_LDBCnn(memory,z80);
+   int retValue = OP_01h_LDBCd16(memory,z80);
 
    return retValue;
 }
@@ -117,9 +113,9 @@ int OP_05h_DECB_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_06h_LDBn_wrapper(Memory * memory, Z80 * z80)
+int OP_06h_LDBd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_06h_LDBn(memory,z80);
+   int retValue = OP_06h_LDBd8(memory,z80);
 
    return retValue;
 }
@@ -173,9 +169,9 @@ int OP_0Dh_DECC_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_0Eh_LDCn_wrapper(Memory * memory, Z80 * z80)
+int OP_0Eh_LDCd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_0Eh_LDCn(memory,z80);
+   int retValue = OP_0Eh_LDCd8(memory,z80);
 
    return retValue;
 }
@@ -195,9 +191,9 @@ int OP_10h_STOP0_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_11h_LDDEnn_wrapper(Memory * memory, Z80 * z80)
+int OP_11h_LDDEa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_11h_LDDEnn(memory,z80);
+   int retValue = OP_11h_LDDEd16(memory,z80);
 
    return retValue;
 }
@@ -230,9 +226,9 @@ int OP_15h_DECD_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_16h_LDn_wrapper(Memory * memory, Z80 * z80)
+int OP_16h_LDd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_16h_LDn(memory,z80);
+   int retValue = OP_16h_LDd8(memory,z80);
 
    return retValue;
 }
@@ -244,9 +240,9 @@ int OP_17h_RLA_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_18h_JRn_wrapper(Memory * memory, Z80 * z80)
+int OP_18h_JRr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_18h_JRn(memory,z80);
+   int retValue = OP_18h_JRr8(memory,z80);
 
    return retValue;
 }
@@ -286,9 +282,9 @@ int OP_1Dh_DECE_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_1Eh_LDEn_wrapper(Memory * memory, Z80 * z80)
+int OP_1Eh_LDEd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_1Eh_LDEn(memory,z80);
+   int retValue = OP_1Eh_LDEd8(memory,z80);
 
    return retValue;
 }
@@ -301,16 +297,16 @@ int OP_1Fh_RRA_wrapper(Memory * memory, Z80 * z80)
 }
 
 
-int OP_20h_JRNZn_wrapper(Memory * memory, Z80 * z80)
+int OP_20h_JRNZr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_20h_JRNZn(memory,z80);
+   int retValue = OP_20h_JRNZr8(memory,z80);
 
    return retValue;
 }
 
-int OP_21h_LDHLnn_wrapper(Memory * memory, Z80 * z80)
+int OP_21h_LDHLd16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_21h_LDHLnn(memory,z80);
+   int retValue = OP_21h_LDHLd16(memory,z80);
 
    return retValue;
 }
@@ -343,9 +339,9 @@ int OP_25h_DECH_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_26h_LDHn_wrapper(Memory * memory, Z80 * z80)
+int OP_26h_LDHd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_26h_LDHn(memory,z80);
+   int retValue = OP_26h_LDHd8(memory,z80);
 
    return retValue;
 }
@@ -357,9 +353,9 @@ int OP_27h_DAA_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_28h_JRZn_wrapper(Memory * memory, Z80 * z80)
+int OP_28h_JRZr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_28h_JRZn(memory,z80);
+   int retValue = OP_28h_JRZr8(memory,z80);
 
    return retValue;
 }
@@ -399,9 +395,9 @@ int OP_2Dh_DECL_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_2Eh_LDLn_wrapper(Memory * memory, Z80 * z80)
+int OP_2Eh_LDLd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_2Eh_LDLn(memory,z80);
+   int retValue = OP_2Eh_LDLd8(memory,z80);
 
    return retValue;
 }
@@ -414,16 +410,16 @@ int OP_2Fh_CPL_wrapper(Memory * memory, Z80 * z80)
 }
 
 
-int OP_30h_JRNCn_wrapper(Memory * memory, Z80 * z80)
+int OP_30h_JRNCr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_30h_JRNCn(memory,z80);
+   int retValue = OP_30h_JRNCr8(memory,z80);
 
    return retValue;
 }
 
-int OP_31h_LDSPnn_wrapper(Memory * memory, Z80 * z80)
+int OP_31h_LDSPd16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_31h_LDSPnn(memory,z80);
+   int retValue = OP_31h_LDSPd16(memory,z80);
 
    return retValue;
 }
@@ -456,9 +452,9 @@ int OP_35h_DECHL_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_36h_LDHLn_wrapper(Memory * memory, Z80 * z80)
+int OP_36h_LDHLd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_36h_LDHLn(memory,z80);
+   int retValue = OP_36h_LDHLd8(memory,z80);
 
    return retValue;
 }
@@ -470,9 +466,9 @@ int OP_37h_SCF_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_38h_JRCn_wrapper(Memory * memory, Z80 * z80)
+int OP_38h_JRCr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_38h_JRCn(memory,z80);
+   int retValue = OP_38h_JRCr8(memory,z80);
 
    return retValue;
 }
@@ -512,9 +508,9 @@ int OP_3Dh_DECA_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_3Eh_LDAn_wrapper(Memory * memory, Z80 * z80)
+int OP_3Eh_LDAd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_3Eh_LDAn(memory,z80);
+   int retValue = OP_3Eh_LDAd8(memory,z80);
 
    return retValue;
 }
@@ -1445,23 +1441,23 @@ int OP_C1h_POPBC_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_C2h_JPNZnn_wrapper(Memory * memory, Z80 * z80)
+int OP_C2h_JPNZa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_C2h_JPNZnn(memory,z80);
+   int retValue = OP_C2h_JPNZa16(memory,z80);
 
    return retValue;
 }
 
-int OP_C3h_JPnn_wrapper(Memory * memory, Z80 * z80)
+int OP_C3h_JPa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_C3h_JPnn(memory,z80);
+   int retValue = OP_C3h_JPa16(memory,z80);
 
    return retValue;
 }
 
-int OP_C4h_CALLNZnn_wrapper(Memory * memory, Z80 * z80)
+int OP_C4h_CALLNZa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_C4h_CALLNZnn(memory,z80);
+   int retValue = OP_C4h_CALLNZa16(memory,z80);
 
    return retValue;
 }
@@ -1473,9 +1469,9 @@ int OP_C5h_PUSHBC_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_C6h_ADDAn_wrapper(Memory * memory, Z80 * z80)
+int OP_C6h_ADDAd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_C6h_ADDAn(memory,z80);
+   int retValue = OP_C6h_ADDAd8(memory,z80);
 
    return retValue;
 }
@@ -1501,9 +1497,9 @@ int OP_C9h_RET_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_CAh_JPZnn_wrapper(Memory * memory, Z80 * z80)
+int OP_CAh_JPZa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_CAh_JPZnn(memory,z80);
+   int retValue = OP_CAh_JPZa16(memory,z80);
 
    return retValue;
 }
@@ -1515,23 +1511,23 @@ int OP_CBh_PREFIXCB_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_CCh_CALLZnn_wrapper(Memory * memory, Z80 * z80)
+int OP_CCh_CALLZa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_CCh_CALLZnn(memory,z80);
+   int retValue = OP_CCh_CALLZa16(memory,z80);
 
    return retValue;
 }
 
-int OP_CDh_CALLnn_wrapper(Memory * memory, Z80 * z80)
+int OP_CDh_CALLa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_CDh_CALLnn(memory,z80);
+   int retValue = OP_CDh_CALLa16(memory,z80);
 
    return retValue;
 }
 
-int OP_CEh_ADCAn_wrapper(Memory * memory, Z80 * z80)
+int OP_CEh_ADCAd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_CEh_ADCAn(memory,z80);
+   int retValue = OP_CEh_ADCAd8(memory,z80);
 
    return retValue;
 }
@@ -1558,9 +1554,9 @@ int OP_D1h_POPDE_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_D2h_JPNCnn_wrapper(Memory * memory, Z80 * z80)
+int OP_D2h_JPNCa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_D2h_JPNCnn(memory,z80);
+   int retValue = OP_D2h_JPNCa16(memory,z80);
 
    return retValue;
 }
@@ -1572,9 +1568,9 @@ int OP_D3h_INVALID_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_D4h_CALLNCnn_wrapper(Memory * memory, Z80 * z80)
+int OP_D4h_CALLNCa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_D4h_CALLNCnn(memory,z80);
+   int retValue = OP_D4h_CALLNCa16(memory,z80);
 
    return retValue;
 }
@@ -1586,9 +1582,9 @@ int OP_D5h_PUSHDE_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_D6h_SUBn_wrapper(Memory * memory, Z80 * z80)
+int OP_D6h_SUBd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_D6h_SUBn(memory,z80);
+   int retValue = OP_D6h_SUBd8(memory,z80);
 
    return retValue;
 }
@@ -1614,9 +1610,9 @@ int OP_D9h_RETI_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_DAh_JPCnn_wrapper(Memory * memory, Z80 * z80)
+int OP_DAh_JPCa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_DAh_JPCnn(memory,z80);
+   int retValue = OP_DAh_JPCa16(memory,z80);
 
    return retValue;
 }
@@ -1628,9 +1624,9 @@ int OP_DBh_INVALID_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_DCh_CALLCnn_wrapper(Memory * memory, Z80 * z80)
+int OP_DCh_CALLCa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_DCh_CALLCnn(memory,z80);
+   int retValue = OP_DCh_CALLCa16(memory,z80);
 
    return retValue;
 }
@@ -1642,9 +1638,9 @@ int OP_DDh_INVALID_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_DEh_SBCAn_wrapper(Memory * memory, Z80 * z80)
+int OP_DEh_SBCAd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_DEh_SBCAn(memory,z80);
+   int retValue = OP_DEh_SBCAd8(memory,z80);
 
    return retValue;
 }
@@ -1657,9 +1653,9 @@ int OP_DFh_RST18H_wrapper(Memory * memory, Z80 * z80)
 }
 
 
-int OP_E0h_LDHnA_wrapper(Memory * memory, Z80 * z80)
+int OP_E0h_LDHa8A_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_E0h_LDHnA(memory,z80);
+   int retValue = OP_E0h_LDHa8A(memory,z80);
 
    return retValue;
 }
@@ -1671,9 +1667,9 @@ int OP_E1h_POPHL_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_E2h_LDCA_wrapper(Memory * memory, Z80 * z80)
+int OP_E2h_LDHCA_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_E2h_LDCA(memory,z80);
+   int retValue = OP_E2h_LDHCA(memory,z80);
 
    return retValue;
 }
@@ -1699,9 +1695,9 @@ int OP_E5h_PUSHHL_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_E6h_ANDn_wrapper(Memory * memory, Z80 * z80)
+int OP_E6h_ANDd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_E6h_ANDn(memory,z80);
+   int retValue = OP_E6h_ANDd8(memory,z80);
 
    return retValue;
 }
@@ -1713,9 +1709,9 @@ int OP_E7h_RST20H_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_E8h_ADDSPn_wrapper(Memory * memory, Z80 * z80)
+int OP_E8h_ADDSPr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_E8h_ADDSPn(memory,z80);
+   int retValue = OP_E8h_ADDSPr8(memory,z80);
 
    return retValue;
 }
@@ -1755,9 +1751,9 @@ int OP_EDh_INVALID_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_EEh_XORn_wrapper(Memory * memory, Z80 * z80)
+int OP_EEh_XORd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_EEh_XORn(memory,z80);
+   int retValue = OP_EEh_XORd8(memory,z80);
 
    return retValue;
 }
@@ -1770,9 +1766,9 @@ int OP_EFh_RST28H_wrapper(Memory * memory, Z80 * z80)
 }
 
 
-int OP_F0h_LDHAn_wrapper(Memory * memory, Z80 * z80)
+int OP_F0h_LDHAa8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_F0h_LDHAn(memory,z80);
+   int retValue = OP_F0h_LDHAa8(memory,z80);
 
    return retValue;
 }
@@ -1812,9 +1808,9 @@ int OP_F5h_PUSHAF_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_F6h_ORn_wrapper(Memory * memory, Z80 * z80)
+int OP_F6h_ORd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_F6h_ORn(memory,z80);
+   int retValue = OP_F6h_ORd8(memory,z80);
 
    return retValue;
 }
@@ -1826,9 +1822,9 @@ int OP_F7h_RST30H_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_F8h_LDHLSPn_wrapper(Memory * memory, Z80 * z80)
+int OP_F8h_LDHLSPr8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_F8h_LDHLSPn(memory,z80);
+   int retValue = OP_F8h_LDHLSPr8(memory,z80);
 
    return retValue;
 }
@@ -1840,9 +1836,9 @@ int OP_F9h_LDSPHL_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_FAh_LDAnn_wrapper(Memory * memory, Z80 * z80)
+int OP_FAh_LDAa16_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_FAh_LDAnn(memory,z80);
+   int retValue = OP_FAh_LDAa16(memory,z80);
 
    return retValue;
 }
@@ -1868,9 +1864,9 @@ int OP_FDh_INVALID_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_FEh_CPn_wrapper(Memory * memory, Z80 * z80)
+int OP_FEh_CPd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_FEh_CPn(memory,z80);
+   int retValue = OP_FEh_CPd8(memory,z80);
 
    return retValue;
 }

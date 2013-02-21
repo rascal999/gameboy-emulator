@@ -9,27 +9,16 @@
 #include <stdint.h>
 #include <string.h>
 
-#ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-   #include "mock_display.h"
-//   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-   #include "mock_z80.h"
-#else
-   #include "cartridge.h"
-   #include "debug.h"
-   #include "display.h"
-//   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
-   #include "rom.h"
-   #include "timer.h"
-   #include "z80.h"
-#endif
+#include "cartridge.h"
+#include "debug.h"
+#include "display.h"
+//#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+#include "opcode_wrappers.h"
+#include "rom.h"
+#include "timer.h"
+#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]

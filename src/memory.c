@@ -8,26 +8,21 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-   #include "mock_display.h"
-   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-   #include "cartridge.h"
-   #include "debug.h"
-   #include "display.h"
-   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
-   #include "rom.h"
-   #include "timer.h"
-   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
+
+#include "cartridge.h"
+#include "debug.h"
+#include "display.h"
+#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+#include "opcode_wrappers.h"
+#include "rom.h"
+#include "timer.h"
+#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -47,8 +42,60 @@ Error err;
 /* MMU */
 /* 8 bit */
 /* Read byte */
+uint8_t mock_rb(Memory * mem, uint16_t addr)
+{
+   return mem->addr[addr];    
+}
+
+/* Write byte */              
+int mock_wb(Memory * mem, uint16_t addr, uint8_t value)
+{
+   mem->addr[addr] = value;   
+
+   return 0;
+}
+
+/* 16 bit */                  
+/* Read word */               
+uint16_t mock_rw(Memory * mem, uint16_t addr)
+{
+   return (rb(mem,(addr+1)) << 8) + rb(mem,(addr));
+}
+
+/* Write word */              
+int mock_ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value) 
+{
+   mem->addr[addr] = ((value & 0xFF00) >> 4);
+   mem->addr[addr + 1] = (value & 0xFF);
+
+   return 0;                  
+}
+/* END MMU */
+
+int mock_InitMemory(Memory * memory)
+{
+   int random_seed = time(NULL), i = 0;
+   srand(random_seed);
+
+   for ( i=0 ; i<0xFFFF ; i++ )
+   {
+      memory->addr[i] = rand() % 0xF;
+   }
+}
+
+/* MMU */
+/* 8 bit */
+/* Read byte */
 uint8_t rb(Memory * mem, uint16_t addr)
 {
+   // Mock function
+   int mock_func_return = 0;
+   if (UNIT_TEST == 1)
+   {
+      mock_func_return = mock_rb(mem,addr);
+      return mock_func_return;
+   }
+
    switch(addr & 0xF000)
    {
       case 0x0000:
@@ -172,6 +219,14 @@ uint8_t rb(Memory * mem, uint16_t addr)
 /* Write byte */
 int wb(Memory * mem, uint16_t addr, uint8_t value)
 {
+   // Mock function
+   int mock_func_return = 0;
+   if (UNIT_TEST == 1)
+   {
+      mock_func_return = mock_wb(mem,addr,value);
+      return mock_func_return;
+   }
+
    /* Timer registers */
    switch(addr & 0xFFFF)
    {
@@ -230,19 +285,45 @@ int wb(Memory * mem, uint16_t addr, uint8_t value)
 /* Read word */
 uint16_t rw(Memory * mem, uint16_t addr)
 {
+   // Mock function
+   int mock_func_return = 0;
+   if (UNIT_TEST == 1)
+   {
+      mock_func_return = mock_rw(mem,addr);
+      return mock_func_return;
+   }
+
    return (rb(mem,(addr+1)) << 8) + rb(mem,(addr));
 }
 
 /* Write word */
 int ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value)
 {
-   mem->addr[addr] = value;
+   // Mock function
+   int mock_func_return = 0;
+   if (UNIT_TEST == 1)
+   {
+      mock_func_return = mock_ww(mem,z80,addr,value);
+      return mock_func_return;
+   }
+
+   mem->addr[addr] = ((value & 0xFF00) >> 4);
+   mem->addr[addr + 1] = (value & 0xFF);
+
    return 0;
 }
 /* END MMU */
 
 int InitMemory(Memory * memory)
 {
+   // Mock function
+   int mock_func_return = 0;
+   if (UNIT_TEST == 1)
+   {
+      mock_func_return = mock_InitMemory(memory);
+      return mock_func_return;
+   }
+
    /* Start in BIOS ROM */
    memory->bios_rom_loaded = 1;
 

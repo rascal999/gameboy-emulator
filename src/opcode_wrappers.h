@@ -10,26 +10,21 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-   #include "mock_display.h"
-   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-//   #include "mock_opcode_wrappers.h"
-   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-   #include "cartridge.h"
-   #include "debug.h"
-   #include "display.h"
-   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-//   #include "opcode_wrappers.h"
-   #include "rom.h"
-   #include "timer.h"
-   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
+
+#include "cartridge.h"
+#include "debug.h"
+#include "display.h"
+#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+//#include "opcode_wrappers.h"
+#include "rom.h"
+#include "timer.h"
+#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -47,12 +42,12 @@
 int OP_not_implemented(Memory * memory, Z80 * z80);
 int OP_invalid(Memory * memory, Z80 * z80);
 int OP_00h_NOP_wrapper(Memory * memory, Z80 * z80);
-int OP_01h_LDBCnn_wrapper(Memory * memory, Z80 * z80);
+int OP_01h_LDBCa16_wrapper(Memory * memory, Z80 * z80);
 int OP_02h_LDBCA_wrapper(Memory * memory, Z80 * z80);
 int OP_03h_INCBC_wrapper(Memory * memory, Z80 * z80);
 int OP_04h_INCB_wrapper(Memory * memory, Z80 * z80);
 int OP_05h_DECB_wrapper(Memory * memory, Z80 * z80);
-int OP_06h_LDBn_wrapper(Memory * memory, Z80 * z80);
+int OP_06h_LDBd8_wrapper(Memory * memory, Z80 * z80);
 int OP_07h_RLCA_wrapper(Memory * memory, Z80 * z80);
 int OP_08h_LDnnSP_wrapper(Memory * memory, Z80 * z80);
 int OP_09h_ADDHLBC_wrapper(Memory * memory, Z80 * z80);
@@ -60,58 +55,58 @@ int OP_0Ah_LDABC_wrapper(Memory * memory, Z80 * z80);
 int OP_0Bh_DECBC_wrapper(Memory * memory, Z80 * z80);
 int OP_0Ch_INCC_wrapper(Memory * memory, Z80 * z80);
 int OP_0Dh_DECC_wrapper(Memory * memory, Z80 * z80);
-int OP_0Eh_LDCn_wrapper(Memory * memory, Z80 * z80);
+int OP_0Eh_LDCd8_wrapper(Memory * memory, Z80 * z80);
 int OP_0Fh_RRCA_wrapper(Memory * memory, Z80 * z80);
 
 int OP_10h_STOP0_wrapper(Memory * memory, Z80 * z80);
-int OP_11h_LDDEnn_wrapper(Memory * memory, Z80 * z80);
+int OP_11h_LDDEa16_wrapper(Memory * memory, Z80 * z80);
 int OP_12h_LDDEA_wrapper(Memory * memory, Z80 * z80);
 int OP_13h_INCDE_wrapper(Memory * memory, Z80 * z80);
 int OP_14h_INCD_wrapper(Memory * memory, Z80 * z80);
 int OP_15h_DECD_wrapper(Memory * memory, Z80 * z80);
-int OP_16h_LDn_wrapper(Memory * memory, Z80 * z80);
+int OP_16h_LDd8_wrapper(Memory * memory, Z80 * z80);
 int OP_17h_RLA_wrapper(Memory * memory, Z80 * z80);
-int OP_18h_JRn_wrapper(Memory * memory, Z80 * z80);
+int OP_18h_JRd8_wrapper(Memory * memory, Z80 * z80);
 int OP_19h_ADDHLDE_wrapper(Memory * memory, Z80 * z80);
 int OP_1Ah_LDADE_wrapper(Memory * memory, Z80 * z80);
 int OP_1Bh_DECDE_wrapper(Memory * memory, Z80 * z80);
 int OP_1Ch_INCE_wrapper(Memory * memory, Z80 * z80);
 int OP_1Dh_DECE_wrapper(Memory * memory, Z80 * z80);
-int OP_1Eh_LDEn_wrapper(Memory * memory, Z80 * z80);
+int OP_1Eh_LDEd8_wrapper(Memory * memory, Z80 * z80);
 int OP_1Fh_RRA_wrapper(Memory * memory, Z80 * z80);
 
-int OP_20h_JRNZn_wrapper(Memory * memory, Z80 * z80);
-int OP_21h_LDHLnn_wrapper(Memory * memory, Z80 * z80);
+int OP_20h_JRNZr8_wrapper(Memory * memory, Z80 * z80);
+int OP_21h_LDHLd16_wrapper(Memory * memory, Z80 * z80);
 int OP_22h_LDIHLA_wrapper(Memory * memory, Z80 * z80);
 int OP_23h_INCHL_wrapper(Memory * memory, Z80 * z80);
 int OP_24h_INCH_wrapper(Memory * memory, Z80 * z80);
 int OP_25h_DECH_wrapper(Memory * memory, Z80 * z80);
-int OP_26h_LDHn_wrapper(Memory * memory, Z80 * z80);
+int OP_26h_LDHd8_wrapper(Memory * memory, Z80 * z80);
 int OP_27h_DAA_wrapper(Memory * memory, Z80 * z80);
-int OP_28h_JRZn_wrapper(Memory * memory, Z80 * z80);
+int OP_28h_JRZd8_wrapper(Memory * memory, Z80 * z80);
 int OP_29h_ADDHLHL_wrapper(Memory * memory, Z80 * z80);
 int OP_2Ah_LDIAHL_wrapper(Memory * memory, Z80 * z80);
 int OP_2Bh_DECHL_wrapper(Memory * memory, Z80 * z80);
 int OP_2Ch_INCL_wrapper(Memory * memory, Z80 * z80);
 int OP_2Dh_DECL_wrapper(Memory * memory, Z80 * z80);
-int OP_2Eh_LDLn_wrapper(Memory * memory, Z80 * z80);
+int OP_2Eh_LDLd8_wrapper(Memory * memory, Z80 * z80);
 int OP_2Fh_CPL_wrapper(Memory * memory, Z80 * z80);
 
-int OP_30h_JRNCn_wrapper(Memory * memory, Z80 * z80);
-int OP_31h_LDSPnn_wrapper(Memory * memory, Z80 * z80);
+int OP_30h_JRNCd8_wrapper(Memory * memory, Z80 * z80);
+int OP_31h_LDSPd16_wrapper(Memory * memory, Z80 * z80);
 int OP_32h_LDDHLA_wrapper(Memory * memory, Z80 * z80);
 int OP_33h_INCSP_wrapper(Memory * memory, Z80 * z80);
 int OP_34h_INCHL_wrapper(Memory * memory, Z80 * z80);
 int OP_35h_DECHL_wrapper(Memory * memory, Z80 * z80);
-int OP_36h_LDHLn_wrapper(Memory * memory, Z80 * z80);
+int OP_36h_LDHLd8_wrapper(Memory * memory, Z80 * z80);
 int OP_37h_SCF_wrapper(Memory * memory, Z80 * z80);
-int OP_38h_JRCn_wrapper(Memory * memory, Z80 * z80);
+int OP_38h_JRCd8_wrapper(Memory * memory, Z80 * z80);
 int OP_39h_ADDHLSP_wrapper(Memory * memory, Z80 * z80);
 int OP_3Ah_LDDAHL_wrapper(Memory * memory, Z80 * z80);
 int OP_3Bh_DECSP_wrapper(Memory * memory, Z80 * z80);
 int OP_3Ch_INCA_wrapper(Memory * memory, Z80 * z80);
 int OP_3Dh_DECA_wrapper(Memory * memory, Z80 * z80);
-int OP_3Eh_LDAn_wrapper(Memory * memory, Z80 * z80);
+int OP_3Eh_LDAd8_wrapper(Memory * memory, Z80 * z80);
 int OP_3Fh_CCF_wrapper(Memory * memory, Z80 * z80);
 
 int OP_40h_LDBB_wrapper(Memory * memory, Z80 * z80);
@@ -252,68 +247,68 @@ int OP_BFh_CPA_wrapper(Memory * memory, Z80 * z80);
 
 int OP_C0h_RETNZ_wrapper(Memory * memory, Z80 * z80);
 int OP_C1h_POPBC_wrapper(Memory * memory, Z80 * z80);
-int OP_C2h_JPNZnn_wrapper(Memory * memory, Z80 * z80);
-int OP_C3h_JPnn_wrapper(Memory * memory, Z80 * z80);
-int OP_C4h_CALLNZnn_wrapper(Memory * memory, Z80 * z80);
+int OP_C2h_JPNZa16_wrapper(Memory * memory, Z80 * z80);
+int OP_C3h_JPa16_wrapper(Memory * memory, Z80 * z80);
+int OP_C4h_CALLNZa16_wrapper(Memory * memory, Z80 * z80);
 int OP_C5h_PUSHBC_wrapper(Memory * memory, Z80 * z80);
-int OP_C6h_ADDAn_wrapper(Memory * memory, Z80 * z80);
+int OP_C6h_ADDAd8_wrapper(Memory * memory, Z80 * z80);
 int OP_C7h_RST00H_wrapper(Memory * memory, Z80 * z80);
 int OP_C8h_RETZ_wrapper(Memory * memory, Z80 * z80);
 int OP_C9h_RET_wrapper(Memory * memory, Z80 * z80);
-int OP_CAh_JPZnn_wrapper(Memory * memory, Z80 * z80);
+int OP_CAh_JPZa16_wrapper(Memory * memory, Z80 * z80);
 int OP_CBh_PREFIXCB_wrapper(Memory * memory, Z80 * z80);
-int OP_CCh_CALLZnn_wrapper(Memory * memory, Z80 * z80);
-int OP_CDh_CALLnn_wrapper(Memory * memory, Z80 * z80);
-int OP_CEh_ADCAn_wrapper(Memory * memory, Z80 * z80);
+int OP_CCh_CALLZa16_wrapper(Memory * memory, Z80 * z80);
+int OP_CDh_CALLa16_wrapper(Memory * memory, Z80 * z80);
+int OP_CEh_ADCAd8_wrapper(Memory * memory, Z80 * z80);
 int OP_CFh_RST08H_wrapper(Memory * memory, Z80 * z80);
 
 int OP_D0h_RETNC_wrapper(Memory * memory, Z80 * z80);
 int OP_D1h_POPDE_wrapper(Memory * memory, Z80 * z80);
-int OP_D2h_JPNCnn_wrapper(Memory * memory, Z80 * z80);
+int OP_D2h_JPNCa16_wrapper(Memory * memory, Z80 * z80);
 int OP_D3h_INVALID_wrapper(Memory * memory, Z80 * z80);
-int OP_D4h_CALLNCnn_wrapper(Memory * memory, Z80 * z80);
+int OP_D4h_CALLNCa16_wrapper(Memory * memory, Z80 * z80);
 int OP_D5h_PUSHDE_wrapper(Memory * memory, Z80 * z80);
-int OP_D6h_SUBn_wrapper(Memory * memory, Z80 * z80);
+int OP_D6h_SUBd8_wrapper(Memory * memory, Z80 * z80);
 int OP_D7h_RST10H_wrapper(Memory * memory, Z80 * z80);
 int OP_D8h_RETC_wrapper(Memory * memory, Z80 * z80);
 int OP_D9h_RETI_wrapper(Memory * memory, Z80 * z80);
-int OP_DAh_JPCnn_wrapper(Memory * memory, Z80 * z80);
+int OP_DAh_JPCa16_wrapper(Memory * memory, Z80 * z80);
 int OP_DBh_INVALID_wrapper(Memory * memory, Z80 * z80);
-int OP_DCh_CALLCnn_wrapper(Memory * memory, Z80 * z80);
+int OP_DCh_CALLCa16_wrapper(Memory * memory, Z80 * z80);
 int OP_DDh_INVALID_wrapper(Memory * memory, Z80 * z80);
-int OP_DEh_SBCAn_wrapper(Memory * memory, Z80 * z80);
+int OP_DEh_SBCAd8_wrapper(Memory * memory, Z80 * z80);
 int OP_DFh_RST18H_wrapper(Memory * memory, Z80 * z80);
 
-int OP_E0h_LDHnA_wrapper(Memory * memory, Z80 * z80);
+int OP_E0h_LDHa8A_wrapper(Memory * memory, Z80 * z80);
 int OP_E1h_POPHL_wrapper(Memory * memory, Z80 * z80);
-int OP_E2h_LDCA_wrapper(Memory * memory, Z80 * z80);
+int OP_E2h_LDHCA_wrapper(Memory * memory, Z80 * z80);
 int OP_E3h_INVALID_wrapper(Memory * memory, Z80 * z80);
 int OP_E4h_INVALID_wrapper(Memory * memory, Z80 * z80);
 int OP_E5h_PUSHHL_wrapper(Memory * memory, Z80 * z80);
-int OP_E6h_ANDn_wrapper(Memory * memory, Z80 * z80);
+int OP_E6h_ANDd8_wrapper(Memory * memory, Z80 * z80);
 int OP_E7h_RST20H_wrapper(Memory * memory, Z80 * z80);
-int OP_E8h_ADDSPn_wrapper(Memory * memory, Z80 * z80);
+int OP_E8h_ADDSPd8_wrapper(Memory * memory, Z80 * z80);
 int OP_E9h_JPHL_wrapper(Memory * memory, Z80 * z80);
 int OP_EAh_LDnnA_wrapper(Memory * memory, Z80 * z80);
 int OP_EBh_INVALID_wrapper(Memory * memory, Z80 * z80);
 int OP_ECh_INVALID_wrapper(Memory * memory, Z80 * z80);
 int OP_EDh_INVALID_wrapper(Memory * memory, Z80 * z80);
-int OP_EEh_XORn_wrapper(Memory * memory, Z80 * z80);
+int OP_EEh_XORd8_wrapper(Memory * memory, Z80 * z80);
 int OP_EFh_RST28H_wrapper(Memory * memory, Z80 * z80);
 
-int OP_F0h_LDHAn_wrapper(Memory * memory, Z80 * z80);
+int OP_F0h_LDHAd8_wrapper(Memory * memory, Z80 * z80);
 int OP_F1h_POPAF_wrapper(Memory * memory, Z80 * z80);
 int OP_F2h_LDAC_wrapper(Memory * memory, Z80 * z80);
 int OP_F3h_DI_wrapper(Memory * memory, Z80 * z80);
 int OP_F4h_INVALID_wrapper(Memory * memory, Z80 * z80);
 int OP_F5h_PUSHAF_wrapper(Memory * memory, Z80 * z80);
-int OP_F6h_ORn_wrapper(Memory * memory, Z80 * z80);
+int OP_F6h_ORd8_wrapper(Memory * memory, Z80 * z80);
 int OP_F7h_RST30H_wrapper(Memory * memory, Z80 * z80);
-int OP_F8h_LDHLSPn_wrapper(Memory * memory, Z80 * z80);
+int OP_F8h_LDHLSPd8_wrapper(Memory * memory, Z80 * z80);
 int OP_F9h_LDSPHL_wrapper(Memory * memory, Z80 * z80);
-int OP_FAh_LDAnn_wrapper(Memory * memory, Z80 * z80);
+int OP_FAh_LDAa16_wrapper(Memory * memory, Z80 * z80);
 int OP_FBh_EI_wrapper(Memory * memory, Z80 * z80);
 int OP_FCh_INVALID_wrapper(Memory * memory, Z80 * z80);
 int OP_FDh_INVALID_wrapper(Memory * memory, Z80 * z80);
-int OP_FEh_CPn_wrapper(Memory * memory, Z80 * z80);
+int OP_FEh_CPd8_wrapper(Memory * memory, Z80 * z80);
 int OP_FFh_RST38H_wrapper(Memory * memory, Z80 * z80);

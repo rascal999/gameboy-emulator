@@ -8,26 +8,21 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-   #include "mock_display.h"
-   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-   #include "cartridge.h"
-   #include "debug.h"
-   #include "display.h"
-   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
-   #include "rom.h"
-   #include "timer.h"
-   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
+
+#include "cartridge.h"
+#include "debug.h"
+#include "display.h"
+#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+#include "opcode_wrappers.h"
+#include "rom.h"
+#include "timer.h"
+#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -78,7 +73,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0xd].size = 0x1; z80->op[0xd].ticks = 0x4;
    strncpy(z80->op[0xd].name,"DEC C",1023); z80->op[0xd].call = OP_not_implemented;
    z80->op[0xe].size = 0x2; z80->op[0xe].ticks = 0x8;
-   strncpy(z80->op[0xe].name,"LD C,d8",1023); z80->op[0xe].call = OP_not_implemented;
+   strncpy(z80->op[0xe].name,"LD C,d8",1023); z80->op[0xe].call = OP_0Eh_LDCd8;
    z80->op[0xf].size = 0x1; z80->op[0xf].ticks = 0x4;
    strncpy(z80->op[0xf].name,"RRCA",1023); z80->op[0xf].call = OP_not_implemented;
    z80->op[0x10].size = 0x2; z80->op[0x10].ticks = 0x4;
@@ -114,9 +109,9 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0x1f].size = 0x1; z80->op[0x1f].ticks = 0x4;
    strncpy(z80->op[0x1f].name,"RRA",1023); z80->op[0x1f].call = OP_not_implemented;
    z80->op[0x20].size = 0x2; z80->op[0x20].ticks = 0x0;
-   strncpy(z80->op[0x20].name,"JR NZ,r8",1023); z80->op[0x20].call = OP_20h_JRNZn_wrapper;
+   strncpy(z80->op[0x20].name,"JR NZ,r8",1023); z80->op[0x20].call = OP_20h_JRNZr8_wrapper;
    z80->op[0x21].size = 0x3; z80->op[0x21].ticks = 0xc;
-   strncpy(z80->op[0x21].name,"LD HL,d16",1023); z80->op[0x21].call = OP_21h_LDHLnn_wrapper;
+   strncpy(z80->op[0x21].name,"LD HL,d16",1023); z80->op[0x21].call = OP_21h_LDHLd16_wrapper;
    z80->op[0x22].size = 0x1; z80->op[0x22].ticks = 0x8;
    strncpy(z80->op[0x22].name,"LD (HL+),A",1023); z80->op[0x22].call = OP_22h_LDIHLA_wrapper;
    z80->op[0x23].size = 0x1; z80->op[0x23].ticks = 0x8;
@@ -148,9 +143,9 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0x30].size = 0x2; z80->op[0x30].ticks = 0x0;
    strncpy(z80->op[0x30].name,"JR NC,r8",1023); z80->op[0x30].call = OP_not_implemented;
    z80->op[0x31].size = 0x3; z80->op[0x31].ticks = 0xc;
-   strncpy(z80->op[0x31].name,"LD SP,d16",1023); z80->op[0x31].call = OP_31h_LDSPnn_wrapper;
+   strncpy(z80->op[0x31].name,"LD SP,d16",1023); z80->op[0x31].call = OP_31h_LDSPd16_wrapper;
    z80->op[0x32].size = 0x1; z80->op[0x32].ticks = 0x8;
-   strncpy(z80->op[0x32].name,"LD (HL-),A",1023); z80->op[0x32].call = OP_not_implemented;
+   strncpy(z80->op[0x32].name,"LD (HL-),A",1023); z80->op[0x32].call = OP_32h_LDDHLA;
    z80->op[0x33].size = 0x1; z80->op[0x33].ticks = 0x8;
    strncpy(z80->op[0x33].name,"INC SP",1023); z80->op[0x33].call = OP_not_implemented;
    z80->op[0x34].size = 0x1; z80->op[0x34].ticks = 0xc;
@@ -456,7 +451,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0xca].size = 0x3; z80->op[0xca].ticks = 0x0;
    strncpy(z80->op[0xca].name,"JP Z,a16",1023); z80->op[0xca].call = OP_not_implemented;
    z80->op[0xcb].size = 0x1; z80->op[0xcb].ticks = 0x4;
-   strncpy(z80->op[0xcb].name,"PREFIX CB",1023); z80->op[0xcb].call = OP_not_implemented;
+   strncpy(z80->op[0xcb].name,"PREFIX CB",1023); z80->op[0xcb].call = OP_CBh_PREFIXCB;
    z80->op[0xcc].size = 0x3; z80->op[0xcc].ticks = 0x0;
    strncpy(z80->op[0xcc].name,"CALL Z,a16",1023); z80->op[0xcc].call = OP_not_implemented;
    z80->op[0xcd].size = 0x3; z80->op[0xcd].ticks = 0x18;

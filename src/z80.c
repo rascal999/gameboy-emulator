@@ -8,26 +8,21 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-   #include "mock_display.h"
-   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-   #include "cartridge.h"
-   #include "debug.h"
-   #include "display.h"
-   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
-   #include "rom.h"
-   #include "timer.h"
-   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
+
+#include "cartridge.h"
+#include "debug.h"
+#include "display.h"
+#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+#include "opcode_wrappers.h"
+#include "rom.h"
+#include "timer.h"
+#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -328,11 +323,11 @@ int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  OP_LDXD8
+ *         Name:  OP_LDXd8
  *  Description:  Load immediate into register X
  * =====================================================================================
  */
-int OP_LDXD8(Memory * memory, Z80 * z80, uint8_t x)
+int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
 {
    z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC)) & 0xFF;
 
@@ -395,7 +390,7 @@ int OP_00h_NOP(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_01h_LDBCnn(Memory * memory, Z80 * z80)
+int OP_01h_LDBCd16(Memory * memory, Z80 * z80)
 {
    
 
@@ -430,7 +425,7 @@ int OP_05h_DECB(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_06h_LDBn(Memory * memory, Z80 * z80)
+int OP_06h_LDBd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -486,11 +481,11 @@ int OP_0Dh_DECC(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_0Eh_LDCn(Memory * memory, Z80 * z80)
+int OP_0Eh_LDCd8(Memory * memory, Z80 * z80)
 {
-   
+   OP_LDXd8(memory,z80,(uint8_t) 0x2);
 
-   return 1;
+   return 0;
 }
 
 int OP_0Fh_RRCA(Memory * memory, Z80 * z80)
@@ -508,7 +503,7 @@ int OP_10h_STOP0(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_11h_LDDEnn(Memory * memory, Z80 * z80)
+int OP_11h_LDDEd16(Memory * memory, Z80 * z80)
 {
    
 
@@ -543,7 +538,7 @@ int OP_15h_DECD(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_16h_LDn(Memory * memory, Z80 * z80)
+int OP_16h_LDd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -557,7 +552,7 @@ int OP_17h_RLA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_18h_JRn(Memory * memory, Z80 * z80)
+int OP_18h_JRr8(Memory * memory, Z80 * z80)
 {
    
 
@@ -599,7 +594,7 @@ int OP_1Dh_DECE(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_1Eh_LDEn(Memory * memory, Z80 * z80)
+int OP_1Eh_LDEd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -614,7 +609,7 @@ int OP_1Fh_RRA(Memory * memory, Z80 * z80)
 }
 
 
-int OP_20h_JRNZn(Memory * memory, Z80 * z80)
+int OP_20h_JRNZr8(Memory * memory, Z80 * z80)
 {
    int8_t i;
 
@@ -633,7 +628,7 @@ int OP_20h_JRNZn(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_21h_LDHLnn(Memory * memory, Z80 * z80)
+int OP_21h_LDHLd16(Memory * memory, Z80 * z80)
 {
    z80->regH = rb(memory,(z80->regPC+1));
    z80->regL = rb(memory,(z80->regPC));
@@ -677,7 +672,7 @@ int OP_25h_DECH(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_26h_LDHn(Memory * memory, Z80 * z80)
+int OP_26h_LDHd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -691,7 +686,7 @@ int OP_27h_DAA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_28h_JRZn(Memory * memory, Z80 * z80)
+int OP_28h_JRZr8(Memory * memory, Z80 * z80)
 {
    
 
@@ -733,7 +728,7 @@ int OP_2Dh_DECL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_2Eh_LDLn(Memory * memory, Z80 * z80)
+int OP_2Eh_LDLd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -748,14 +743,14 @@ int OP_2Fh_CPL(Memory * memory, Z80 * z80)
 }
 
 
-int OP_30h_JRNCn(Memory * memory, Z80 * z80)
+int OP_30h_JRNCr8(Memory * memory, Z80 * z80)
 {
    
 
    return 1;
 }
 
-int OP_31h_LDSPnn(Memory * memory, Z80 * z80)
+int OP_31h_LDSPd16(Memory * memory, Z80 * z80)
 {
    z80->regSP = (uint16_t) rw(memory,z80->regPC);
    z80->regPC = (uint16_t) z80->regPC + (uint16_t) 2;
@@ -799,7 +794,7 @@ int OP_35h_DECHL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_36h_LDHLn(Memory * memory, Z80 * z80)
+int OP_36h_LDHLd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -813,7 +808,7 @@ int OP_37h_SCF(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_38h_JRCn(Memory * memory, Z80 * z80)
+int OP_38h_JRCr8(Memory * memory, Z80 * z80)
 {
    
 
@@ -855,7 +850,7 @@ int OP_3Dh_DECA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_3Eh_LDAn(Memory * memory, Z80 * z80)
+int OP_3Eh_LDAd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -1341,9 +1336,18 @@ int OP_80h_ADDAB(Memory * memory, Z80 * z80)
 
 int OP_81h_ADDAC(Memory * memory, Z80 * z80)
 {
-   
+   uint8_t oldDest = z80->regA;
+   uint8_t oldSrc = z80->regC;
 
-   return 1;
+   z80->regA = z80->regA + z80->regC;
+
+   uint8_t dest = z80->regA;
+
+   calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
+
+   z80->ticks = 4;
+
+   return 0;
 }
 
 int OP_82h_ADDAD(Memory * memory, Z80 * z80)
@@ -2094,21 +2098,21 @@ int OP_C1h_POPBC(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_C2h_JPNZnn(Memory * memory, Z80 * z80)
+int OP_C2h_JPNZa16(Memory * memory, Z80 * z80)
 {
    
 
    return 1;
 }
 
-int OP_C3h_JPnn(Memory * memory, Z80 * z80)
+int OP_C3h_JPa16(Memory * memory, Z80 * z80)
 {
    
 
    return 1;
 }
 
-int OP_C4h_CALLNZnn(Memory * memory, Z80 * z80)
+int OP_C4h_CALLNZa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2122,7 +2126,7 @@ int OP_C5h_PUSHBC(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_C6h_ADDAn(Memory * memory, Z80 * z80)
+int OP_C6h_ADDAd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2150,7 +2154,7 @@ int OP_C9h_RET(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_CAh_JPZnn(Memory * memory, Z80 * z80)
+int OP_CAh_JPZa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2165,21 +2169,21 @@ int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
    return 0;
 }
 
-int OP_CCh_CALLZnn(Memory * memory, Z80 * z80)
+int OP_CCh_CALLZa16(Memory * memory, Z80 * z80)
 {
    
 
    return 1;
 }
 
-int OP_CDh_CALLnn(Memory * memory, Z80 * z80)
+int OP_CDh_CALLa16(Memory * memory, Z80 * z80)
 {
    
 
    return 1;
 }
 
-int OP_CEh_ADCAn(Memory * memory, Z80 * z80)
+int OP_CEh_ADCAd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2208,7 +2212,7 @@ int OP_D1h_POPDE(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_D2h_JPNCnn(Memory * memory, Z80 * z80)
+int OP_D2h_JPNCa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2222,7 +2226,7 @@ int OP_D3h_INVALID(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_D4h_CALLNCnn(Memory * memory, Z80 * z80)
+int OP_D4h_CALLNCa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2236,7 +2240,7 @@ int OP_D5h_PUSHDE(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_D6h_SUBn(Memory * memory, Z80 * z80)
+int OP_D6h_SUBd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2264,7 +2268,7 @@ int OP_D9h_RETI(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_DAh_JPCnn(Memory * memory, Z80 * z80)
+int OP_DAh_JPCa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2278,7 +2282,7 @@ int OP_DBh_INVALID(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_DCh_CALLCnn(Memory * memory, Z80 * z80)
+int OP_DCh_CALLCa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2292,7 +2296,7 @@ int OP_DDh_INVALID(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_DEh_SBCAn(Memory * memory, Z80 * z80)
+int OP_DEh_SBCAd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2306,7 +2310,7 @@ int OP_DFh_RST18H(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_E0h_LDHnA(Memory * memory, Z80 * z80)
+int OP_E0h_LDHa8A(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + rb(memory,z80->regPC)),z80->regA);
 
@@ -2323,7 +2327,7 @@ int OP_E1h_POPHL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_E2h_LDCA(Memory * memory, Z80 * z80)
+int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + z80->regC),z80->regA);
    z80->ticks = 8;
@@ -2352,7 +2356,7 @@ int OP_E5h_PUSHHL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_E6h_ANDn(Memory * memory, Z80 * z80)
+int OP_E6h_ANDd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2366,7 +2370,7 @@ int OP_E7h_RST20H(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_E8h_ADDSPn(Memory * memory, Z80 * z80)
+int OP_E8h_ADDSPr8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2408,7 +2412,7 @@ int OP_EDh_INVALID(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_EEh_XORn(Memory * memory, Z80 * z80)
+int OP_EEh_XORd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2423,7 +2427,7 @@ int OP_EFh_RST28H(Memory * memory, Z80 * z80)
 }
 
 
-int OP_F0h_LDHAn(Memory * memory, Z80 * z80)
+int OP_F0h_LDHAa8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2465,7 +2469,7 @@ int OP_F5h_PUSHAF(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_F6h_ORn(Memory * memory, Z80 * z80)
+int OP_F6h_ORd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2479,7 +2483,7 @@ int OP_F7h_RST30H(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_F8h_LDHLSPn(Memory * memory, Z80 * z80)
+int OP_F8h_LDHLSPr8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2493,7 +2497,7 @@ int OP_F9h_LDSPHL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_FAh_LDAnn(Memory * memory, Z80 * z80)
+int OP_FAh_LDAa16(Memory * memory, Z80 * z80)
 {
    
 
@@ -2521,7 +2525,7 @@ int OP_FDh_INVALID(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_FEh_CPn(Memory * memory, Z80 * z80)
+int OP_FEh_CPd8(Memory * memory, Z80 * z80)
 {
    
 
@@ -2563,23 +2567,27 @@ int Execute(Memory * memory, Z80 * z80)
    // function (for example, LDXY)
    //
    // Return 1 if the opcode has not been implemented
-   z80->op[rb(memory,(z80->regPC++))].call(memory,z80);
+   if ((err.code = z80->op[rb(memory,(z80->regPC++))].call(memory,z80)) != 0)
+   {
+      err.code = 20;
+      exiterror(&err);
+   }
    /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
    /* switch(rb(memory,(z80->regPC++)))
    {
       case 0x00: OP_00h_NOP(memory,z80); break;
 
       case 0x04: OP_INCX(memory,z80,(uint8_t) 0x1); break;
-      case 0x06: OP_LDXD8(memory,z80,(uint8_t) 0x1); break;
+      case 0x06: OP_LDXd8(memory,z80,(uint8_t) 0x1); break;
       case 0x0C: OP_INCX(memory,z80,(uint8_t) 0x2); break;
-      case 0x0E: OP_LDXD8(memory,z80,(uint8_t) 0x2); break;
+      case 0x0E: OP_LDXd8(memory,z80,(uint8_t) 0x2); break;
       case 0x14: OP_INCX(memory,z80,(uint8_t) 0x3); break;
-      case 0x16: OP_LDXD8(memory,z80,(uint8_t) 0x3); break;
+      case 0x16: OP_LDXd8(memory,z80,(uint8_t) 0x3); break;
       case 0x1C: OP_INCX(memory,z80,(uint8_t) 0x4); break;
-      case 0x1E: OP_LDXD8(memory,z80,(uint8_t) 0x4); break;
-      case 0x26: OP_LDXD8(memory,z80,(uint8_t) 0x6); break;
-      case 0x2E: OP_LDXD8(memory,z80,(uint8_t) 0x7); break;
-      case 0x3E: OP_LDXD8(memory,z80,(uint8_t) 0x0); break;
+      case 0x1E: OP_LDXd8(memory,z80,(uint8_t) 0x4); break;
+      case 0x26: OP_LDXd8(memory,z80,(uint8_t) 0x6); break;
+      case 0x2E: OP_LDXd8(memory,z80,(uint8_t) 0x7); break;
+      case 0x3E: OP_LDXd8(memory,z80,(uint8_t) 0x0); break;
 
       case 0x20: OP_20h_JRNZn(memory,z80); break;
       case 0x21: OP_21h_LDHLnn(memory,z80); break;

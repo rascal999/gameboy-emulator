@@ -22,26 +22,20 @@
 #include <math.h>
 
 #ifdef UNITTEST_OPCODES
-   #ifndef _INCL_DEBUG
-      #define _INCL_DEBUG
-      #include "../src/mock_debug.h"
-   #endif
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "../src/mock_z80.h"
-   #endif
-   #include "../src/mock_error.h"
+   #define UNIT_TEST 1
 #else
-   #ifndef _INCL_DEBUG
-      #define _INCL_DEBUG
-      #include "../src/debug.h"
-   #endif
-   #ifndef _INCL_Z80
-      #define _INCL_Z80
-      #include "../src/z80.h"
-   #endif
-   #include "../src/error.h"
+   #define UNIT_TEST 0
 #endif
+
+#ifndef _INCL_DEBUG
+   #define _INCL_DEBUG
+   #include "../src/debug.h"
+#endif
+#ifndef _INCL_Z80
+   #define _INCL_Z80
+   #include "../src/z80.h"
+#endif
+#include "../src/error.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -148,6 +142,23 @@ pow_uint8 ( uint8_t value, uint8_t pow )
    }
 }
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  LDXd8
+ *  Description:  Load 8bit Y value into X register
+ * =====================================================================================
+ */
+   int
+LDXd8 ( Memory * memory, Z80 * z80, uint8_t reg, uint8_t value )
+{
+printf("FIND %x %x",z80->r->r[reg & 0xF],(value & 0xFF));
+fflush(stdout);
+   fail_unless( z80->r->r[reg & 0xF] == (value & 0xFF) );
+ 
+   return 0;
+}		/* -----  end of function LDXd8Y  ----- */
+
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  LDXY
@@ -198,33 +209,14 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 {
    uint8_t dest, oldDest, oldSrc;
-   char destName;
 
-   switch((regOrder >> 4) & 0xF)
-   {
-      case 0x0: dest = z80->regA; oldDest = old_z80->regA; destName = 'A'; break;
-      case 0x1: dest = z80->regB; oldDest = old_z80->regB; destName = 'B'; break;
-      case 0x2: dest = z80->regC; oldDest = old_z80->regC ;destName = 'C'; break;
-      case 0x3: dest = z80->regD; oldDest = old_z80->regD; destName = 'D'; break;
-      case 0x4: dest = z80->regE; oldDest = old_z80->regE; destName = 'E'; break;
-      case 0x5: dest = z80->regF; oldDest = old_z80->regF; destName = 'F'; break;
-      case 0x6: dest = z80->regH; oldDest = old_z80->regH; destName = 'H'; break;
-      case 0x7: dest = z80->regL; oldDest = old_z80->regL; destName = 'L'; break;
-   }
+   dest = z80->r->r[(regOrder >> 4) & 0xF];
+   oldDest = old_z80->r->r[(regOrder >> 4) & 0xF];
+   oldSrc = old_z80->r->r[regOrder & 0xF];
 
-   switch(regOrder & 0xF)
-   {
-      case 0x0: oldSrc = old_z80->regA; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register A",destName,destName); break;
-      case 0x1: oldSrc = old_z80->regB; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register B",destName,destName); break;
-      case 0x2: oldSrc = old_z80->regC; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register C",destName,destName); break;
-      case 0x3: oldSrc = old_z80->regD; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register D",destName,destName); break;
-      case 0x4: oldSrc = old_z80->regE; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register E",destName,destName); break;
-      case 0x5: oldSrc = old_z80->regF; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register F",destName,destName); break;
-      case 0x6: oldSrc = old_z80->regH; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register H",destName,destName); break;
-      case 0x7: oldSrc = old_z80->regL; fail_unless(dest == ((oldDest + oldSrc) & 0xFF),"Register %c does not equal register %c + register L",destName,destName); break;
-   }
+   fail_unless(dest == ((oldDest + oldSrc) & 0xFF));
 
-   //dest = (oldDest + oldSrc) & 0xFF;
+   dest = (oldDest + oldSrc) & 0xFF;
 
    // Flags
    if ((dest < oldDest) | (dest < oldSrc))
@@ -236,7 +228,7 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    if ((dest & 0xFF) == 0x00)
    {
       // Zero flag
-      fail_unless(z80->regF & 0x80,"Zero flag should be set");
+      fail_unless(z80->regF & 0x80);
    }
 
    if (((oldSrc & 0xF) + (oldDest & 0xF)) & 0x10)
@@ -847,7 +839,7 @@ START_TEST (test_check_OP_INCX)
 }
 END_TEST
 
-START_TEST (test_check_OP_LDXD8)
+START_TEST (test_check_OP_LDXd8)
 {
    Memory memory;
    Opcodes op;
@@ -871,7 +863,7 @@ START_TEST (test_check_OP_LDXD8)
 
          tmp_z80_PC = (z80.regPC & 0xFF);
 
-         result = OP_LDXD8(&memory,&z80,h);
+         result = OP_LDXd8(&memory,&z80,h);
 
          fail_unless((z80.r->r[h] & 0xFF) == rb(&memory,(tmp_z80_PC)) & 0xFF);
          fail_unless(z80.regPC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
@@ -939,6 +931,28 @@ printf("HERE -- HL addr content = %x\nHERE reg = %x\n",rb(&memory,(z80.regH << 8
 }
 END_TEST
 
+START_TEST (test_check_OP_0Eh_LDCd8)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->regPC;
+
+   result = OP_LDXd8(memory,z80,0x2);
+
+   LDXd8(memory,z80,0x2,rb(memory,tmp_z80_PC));
+
+   free(memory);
+   free(registers);
+   free(z80);
+}
+END_TEST
+
 START_TEST (test_check_OP_20h_JRNZn)
 {
    Memory memory;
@@ -972,7 +986,7 @@ START_TEST (test_check_OP_20h_JRNZn)
 
          tmp_z80_PC = z80.regPC;
 
-         result = OP_20h_JRNZn(&memory,&z80);
+         result = OP_20h_JRNZr8(&memory,&z80);
 
          // Relative jump if last result is non-zero
          // If last result is non-zero, ticks == 12, else ticks == 8
@@ -1023,7 +1037,7 @@ START_TEST (test_check_OP_21h_LDHLnn)
 
          tmp_z80_PC = z80.regPC;
 
-         result = OP_21h_LDHLnn(&memory,&z80);
+         result = OP_21h_LDHLd16(&memory,&z80);
 //printf("z80.regPC - 2 == %x\ntmp_z80_PC == %x\n",(z80.regPC - 2),tmp_z80_PC);
          fail_unless((uint16_t) (z80.regPC - 2) == (uint16_t) tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
@@ -1116,7 +1130,7 @@ START_TEST (test_check_OP_31h_LDSPnn)
 
          tmp_z80_PC = z80.regPC;
 
-         result = OP_31h_LDSPnn(&memory,&z80);
+         result = OP_31h_LDSPd16(&memory,&z80);
 
          fail_unless((z80.regPC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
@@ -7016,16 +7030,17 @@ START_TEST (test_check_OP_E0h_LDHAn)
 
       tmp_z80_PC = (z80.regPC & 0xFF);
 
-      result = OP_E0h_LDHAn(&memory,&z80);
+      result = OP_E0h_LDHa8A(&memory,&z80);
 
       fail_unless(z80.regPC == tmp_z80_PC + 0x1,"Program Counter should have been incremented by opcode function");
 
       fail_unless(result == 0,"Result was not 0");
-printf("SEG PC == %x\nSEG rb == %x\nSEG addr == %x\n",z80.regPC & 0xFF,0xff00 + z80.regPC);
-printf("fuck\n");
+//printf("SEG PC == %x\nSEG rb == %x\nSEG addr == %x\n",z80.regPC & 0xFF,0xff00 + z80.regPC);
+//printf("fuck\n");
+printf("regA == %x\nrb + offset == %x\n", z80.regA, rb(&memory,(0xff00 + (rb(&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
 fflush( stdout );
       fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
-      fail_unless(z80.regA == rb(&memory,(0xff00 + (rb(&memory,(z80.regPC & 0xFF)) & 0xFF))));
+      fail_unless(z80.regA == rb(&memory,(0xff00 + (rb(&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
    }
 }
 END_TEST
@@ -7064,7 +7079,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_00h_NOP);
    tcase_add_test(tc_core,test_check_OP_INCX);
 
-   tcase_add_test(tc_core,test_check_OP_LDXD8);
+   tcase_add_test(tc_core,test_check_OP_LDXd8);
    tcase_add_test(tc_core,test_check_OP_LDHLX);
    /*
    tcase_add_test(tc_core,test_check_OP_06h_LDBD8);
@@ -7076,6 +7091,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_3Eh_LDAD8);
    */
 
+   tcase_add_test(tc_core,test_check_OP_0Eh_LDCd8);
    tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);

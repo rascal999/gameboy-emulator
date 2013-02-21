@@ -10,28 +10,21 @@
 #include <string.h>
 
 #ifdef UNITTEST_OPCODES
-   #include "mock_cartridge.h"
-   #include "mock_debug.h"
-//   #include "mock_display.h"
-   #include "mock_error.h"
-   #include "mock_memory.h"
-   #include "mock_opcode_attributes.h"
-   #include "mock_opcode_wrappers.h"
-//   #include "mock_rom.h"
-//   #include "mock_timer.h"
-//   #include "mock_z80.h"
+   #define UNIT_TEST 1
 #else
-   #include "cartridge.h"
-   #include "debug.h"
-//   #include "display.h"
-   #include "error.h"
-   #include "memory.h"
-   #include "opcode_attributes.h"
-   #include "opcode_wrappers.h"
-//   #include "rom.h"
-//   #include "timer.h"
-//   #include "z80.h"
+   #define UNIT_TEST 0
 #endif
+
+#include "cartridge.h"
+#include "debug.h"
+//#include "display.h"
+#include "error.h"
+#include "memory.h"
+#include "opcode_attributes.h"
+#include "opcode_wrappers.h"
+//#include "rom.h"
+//#include "timer.h"
+//#include "z80.h"
 
 #ifndef Z80_REGISTERS
    #define regA r->r[0x0]
@@ -100,18 +93,18 @@ int calculateAdditionFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t old
 int calculateSubtractionFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t oldDest, uint8_t oldSrc);
 int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest);
 
-int OP_LDXD8(Memory * memory, Z80 * z80, uint8_t x);
+int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x);
 int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x);
 int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x);
 int OP_INCX(Memory * memory, Z80 * z80, uint8_t x);
 
 int OP_00h_NOP(Memory * memory, Z80 * z80);
-int OP_01h_LDBCnn(Memory * memory, Z80 * z80);
+int OP_01h_LDBCd16(Memory * memory, Z80 * z80);
 int OP_02h_LDBCA(Memory * memory, Z80 * z80);
 int OP_03h_INCBC(Memory * memory, Z80 * z80);
 int OP_04h_INCB(Memory * memory, Z80 * z80);
 int OP_05h_DECB(Memory * memory, Z80 * z80);
-int OP_06h_LDBn(Memory * memory, Z80 * z80);
+int OP_06h_LDBd8(Memory * memory, Z80 * z80);
 int OP_07h_RLCA(Memory * memory, Z80 * z80);
 int OP_08h_LDnnSP(Memory * memory, Z80 * z80);
 int OP_09h_ADDHLBC(Memory * memory, Z80 * z80);
@@ -119,58 +112,58 @@ int OP_0Ah_LDABC(Memory * memory, Z80 * z80);
 int OP_0Bh_DECBC(Memory * memory, Z80 * z80);
 int OP_0Ch_INCC(Memory * memory, Z80 * z80);
 int OP_0Dh_DECC(Memory * memory, Z80 * z80);
-int OP_0Eh_LDCn(Memory * memory, Z80 * z80);
+int OP_0Eh_LDCd8(Memory * memory, Z80 * z80);
 int OP_0Fh_RRCA(Memory * memory, Z80 * z80);
 
 int OP_10h_STOP0(Memory * memory, Z80 * z80);
-int OP_11h_LDDEnn(Memory * memory, Z80 * z80);
+int OP_11h_LDDEd16(Memory * memory, Z80 * z80);
 int OP_12h_LDDEA(Memory * memory, Z80 * z80);
 int OP_13h_INCDE(Memory * memory, Z80 * z80);
 int OP_14h_INCD(Memory * memory, Z80 * z80);
 int OP_15h_DECD(Memory * memory, Z80 * z80);
-int OP_16h_LDn(Memory * memory, Z80 * z80);
+int OP_16h_LDd8(Memory * memory, Z80 * z80);
 int OP_17h_RLA(Memory * memory, Z80 * z80);
-int OP_18h_JRn(Memory * memory, Z80 * z80);
+int OP_18h_JRr8(Memory * memory, Z80 * z80);
 int OP_19h_ADDHLDE(Memory * memory, Z80 * z80);
 int OP_1Ah_LDADE(Memory * memory, Z80 * z80);
 int OP_1Bh_DECDE(Memory * memory, Z80 * z80);
 int OP_1Ch_INCE(Memory * memory, Z80 * z80);
 int OP_1Dh_DECE(Memory * memory, Z80 * z80);
-int OP_1Eh_LDEn(Memory * memory, Z80 * z80);
+int OP_1Eh_LDEd8(Memory * memory, Z80 * z80);
 int OP_1Fh_RRA(Memory * memory, Z80 * z80);
 
-int OP_20h_JRNZn(Memory * memory, Z80 * z80);
-int OP_21h_LDHLnn(Memory * memory, Z80 * z80);
+int OP_20h_JRNZr8(Memory * memory, Z80 * z80);
+int OP_21h_LDHLd16(Memory * memory, Z80 * z80);
 int OP_22h_LDIHLA(Memory * memory, Z80 * z80);
 int OP_23h_INCHL(Memory * memory, Z80 * z80);
 int OP_24h_INCH(Memory * memory, Z80 * z80);
 int OP_25h_DECH(Memory * memory, Z80 * z80);
-int OP_26h_LDHn(Memory * memory, Z80 * z80);
+int OP_26h_LDHd8(Memory * memory, Z80 * z80);
 int OP_27h_DAA(Memory * memory, Z80 * z80);
-int OP_28h_JRZn(Memory * memory, Z80 * z80);
+int OP_28h_JRZr8(Memory * memory, Z80 * z80);
 int OP_29h_ADDHLHL(Memory * memory, Z80 * z80);
 int OP_2Ah_LDIAHL(Memory * memory, Z80 * z80);
 int OP_2Bh_DECHL(Memory * memory, Z80 * z80);
 int OP_2Ch_INCL(Memory * memory, Z80 * z80);
 int OP_2Dh_DECL(Memory * memory, Z80 * z80);
-int OP_2Eh_LDLn(Memory * memory, Z80 * z80);
+int OP_2Eh_LDLd8(Memory * memory, Z80 * z80);
 int OP_2Fh_CPL(Memory * memory, Z80 * z80);
 
-int OP_30h_JRNCn(Memory * memory, Z80 * z80);
-int OP_31h_LDSPnn(Memory * memory, Z80 * z80);
+int OP_30h_JRNCr8(Memory * memory, Z80 * z80);
+int OP_31h_LDSPd16(Memory * memory, Z80 * z80);
 int OP_32h_LDDHLA(Memory * memory, Z80 * z80);
 int OP_33h_INCSP(Memory * memory, Z80 * z80);
 int OP_34h_INCHL(Memory * memory, Z80 * z80);
 int OP_35h_DECHL(Memory * memory, Z80 * z80);
-int OP_36h_LDHLn(Memory * memory, Z80 * z80);
+int OP_36h_LDHLd8(Memory * memory, Z80 * z80);
 int OP_37h_SCF(Memory * memory, Z80 * z80);
-int OP_38h_JRCn(Memory * memory, Z80 * z80);
+int OP_38h_JRCr8(Memory * memory, Z80 * z80);
 int OP_39h_ADDHLSP(Memory * memory, Z80 * z80);
 int OP_3Ah_LDDAHL(Memory * memory, Z80 * z80);
 int OP_3Bh_DECSP(Memory * memory, Z80 * z80);
 int OP_3Ch_INCA(Memory * memory, Z80 * z80);
 int OP_3Dh_DECA(Memory * memory, Z80 * z80);
-int OP_3Eh_LDAn(Memory * memory, Z80 * z80);
+int OP_3Eh_LDAd8(Memory * memory, Z80 * z80);
 int OP_3Fh_CCF(Memory * memory, Z80 * z80);
 
 int OP_40h_LDBB(Memory * memory, Z80 * z80);
@@ -311,70 +304,70 @@ int OP_BFh_CPA(Memory * memory, Z80 * z80);
 
 int OP_C0h_RETNZ(Memory * memory, Z80 * z80);
 int OP_C1h_POPBC(Memory * memory, Z80 * z80);
-int OP_C2h_JPNZnn(Memory * memory, Z80 * z80);
-int OP_C3h_JPnn(Memory * memory, Z80 * z80);
-int OP_C4h_CALLNZnn(Memory * memory, Z80 * z80);
+int OP_C2h_JPNZa16(Memory * memory, Z80 * z80);
+int OP_C3h_JPa16(Memory * memory, Z80 * z80);
+int OP_C4h_CALLNZa16(Memory * memory, Z80 * z80);
 int OP_C5h_PUSHBC(Memory * memory, Z80 * z80);
-int OP_C6h_ADDAn(Memory * memory, Z80 * z80);
+int OP_C6h_ADDAd8(Memory * memory, Z80 * z80);
 int OP_C7h_RST00H(Memory * memory, Z80 * z80);
 int OP_C8h_RETZ(Memory * memory, Z80 * z80);
 int OP_C9h_RET(Memory * memory, Z80 * z80);
-int OP_CAh_JPZnn(Memory * memory, Z80 * z80);
+int OP_CAh_JPZa16(Memory * memory, Z80 * z80);
 int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80);
-int OP_CCh_CALLZnn(Memory * memory, Z80 * z80);
-int OP_CDh_CALLnn(Memory * memory, Z80 * z80);
-int OP_CEh_ADCAn(Memory * memory, Z80 * z80);
+int OP_CCh_CALLZa16(Memory * memory, Z80 * z80);
+int OP_CDh_CALLa16(Memory * memory, Z80 * z80);
+int OP_CEh_ADCAd8(Memory * memory, Z80 * z80);
 int OP_CFh_RST08H(Memory * memory, Z80 * z80);
 
 int OP_D0h_RETNC(Memory * memory, Z80 * z80);
 int OP_D1h_POPDE(Memory * memory, Z80 * z80);
-int OP_D2h_JPNCnn(Memory * memory, Z80 * z80);
+int OP_D2h_JPNCa16(Memory * memory, Z80 * z80);
 int OP_D3h_INVALID(Memory * memory, Z80 * z80);
-int OP_D4h_CALLNCnn(Memory * memory, Z80 * z80);
+int OP_D4h_CALLNCa16(Memory * memory, Z80 * z80);
 int OP_D5h_PUSHDE(Memory * memory, Z80 * z80);
-int OP_D6h_SUBn(Memory * memory, Z80 * z80);
+int OP_D6h_SUBd8(Memory * memory, Z80 * z80);
 int OP_D7h_RST10H(Memory * memory, Z80 * z80);
 int OP_D8h_RETC(Memory * memory, Z80 * z80);
 int OP_D9h_RETI(Memory * memory, Z80 * z80);
-int OP_DAh_JPCnn(Memory * memory, Z80 * z80);
+int OP_DAh_JPCa16(Memory * memory, Z80 * z80);
 int OP_DBh_INVALID(Memory * memory, Z80 * z80);
-int OP_DCh_CALLCnn(Memory * memory, Z80 * z80);
+int OP_DCh_CALLCa16(Memory * memory, Z80 * z80);
 int OP_DDh_INVALID(Memory * memory, Z80 * z80);
-int OP_DEh_SBCAn(Memory * memory, Z80 * z80);
+int OP_DEh_SBCAd8(Memory * memory, Z80 * z80);
 int OP_DFh_RST18H(Memory * memory, Z80 * z80);
 
-int OP_E0h_LDHnA(Memory * memory, Z80 * z80);
+int OP_E0h_LDHa8A(Memory * memory, Z80 * z80);
 int OP_E1h_POPHL(Memory * memory, Z80 * z80);
-int OP_E2h_LDCA(Memory * memory, Z80 * z80);
+int OP_E2h_LDHCA(Memory * memory, Z80 * z80);
 int OP_E3h_INVALID(Memory * memory, Z80 * z80);
 int OP_E4h_INVALID(Memory * memory, Z80 * z80);
 int OP_E5h_PUSHHL(Memory * memory, Z80 * z80);
-int OP_E6h_ANDn(Memory * memory, Z80 * z80);
+int OP_E6h_ANDd8(Memory * memory, Z80 * z80);
 int OP_E7h_RST20H(Memory * memory, Z80 * z80);
-int OP_E8h_ADDSPn(Memory * memory, Z80 * z80);
+int OP_E8h_ADDSPr8(Memory * memory, Z80 * z80);
 int OP_E9h_JPHL(Memory * memory, Z80 * z80);
 int OP_EAh_LDnnA(Memory * memory, Z80 * z80);
 int OP_EBh_INVALID(Memory * memory, Z80 * z80);
 int OP_ECh_INVALID(Memory * memory, Z80 * z80);
 int OP_EDh_INVALID(Memory * memory, Z80 * z80);
-int OP_EEh_XORn(Memory * memory, Z80 * z80);
+int OP_EEh_XORd8(Memory * memory, Z80 * z80);
 int OP_EFh_RST28H(Memory * memory, Z80 * z80);
 
-int OP_F0h_LDHAn(Memory * memory, Z80 * z80);
+int OP_F0h_LDHAa8(Memory * memory, Z80 * z80);
 int OP_F1h_POPAF(Memory * memory, Z80 * z80);
 int OP_F2h_LDAC(Memory * memory, Z80 * z80);
 int OP_F3h_DI(Memory * memory, Z80 * z80);
 int OP_F4h_INVALID(Memory * memory, Z80 * z80);
 int OP_F5h_PUSHAF(Memory * memory, Z80 * z80);
-int OP_F6h_ORn(Memory * memory, Z80 * z80);
+int OP_F6h_ORd8(Memory * memory, Z80 * z80);
 int OP_F7h_RST30H(Memory * memory, Z80 * z80);
-int OP_F8h_LDHLSPn(Memory * memory, Z80 * z80);
+int OP_F8h_LDHLSPr8(Memory * memory, Z80 * z80);
 int OP_F9h_LDSPHL(Memory * memory, Z80 * z80);
-int OP_FAh_LDAnn(Memory * memory, Z80 * z80);
+int OP_FAh_LDAa16(Memory * memory, Z80 * z80);
 int OP_FBh_EI(Memory * memory, Z80 * z80);
 int OP_FCh_INVALID(Memory * memory, Z80 * z80);
 int OP_FDh_INVALID(Memory * memory, Z80 * z80);
-int OP_FEh_CPn(Memory * memory, Z80 * z80);
+int OP_FEh_CPd8(Memory * memory, Z80 * z80);
 int OP_FFh_RST38H(Memory * memory, Z80 * z80);
 
 int Dispatch(Memory * memory, Z80 * z80);
@@ -393,4 +386,4 @@ int HertzToMilliseconds(int Hertz);
 int decrementHL(Z80 * z80);
 int incrementHL(Z80 * z80);
 int calculateFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t oldDest, uint8_t oldSrc);
-int OP_LDXD8(Memory * memory, Z80 * z80, uint8_t x);
+int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x);
