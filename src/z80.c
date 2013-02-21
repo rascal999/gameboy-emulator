@@ -337,6 +337,24 @@ int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  OP_LDXd16
+ *  Description:  Load immediate into register X
+ * =====================================================================================
+ */
+   int
+OP_LDXd16 ( Memory * memory, Z80 * z80, uint8_t x )
+{
+   z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC + 1)) & 0xFF;
+   z80->r->r[(x & 0xF) + 1] = rb(memory,(z80->regPC)) & 0xFF;
+
+   z80->regPC = z80->regPC + 2;
+   z80->ticks = 12;
+
+   return 0;
+}		/* -----  end of function OP_LDXd16  ----- */
+
 int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x)
 {
    z80->r->r[((x & 0xF0) >> 4)] = z80->r->r[(x & 0xF)];
@@ -362,6 +380,8 @@ int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
 
    z80->r->r[x & 0xF]++;
 
+   z80->regF = z80->regF & 0x10;
+
    // Zero flag
    if (z80->r->r[x & 0xF] == 0x0)
    {
@@ -370,7 +390,7 @@ int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
 
    // Half carry
    // If 0xF on oldRegValue, then set H flag
-   if ((oldRegValue & 0xF) & 0xF)
+   if (((oldRegValue + 1) & 0xF) == 0x0)
    {
       z80->regF = z80->regF | 0x20;
    }
@@ -469,7 +489,8 @@ int OP_0Bh_DECBC(Memory * memory, Z80 * z80)
 
 int OP_0Ch_INCC(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_INCX
 
    return 1;
 }
@@ -483,9 +504,10 @@ int OP_0Dh_DECC(Memory * memory, Z80 * z80)
 
 int OP_0Eh_LDCd8(Memory * memory, Z80 * z80)
 {
-   OP_LDXd8(memory,z80,(uint8_t) 0x2);
+   // Not used
+   // Wrapper redirect to OP_LDXd8
 
-   return 0;
+   return 1;
 }
 
 int OP_0Fh_RRCA(Memory * memory, Z80 * z80)
@@ -852,7 +874,8 @@ int OP_3Dh_DECA(Memory * memory, Z80 * z80)
 
 int OP_3Eh_LDAd8(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_LDXd8
 
    return 1;
 }
@@ -1202,7 +1225,6 @@ int OP_6Fh_LDLA(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int OP_70h_LDHLB(Memory * memory, Z80 * z80)
 {

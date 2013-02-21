@@ -814,7 +814,7 @@ START_TEST (test_check_OP_INCX)
          result = OP_INCX(&memory,&z80,h);
 
          // Half carry
-         if ((((oldRegValue & 0xF) + 0x1) & 0xF) == 0xF)
+         if ((((oldRegValue & 0xF) + 0x1) & 0xF) == 0x0)
          {
             fail_unless((z80.regF & 0x20) == 0x20);
          }
@@ -872,6 +872,37 @@ START_TEST (test_check_OP_LDXd8)
          fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
+}
+END_TEST
+
+START_TEST (test_check_OP_LDXd16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+
+   int result = 0, h = 0, i = 0;
+   uint8_t tmp_z80_PC = z80.regPC;
+   
+   z80.regPC = i;
+
+   tmp_z80_PC = (z80.regPC & 0xFF);
+
+   result = OP_LDXd16(&memory,&z80,h);
+
+   fail_unless((z80.r->r[h] & 0xFF) == rb(&memory,(tmp_z80_PC + 1)) & 0xFF);
+   fail_unless((z80.r->r[h + 1] & 0xFF) == rb(&memory,(tmp_z80_PC)) & 0xFF);
+   fail_unless(z80.regPC == tmp_z80_PC + 2);
+
+   fail_unless(result == 0,"Result was not 0");
+   fail_unless(z80.ticks == 12);
 }
 END_TEST
 
@@ -7080,6 +7111,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_INCX);
 
    tcase_add_test(tc_core,test_check_OP_LDXd8);
+   tcase_add_test(tc_core,test_check_OP_LDXd16);
    tcase_add_test(tc_core,test_check_OP_LDHLX);
    /*
    tcase_add_test(tc_core,test_check_OP_06h_LDBD8);

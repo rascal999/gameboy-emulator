@@ -94,6 +94,7 @@ int calculateSubtractionFlags(Memory * memory, Z80 * z80, uint8_t dest, uint8_t 
 int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest);
 
 int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x);
+int OP_LDXd16(Memory * memory, Z80 * z80, uint8_t x);
 int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x);
 int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x);
 int OP_INCX(Memory * memory, Z80 * z80, uint8_t x);
