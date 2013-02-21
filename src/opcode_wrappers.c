@@ -256,7 +256,8 @@ int OP_19h_ADDHLDE_wrapper(Memory * memory, Z80 * z80)
 
 int OP_1Ah_LDADE_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_1Ah_LDADE(memory,z80);
+   // D register starts at 0x3, hence the argument
+   int retValue = OP_LDXYZ(memory,z80,0x0,0x3);
 
    return retValue;
 }

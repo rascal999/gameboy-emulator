@@ -200,6 +200,21 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
    return 0;
 }
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  LDXYZ
+ *  Description:  
+ * =====================================================================================
+ */
+   int
+LDXYZ( Memory * memory, Z80 * z80, uint8_t x, uint8_t yz )
+{
+   fail_unless( z80->r->r[(x & 0xF)] == (rb(memory,(z80->r->r[yz] << 8) + z80->r->r[(yz + 1)]) & 0xFF) );
+   
+   return 0;
+}		/* -----  end of function LDXYZ  ----- */
+
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  ADDXY
@@ -977,6 +992,28 @@ START_TEST (test_check_OP_0Eh_LDCd8)
    result = OP_LDXd8(memory,z80,0x2);
 
    LDXd8(memory,z80,0x2,rb(memory,tmp_z80_PC));
+
+   free(memory);
+   free(registers);
+   free(z80);
+}
+END_TEST
+
+START_TEST (test_check_OP_1Ah_LDADE)
+{
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
+
+   resetCPURegisters(memory,z80,registers);
+   InitMemory(memory);
+
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->regPC;
+
+   result = OP_LDXYZ(memory,z80,0x0,0x3);
+
+   LDXYZ(memory,z80,0x0,0x3);
 
    free(memory);
    free(registers);
@@ -7124,6 +7161,7 @@ Suite * add_suite(void)
    */
 
    tcase_add_test(tc_core,test_check_OP_0Eh_LDCd8);
+   tcase_add_test(tc_core,test_check_OP_1Ah_LDADE);
    tcase_add_test(tc_core,test_check_OP_20h_JRNZn);
    tcase_add_test(tc_core,test_check_OP_21h_LDHLnn);
    tcase_add_test(tc_core,test_check_OP_22h_LDIHLA);

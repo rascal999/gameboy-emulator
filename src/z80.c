@@ -355,6 +355,24 @@ OP_LDXd16 ( Memory * memory, Z80 * z80, uint8_t x )
    return 0;
 }		/* -----  end of function OP_LDXd16  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  OP_LDXYZ
+ *  Description:  Load value stored at address pointed to by Y register + Z register
+ *  into register X
+ * =====================================================================================
+ */
+   int
+OP_LDXYZ ( Memory * memory, Z80 * z80, uint8_t x, uint8_t yz )
+{
+   z80->r->r[(x & 0xF)] = rb(memory,(((z80->r->r[(yz & 0xF)] << 8) + z80->r->r[((yz & 0xF) + 0x1)]))) & 0xFF;
+
+   z80->regPC = z80->regPC + 1;
+   z80->ticks = 8;
+
+   return 0;
+}		/* -----  end of function LDXYZ  ----- */
+
 int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x)
 {
    z80->r->r[((x & 0xF0) >> 4)] = z80->r->r[(x & 0xF)];
@@ -590,7 +608,8 @@ int OP_19h_ADDHLDE(Memory * memory, Z80 * z80)
 
 int OP_1Ah_LDADE(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_LDXYZ
 
    return 1;
 }

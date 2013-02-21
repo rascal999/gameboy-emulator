@@ -97,7 +97,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    z80->op[0x19].size = 0x1; z80->op[0x19].ticks = 0x8;
    strncpy(z80->op[0x19].name,"ADD HL,DE",1023); z80->op[0x19].call = OP_not_implemented;
    z80->op[0x1a].size = 0x1; z80->op[0x1a].ticks = 0x8;
-   strncpy(z80->op[0x1a].name,"LD A,(DE)",1023); z80->op[0x1a].call = OP_not_implemented;
+   strncpy(z80->op[0x1a].name,"LD A,(DE)",1023); z80->op[0x1a].call = OP_1Ah_LDADE_wrapper;
    z80->op[0x1b].size = 0x1; z80->op[0x1b].ticks = 0x8;
    strncpy(z80->op[0x1b].name,"DEC DE",1023); z80->op[0x1b].call = OP_not_implemented;
    z80->op[0x1c].size = 0x1; z80->op[0x1c].ticks = 0x4;
@@ -268,13 +268,6 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes *
    strncpy(z80->op[0x6e].name,"LD L,(HL)",1023); z80->op[0x6e].call = OP_not_implemented;
    z80->op[0x6f].size = 0x1; z80->op[0x6f].ticks = 0x4;
    strncpy(z80->op[0x6f].name,"LD L,A",1023); z80->op[0x6f].call = OP_not_implemented;
-/*int OP_70h_LDHLB_wrapper(Memory * memory, Z80 * z80)
-int OP_71h_LDHLC_wrapper(Memory * memory, Z80 * z80)
-int OP_72h_LDHLD_wrapper(Memory * memory, Z80 * z80)
-int OP_73h_LDHLE_wrapper(Memory * memory, Z80 * z80)
-int OP_74h_LDHLH_wrapper(Memory * memory, Z80 * z80)
-int OP_75h_LDHLL_wrapper(Memory * memory, Z80 * z80)*/
-
    z80->op[0x70].size = 0x1; z80->op[0x70].ticks = 0x8;
    strncpy(z80->op[0x70].name,"LD (HL),B",1023); z80->op[0x70].call = OP_70h_LDHLB_wrapper;
    z80->op[0x71].size = 0x1; z80->op[0x71].ticks = 0x8;
