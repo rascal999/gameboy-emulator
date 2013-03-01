@@ -1506,9 +1506,13 @@ int OP_CAh_JPZa16_wrapper(Memory * memory, Z80 * z80)
 
 int OP_CBh_PREFIXCB_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_CBh_PREFIXCB(memory,z80);
+   //int retValue = OP_CBh_PREFIXCB(memory,z80);
 
-   return retValue;
+   //return retValue;
+   // I think we can just return 0 here because op pointer is checked
+   z80->op_call = z80->cb_op;
+
+   return 0;
 }
 
 int OP_CCh_CALLZa16_wrapper(Memory * memory, Z80 * z80)
@@ -1874,6 +1878,1821 @@ int OP_FEh_CPd8_wrapper(Memory * memory, Z80 * z80)
 int OP_FFh_RST38H_wrapper(Memory * memory, Z80 * z80)
 {
    int retValue = OP_FFh_RST38H(memory,z80);
+
+   return retValue;
+}
+
+//
+//
+//
+// CB Prefix
+//
+//
+//
+
+int CB_OP_00h_RLCB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_00h_RLCB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_01h_RLCC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_01h_RLCC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_02h_RLCD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_02h_RLCD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_03h_RLCE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_03h_RLCE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_04h_RLCH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_04h_RLCH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_05h_RLCL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_05h_RLCL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_06h_RLCHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_06h_RLCHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_07h_RLCA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_07h_RLCA(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_08h_RRCB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_08h_RRCB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_09h_RRCC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_09h_RRCC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_0Ah_RRCD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_0Ah_RRCD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_0Bh_RRCE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_0Bh_RRCE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_0Ch_RRCH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_0Ch_RRCH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_0Dh_RRCL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_0Dh_RRCL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_0Eh_RRCHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_0Eh_RRCHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_0Fh_RRCA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_0Fh_RRCA(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_10h_RLB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_10h_RLB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_11h_RLC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_11h_RLC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_12h_RLD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_12h_RLD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_13h_RLE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_13h_RLE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_14h_RLH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_14h_RLH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_15h_RLL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_15h_RLL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_16h_RLHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_16h_RLHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_17h_RLA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_17h_RLA(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_18h_RRB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_18h_RRB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_19h_RRC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_19h_RRC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_1Ah_RRD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_1Ah_RRD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_1Bh_RRE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_1Bh_RRE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_1Ch_RRH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_1Ch_RRH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_1Dh_RRL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_1Dh_RRL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_1Eh_RRHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_1Eh_RRHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_1Fh_RRA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_1Fh_RRA(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_20h_SLAB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_20h_SLAB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_21h_SLAC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_21h_SLAC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_22h_SLAD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_22h_SLAD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_23h_SLAE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_23h_SLAE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_24h_SLAH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_24h_SLAH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_25h_SLAL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_25h_SLAL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_26h_SLAHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_26h_SLAHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_27h_SLAA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_27h_SLAA(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_28h_SRAB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_28h_SRAB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_29h_SRAC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_29h_SRAC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_2Ah_SRAD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_2Ah_SRAD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_2Bh_SRAE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_2Bh_SRAE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_2Ch_SRAH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_2Ch_SRAH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_2Dh_SRAL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_2Dh_SRAL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_2Eh_SRAHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_2Eh_SRAHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_2Fh_SRAA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_2Fh_SRAA(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_30h_SWAPB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_30h_SWAPB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_31h_SWAPC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_31h_SWAPC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_32h_SWAPD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_32h_SWAPD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_33h_SWAPE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_33h_SWAPE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_34h_SWAPH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_34h_SWAPH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_35h_SWAPL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_35h_SWAPL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_36h_SWAPHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_36h_SWAPHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_37h_SWAPA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_37h_SWAPA(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_38h_SRLB_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_38h_SRLB(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_39h_SRLC_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_39h_SRLC(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_3Ah_SRLD_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_3Ah_SRLD(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_3Bh_SRLE_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_3Bh_SRLE(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_3Ch_SRLH_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_3Ch_SRLH(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_3Dh_SRLL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_3Dh_SRLL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_3Eh_SRLHL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_3Eh_SRLHL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_3Fh_SRLA_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_3Fh_SRLA(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_40h_BIT0B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x01);
+
+   return retValue;
+}
+
+int CB_OP_41h_BIT0C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x02);
+
+   return retValue;
+}
+
+int CB_OP_42h_BIT0D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x03);
+
+   return retValue;
+}
+
+int CB_OP_43h_BIT0E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x04);
+
+   return retValue;
+}
+
+int CB_OP_44h_BIT0H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x06);
+
+   return retValue;
+}
+
+int CB_OP_45h_BIT0L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x07);
+
+   return retValue;
+}
+
+int CB_OP_46h_BIT0HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_46h_BIT0HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_47h_BIT0A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x00);
+
+   return retValue;
+}
+
+int CB_OP_48h_BIT1B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_48h_BIT1B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_49h_BIT1C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_49h_BIT1C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_4Ah_BIT1D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_4Ah_BIT1D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_4Bh_BIT1E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_4Bh_BIT1E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_4Ch_BIT1H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_4Ch_BIT1H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_4Dh_BIT1L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_4Dh_BIT1L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_4Eh_BIT1HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_4Eh_BIT1HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_4Fh_BIT1A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_4Fh_BIT1A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_50h_BIT2B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_50h_BIT2B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_51h_BIT2C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_51h_BIT2C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_52h_BIT2D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_52h_BIT2D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_53h_BIT2E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_53h_BIT2E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_54h_BIT2H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_54h_BIT2H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_55h_BIT2L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_55h_BIT2L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_56h_BIT2HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_56h_BIT2HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_57h_BIT2A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_57h_BIT2A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_58h_BIT3B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_58h_BIT3B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_59h_BIT3C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_59h_BIT3C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_5Ah_BIT3D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_5Ah_BIT3D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_5Bh_BIT3E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_5Bh_BIT3E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_5Ch_BIT3H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_5Ch_BIT3H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_5Dh_BIT3L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_5Dh_BIT3L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_5Eh_BIT3HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_5Eh_BIT3HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_5Fh_BIT3A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_5Fh_BIT3A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_60h_BIT4B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_60h_BIT4B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_61h_BIT4C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_61h_BIT4C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_62h_BIT4D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_62h_BIT4D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_63h_BIT4E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_63h_BIT4E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_64h_BIT4H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_64h_BIT4H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_65h_BIT4L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_65h_BIT4L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_66h_BIT4HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_66h_BIT4HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_67h_BIT4A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_67h_BIT4A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_68h_BIT5B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_68h_BIT5B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_69h_BIT5C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_69h_BIT5C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_6Ah_BIT5D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_6Ah_BIT5D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_6Bh_BIT5E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_6Bh_BIT5E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_6Ch_BIT5H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_6Ch_BIT5H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_6Dh_BIT5L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_6Dh_BIT5L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_6Eh_BIT5HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_6Eh_BIT5HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_6Fh_BIT5A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_6Fh_BIT5A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_70h_BIT6B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_70h_BIT6B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_71h_BIT6C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_71h_BIT6C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_72h_BIT6D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_72h_BIT6D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_73h_BIT6E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_73h_BIT6E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_74h_BIT6H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_74h_BIT6H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_75h_BIT6L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_75h_BIT6L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_76h_BIT6HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_76h_BIT6HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_77h_BIT6A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_77h_BIT6A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_78h_BIT7B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_78h_BIT7B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_79h_BIT7C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_79h_BIT7C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_7Ah_BIT7D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_7Ah_BIT7D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_7Bh_BIT7E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_7Bh_BIT7E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_7Ch_BIT7H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_BIT(memory,z80,0x76);
+
+   return retValue;
+}
+
+int CB_OP_7Dh_BIT7L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_7Dh_BIT7L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_7Eh_BIT7HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_7Eh_BIT7HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_7Fh_BIT7A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_7Fh_BIT7A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_80h_RES0B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_80h_RES0B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_81h_RES0C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_81h_RES0C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_82h_RES0D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_82h_RES0D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_83h_RES0E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_83h_RES0E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_84h_RES0H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_84h_RES0H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_85h_RES0L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_85h_RES0L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_86h_RES0HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_86h_RES0HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_87h_RES0A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_87h_RES0A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_88h_RES1B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_88h_RES1B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_89h_RES1C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_89h_RES1C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_8Ah_RES1D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_8Ah_RES1D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_8Bh_RES1E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_8Bh_RES1E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_8Ch_RES1H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_8Ch_RES1H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_8Dh_RES1L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_8Dh_RES1L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_8Eh_RES1HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_8Eh_RES1HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_8Fh_RES1A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_8Fh_RES1A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_90h_RES2B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_90h_RES2B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_91h_RES2C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_91h_RES2C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_92h_RES2D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_92h_RES2D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_93h_RES2E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_93h_RES2E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_94h_RES2H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_94h_RES2H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_95h_RES2L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_95h_RES2L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_96h_RES2HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_96h_RES2HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_97h_RES2A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_97h_RES2A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_98h_RES3B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_98h_RES3B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_99h_RES3C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_99h_RES3C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_9Ah_RES3D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_9Ah_RES3D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_9Bh_RES3E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_9Bh_RES3E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_9Ch_RES3H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_9Ch_RES3H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_9Dh_RES3L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_9Dh_RES3L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_9Eh_RES3HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_9Eh_RES3HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_9Fh_RES3A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_9Fh_RES3A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_A0h_RES4B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A0h_RES4B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A1h_RES4C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A1h_RES4C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A2h_RES4D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A2h_RES4D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A3h_RES4E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A3h_RES4E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A4h_RES4H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A4h_RES4H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A5h_RES4L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A5h_RES4L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A6h_RES4HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A6h_RES4HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A7h_RES4A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A7h_RES4A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A8h_RES5B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A8h_RES5B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_A9h_RES5C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_A9h_RES5C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_AAh_RES5D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_AAh_RES5D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_ABh_RES5E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_ABh_RES5E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_ACh_RES5H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_ACh_RES5H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_ADh_RES5L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_ADh_RES5L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_AEh_RES5HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_AEh_RES5HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_AFh_RES5A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_AFh_RES5A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_B0h_RES6B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B0h_RES6B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B1h_RES6C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B1h_RES6C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B2h_RES6D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B2h_RES6D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B3h_RES6E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B3h_RES6E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B4h_RES6H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B4h_RES6H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B5h_RES6L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B5h_RES6L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B6h_RES6HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B6h_RES6HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B7h_RES6A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B7h_RES6A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B8h_RES7B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B8h_RES7B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_B9h_RES7C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_B9h_RES7C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_BAh_RES7D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_BAh_RES7D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_BBh_RES7E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_BBh_RES7E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_BCh_RES7H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_BCh_RES7H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_BDh_RES7L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_BDh_RES7L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_BEh_RES7HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_BEh_RES7HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_BFh_RES7A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_BFh_RES7A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_C0h_SET0B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C0h_SET0B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C1h_SET0C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C1h_SET0C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C2h_SET0D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C2h_SET0D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C3h_SET0E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C3h_SET0E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C4h_SET0H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C4h_SET0H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C5h_SET0L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C5h_SET0L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C6h_SET0HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C6h_SET0HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C7h_SET0A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C7h_SET0A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C8h_SET1B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C8h_SET1B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_C9h_SET1C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_C9h_SET1C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_CAh_SET1D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_CAh_SET1D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_CBh_SET1E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_CBh_SET1E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_CCh_SET1H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_CCh_SET1H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_CDh_SET1L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_CDh_SET1L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_CEh_SET1HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_CEh_SET1HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_CFh_SET1A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_CFh_SET1A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_D0h_SET2B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D0h_SET2B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D1h_SET2C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D1h_SET2C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D2h_SET2D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D2h_SET2D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D3h_SET2E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D3h_SET2E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D4h_SET2H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D4h_SET2H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D5h_SET2L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D5h_SET2L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D6h_SET2HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D6h_SET2HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D7h_SET2A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D7h_SET2A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D8h_SET3B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D8h_SET3B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_D9h_SET3C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_D9h_SET3C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_DAh_SET3D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_DAh_SET3D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_DBh_SET3E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_DBh_SET3E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_DCh_SET3H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_DCh_SET3H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_DDh_SET3L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_DDh_SET3L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_DEh_SET3HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_DEh_SET3HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_DFh_SET3A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_DFh_SET3A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_E0h_SET4B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E0h_SET4B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E1h_SET4C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E1h_SET4C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E2h_SET4D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E2h_SET4D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E3h_SET4E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E3h_SET4E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E4h_SET4H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E4h_SET4H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E5h_SET4L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E5h_SET4L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E6h_SET4HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E6h_SET4HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E7h_SET4A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E7h_SET4A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E8h_SET5B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E8h_SET5B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_E9h_SET5C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_E9h_SET5C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_EAh_SET5D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_EAh_SET5D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_EBh_SET5E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_EBh_SET5E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_ECh_SET5H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_ECh_SET5H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_EDh_SET5L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_EDh_SET5L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_EEh_SET5HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_EEh_SET5HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_EFh_SET5A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_EFh_SET5A(memory,z80);
+
+   return retValue;
+}
+
+
+int CB_OP_F0h_SET6B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F0h_SET6B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F1h_SET6C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F1h_SET6C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F2h_SET6D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F2h_SET6D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F3h_SET6E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F3h_SET6E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F4h_SET6H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F4h_SET6H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F5h_SET6L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F5h_SET6L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F6h_SET6HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F6h_SET6HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F7h_SET6A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F7h_SET6A(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F8h_SET7B_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F8h_SET7B(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_F9h_SET7C_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_F9h_SET7C(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_FAh_SET7D_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_FAh_SET7D(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_FBh_SET7E_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_FBh_SET7E(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_FCh_SET7H_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_FCh_SET7H(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_FDh_SET7L_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_FDh_SET7L(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_FEh_SET7HL_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_FEh_SET7HL(memory,z80);
+
+   return retValue;
+}
+
+int CB_OP_FFh_SET7A_wrapper(Memory * memory, Z80 * z80)
+{
+   int retValue = CB_OP_FFh_SET7A(memory,z80);
 
    return retValue;
 }

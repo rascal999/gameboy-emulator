@@ -39,4 +39,4 @@
    #define regSP r->r16[0x1]
 #endif
 
-int InitZ80OpcodeStats(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op);
+int InitZ80OpcodeStats(Z80 * z80, Registers * registers);

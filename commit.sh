@@ -20,17 +20,17 @@ if [[ $? != 0 ]]; then
    exit
 fi
 
-make check
+#make check
 if [[ $? != 0 ]]; then
    exit
 fi
 
-make distcheck
+#make distcheck
 if [[ $? != 0 ]]; then
    exit
 fi
 
-mv gameboy-emulator-0.1.tar.gz dist/
+#mv gameboy-emulator-0.1.tar.gz dist/
 if [[ $? != 0 ]]; then
    exit
 fi

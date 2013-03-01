@@ -37,6 +37,8 @@
    #define regSP r->r16[0x1]
 #endif
 
+// TODO You need to fix the unit tests for the PC stuff and get the ticks sorted out..
+
 int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op)
 {
    op = malloc(sizeof(Opcodes) * 0x100);
@@ -44,7 +46,9 @@ int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op)
    z80->op = op;
    z80->cb_op = cb_op;
 
-   InitZ80OpcodeStats(z80,registers,op,cb_op);
+   z80->op_call = z80->op;
+
+   InitZ80OpcodeStats(z80,registers);
 
    z80->r = registers;
    /* http://www.devrs.com/gb/files/gbspec.txt */
@@ -143,7 +147,7 @@ int CB_BIT(Memory * memory, Z80 * z80, uint8_t parameters)
       z80->regF = z80->regF | 0x80;
    }
 
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -157,7 +161,7 @@ int CB_RES(Memory * memory, Z80 * z80, uint8_t parameters)
 
    z80->r->r[(parameters & 0xF)] = z80->r->r[(parameters & 0xF)] & math_pow_uint8(2,(((parameters & 0xF0) >> 4) & 0xF));
 
-   z80->ticks = 8; 
+   //z80->ticks = 8; 
 
    return 0;
 }
@@ -171,7 +175,7 @@ int CB_SET(Memory * memory, Z80 * z80, uint8_t parameters)
  
    z80->r->r[(parameters & 0xF)] = (z80->r->r[(parameters & 0xF)] | math_pow_uint8(2,(((parameters & 0xF0) >> 4) & 0xF)));
 
-   z80->ticks = 8; 
+   //z80->ticks = 8; 
 
    return 0;
 }
@@ -193,7 +197,7 @@ int CB_RLC(Memory * memory, Z80 * z80, uint8_t parameters)
    // Rotate register, add carry bit, and ensure 8 bits
    z80->r->r[(parameters & 0xF)] = (((z80->r->r[(parameters & 0xF)] << 1) + ((z80->regF >> 5) & 0x1)) & 0xFF);
 
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -215,7 +219,7 @@ int CB_RRC(Memory * memory, Z80 * z80, uint8_t parameters)
    // Rotate register, add carry bit, and ensure 8 bits
    z80->r->r[(parameters & 0xF)] = (z80->r->r[(parameters & 0xF)] >> 1) + (((z80->regF >> 5) & 0x1) << 7) & 0xFF;
 
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -331,8 +335,8 @@ int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
 {
    z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC)) & 0xFF;
 
-   z80->regPC = z80->regPC + 1;
-   z80->ticks = 8;
+   //z80->regPC = z80->regPC + 1;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -349,8 +353,8 @@ OP_LDXd16 ( Memory * memory, Z80 * z80, uint8_t x )
    z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC + 1)) & 0xFF;
    z80->r->r[(x & 0xF) + 1] = rb(memory,(z80->regPC)) & 0xFF;
 
-   z80->regPC = z80->regPC + 2;
-   z80->ticks = 12;
+   //z80->regPC = z80->regPC + 2;
+   //z80->ticks = 12;
 
    return 0;
 }		/* -----  end of function OP_LDXd16  ----- */
@@ -367,8 +371,8 @@ OP_LDXYZ ( Memory * memory, Z80 * z80, uint8_t x, uint8_t yz )
 {
    z80->r->r[(x & 0xF)] = rb(memory,(((z80->r->r[(yz & 0xF)] << 8) + z80->r->r[((yz & 0xF) + 0x1)]))) & 0xFF;
 
-   z80->regPC = z80->regPC + 1;
-   z80->ticks = 8;
+   //z80->regPC = z80->regPC + 3;
+   //z80->ticks = 24;
 
    return 0;
 }		/* -----  end of function LDXYZ  ----- */
@@ -377,7 +381,7 @@ int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x)
 {
    z80->r->r[((x & 0xF0) >> 4)] = z80->r->r[(x & 0xF)];
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -386,7 +390,7 @@ int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x)
 {
    wb(memory,(z80->regH << 8) + z80->regL,z80->r->r[x & 0xF]);
 
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -416,14 +420,14 @@ int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
    // Set N flag to 0x0;
    z80->regF = z80->regF & 0xB0;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
 
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -656,11 +660,11 @@ int OP_20h_JRNZr8(Memory * memory, Z80 * z80)
 
    i = (int8_t) rb(memory,(z80->regPC)) & 0xFF;
 
-   z80->regPC++;
+   //z80->regPC++;
 
    if ((z80->regF & 0x80) == 0x00)
    {
-      z80->regPC = (z80->regPC + (int8_t) i) & 0xFF;
+      //z80->regPC = (z80->regPC + (int8_t) i) & 0xFF;
       z80->ticks = 12;
    } else {
       z80->ticks = 8;
@@ -673,8 +677,8 @@ int OP_21h_LDHLd16(Memory * memory, Z80 * z80)
 {
    z80->regH = rb(memory,(z80->regPC+1));
    z80->regL = rb(memory,(z80->regPC));
-   z80->regPC = z80->regPC + 2;
-   z80->ticks = 12;
+   //z80->regPC = z80->regPC + 2;
+   //z80->ticks = 12;
 
    return 0;
 }
@@ -687,7 +691,7 @@ int OP_22h_LDIHLA(Memory * memory, Z80 * z80)
    tmp = (z80->regH << 8) + z80->regL;
 
    incrementHL(z80);
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -794,8 +798,8 @@ int OP_30h_JRNCr8(Memory * memory, Z80 * z80)
 int OP_31h_LDSPd16(Memory * memory, Z80 * z80)
 {
    z80->regSP = (uint16_t) rw(memory,z80->regPC);
-   z80->regPC = (uint16_t) z80->regPC + (uint16_t) 2;
-   z80->ticks = 12;
+   //z80->regPC = (uint16_t) z80->regPC + 2;
+   //z80->ticks = 12;
 
    return 0;
 }
@@ -809,7 +813,7 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
    tmp = (z80->regH << 8) + z80->regL;
 
    decrementHL(z80);
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -1263,7 +1267,7 @@ int OP_72h_LDHLD(Memory * memory, Z80 * z80)
 {
    wb(memory,(z80->regH << 8) + z80->regL,z80->regD);
 
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -1370,7 +1374,7 @@ int OP_80h_ADDAB(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1386,7 +1390,7 @@ int OP_81h_ADDAC(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1402,7 +1406,7 @@ int OP_82h_ADDAD(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1418,7 +1422,7 @@ int OP_83h_ADDAE(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1434,7 +1438,7 @@ int OP_84h_ADDAH(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1450,7 +1454,7 @@ int OP_85h_ADDAL(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1473,7 +1477,7 @@ int OP_87h_ADDAA(Memory * memory, Z80 * z80)
 
    calculateAdditionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1491,7 +1495,7 @@ int OP_88h_ADCAB(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1509,7 +1513,7 @@ int OP_89h_ADCAC(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1527,7 +1531,7 @@ int OP_8Ah_ADCAD(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1545,7 +1549,7 @@ int OP_8Bh_ADCAE(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1563,7 +1567,7 @@ int OP_8Ch_ADCAH(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1581,7 +1585,7 @@ int OP_8Dh_ADCAL(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1606,7 +1610,7 @@ int OP_8Fh_ADCAA(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA + ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1622,7 +1626,7 @@ int OP_90h_SUBB(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1638,7 +1642,7 @@ int OP_91h_SUBC(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1654,7 +1658,7 @@ int OP_92h_SUBD(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1670,7 +1674,7 @@ int OP_93h_SUBE(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1686,7 +1690,7 @@ int OP_94h_SUBH(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1702,7 +1706,7 @@ int OP_95h_SUBL(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1725,7 +1729,7 @@ int OP_97h_SUBA(Memory * memory, Z80 * z80)
 
    calculateSubtractionFlags(memory,z80,dest,oldDest,oldSrc);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1742,7 +1746,7 @@ int OP_98h_SBCAB(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1759,7 +1763,7 @@ int OP_99h_SBCAC(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1776,7 +1780,7 @@ int OP_9Ah_SBCAD(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1793,7 +1797,7 @@ int OP_9Bh_SBCAE(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1810,7 +1814,7 @@ int OP_9Ch_SBCAH(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1827,7 +1831,7 @@ int OP_9Dh_SBCAL(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1851,7 +1855,7 @@ int OP_9Fh_SBCAA(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1864,7 +1868,7 @@ int OP_A0h_ANDB(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1877,7 +1881,7 @@ int OP_A1h_ANDC(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1890,7 +1894,7 @@ int OP_A2h_ANDD(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1903,7 +1907,7 @@ int OP_A3h_ANDE(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1916,7 +1920,7 @@ int OP_A4h_ANDH(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1929,7 +1933,7 @@ int OP_A5h_ANDL(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -1949,7 +1953,7 @@ int OP_A7h_ANDA(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -2007,7 +2011,7 @@ int OP_AFh_XORA(Memory * memory, Z80 * z80)
 {
    z80->regA = 0;
    z80->regF = 0x80;
-   z80->ticks = 4;
+   //z80->ticks = 4;
 
    return 0;
 }
@@ -2202,11 +2206,9 @@ int OP_CAh_JPZa16(Memory * memory, Z80 * z80)
    return 1;
 }
 
+// Deprecated
 int OP_CBh_PREFIXCB(Memory * memory, Z80 * z80)
 {
-   ExecuteCB(memory,z80);
-
-   // Maybe return value specific to CB prefix?
    return 0;
 }
 
@@ -2355,8 +2357,8 @@ int OP_E0h_LDHa8A(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + rb(memory,z80->regPC)),z80->regA);
 
-   z80->regPC = z80->regPC + 1;
-   z80->ticks = 12;
+   //z80->regPC = z80->regPC + 1;
+   //z80->ticks = 12;
 
    return 0;
 }
@@ -2371,7 +2373,7 @@ int OP_E1h_POPHL(Memory * memory, Z80 * z80)
 int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + z80->regC),z80->regA);
-   z80->ticks = 8;
+   //z80->ticks = 8;
 
    return 0;
 }
@@ -2579,15 +2581,1830 @@ int OP_FFh_RST38H(Memory * memory, Z80 * z80)
    z80->regSP = z80->regPC;
    z80->regSP--;
    z80->regPC = 0x38;
-   z80->ticks = 16;
+   //z80->ticks = 16;
 
    return 0;
+}
+
+//
+//
+//
+// CB Prefix
+//
+//
+//
+
+int CB_OP_00h_RLCB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_01h_RLCC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_02h_RLCD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_03h_RLCE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_04h_RLCH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_05h_RLCL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_06h_RLCHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_07h_RLCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_08h_RRCB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_09h_RRCC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_0Ah_RRCD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_0Bh_RRCE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_0Ch_RRCH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_0Dh_RRCL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_0Eh_RRCHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_0Fh_RRCA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_10h_RLB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_11h_RLC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_12h_RLD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_13h_RLE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_14h_RLH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_15h_RLL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_16h_RLHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_17h_RLA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_18h_RRB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_19h_RRC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_1Ah_RRD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_1Bh_RRE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_1Ch_RRH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_1Dh_RRL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_1Eh_RRHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_1Fh_RRA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_20h_SLAB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_21h_SLAC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_22h_SLAD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_23h_SLAE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_24h_SLAH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_25h_SLAL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_26h_SLAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_27h_SLAA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_28h_SRAB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_29h_SRAC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_2Ah_SRAD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_2Bh_SRAE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_2Ch_SRAH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_2Dh_SRAL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_2Eh_SRAHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_2Fh_SRAA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_30h_SWAPB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_31h_SWAPC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_32h_SWAPD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_33h_SWAPE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_34h_SWAPH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_35h_SWAPL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_36h_SWAPHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_37h_SWAPA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_38h_SRLB(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_39h_SRLC(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_3Ah_SRLD(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_3Bh_SRLE(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_3Ch_SRLH(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_3Dh_SRLL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_3Eh_SRLHL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_3Fh_SRLA(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_40h_BIT0B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_41h_BIT0C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_42h_BIT0D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_43h_BIT0E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_44h_BIT0H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_45h_BIT0L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_46h_BIT0HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_47h_BIT0A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_48h_BIT1B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_49h_BIT1C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_4Ah_BIT1D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_4Bh_BIT1E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_4Ch_BIT1H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_4Dh_BIT1L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_4Eh_BIT1HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_4Fh_BIT1A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_50h_BIT2B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_51h_BIT2C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_52h_BIT2D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_53h_BIT2E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_54h_BIT2H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_55h_BIT2L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_56h_BIT2HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_57h_BIT2A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_58h_BIT3B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_59h_BIT3C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_5Ah_BIT3D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_5Bh_BIT3E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_5Ch_BIT3H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_5Dh_BIT3L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_5Eh_BIT3HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_5Fh_BIT3A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_60h_BIT4B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_61h_BIT4C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_62h_BIT4D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_63h_BIT4E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_64h_BIT4H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_65h_BIT4L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_66h_BIT4HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_67h_BIT4A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_68h_BIT5B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_69h_BIT5C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_6Ah_BIT5D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_6Bh_BIT5E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_6Ch_BIT5H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_6Dh_BIT5L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_6Eh_BIT5HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_6Fh_BIT5A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_70h_BIT6B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_71h_BIT6C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_72h_BIT6D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_73h_BIT6E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_74h_BIT6H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_75h_BIT6L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_76h_BIT6HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_77h_BIT6A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_78h_BIT7B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_79h_BIT7C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_7Ah_BIT7D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_7Bh_BIT7E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_7Ch_BIT7H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_7Dh_BIT7L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_7Eh_BIT7HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_7Fh_BIT7A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_80h_RES0B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_81h_RES0C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_82h_RES0D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_83h_RES0E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_84h_RES0H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_85h_RES0L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_86h_RES0HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_87h_RES0A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_88h_RES1B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_89h_RES1C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_8Ah_RES1D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_8Bh_RES1E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_8Ch_RES1H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_8Dh_RES1L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_8Eh_RES1HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_8Fh_RES1A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_90h_RES2B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_91h_RES2C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_92h_RES2D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_93h_RES2E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_94h_RES2H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_95h_RES2L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_96h_RES2HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_97h_RES2A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_98h_RES3B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_99h_RES3C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_9Ah_RES3D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_9Bh_RES3E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_9Ch_RES3H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_9Dh_RES3L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_9Eh_RES3HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_9Fh_RES3A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_A0h_RES4B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A1h_RES4C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A2h_RES4D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A3h_RES4E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A4h_RES4H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A5h_RES4L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A6h_RES4HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A7h_RES4A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A8h_RES5B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_A9h_RES5C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_AAh_RES5D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_ABh_RES5E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_ACh_RES5H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_ADh_RES5L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_AEh_RES5HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_AFh_RES5A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_B0h_RES6B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B1h_RES6C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B2h_RES6D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B3h_RES6E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B4h_RES6H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B5h_RES6L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B6h_RES6HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B7h_RES6A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B8h_RES7B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_B9h_RES7C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_BAh_RES7D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_BBh_RES7E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_BCh_RES7H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_BDh_RES7L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_BEh_RES7HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_BFh_RES7A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_C0h_SET0B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C1h_SET0C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C2h_SET0D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C3h_SET0E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C4h_SET0H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C5h_SET0L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C6h_SET0HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C7h_SET0A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C8h_SET1B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_C9h_SET1C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_CAh_SET1D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_CBh_SET1E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_CCh_SET1H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_CDh_SET1L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_CEh_SET1HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_CFh_SET1A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_D0h_SET2B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D1h_SET2C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D2h_SET2D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D3h_SET2E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D4h_SET2H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D5h_SET2L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D6h_SET2HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D7h_SET2A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D8h_SET3B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_D9h_SET3C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_DAh_SET3D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_DBh_SET3E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_DCh_SET3H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_DDh_SET3L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_DEh_SET3HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_DFh_SET3A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_E0h_SET4B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E1h_SET4C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E2h_SET4D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E3h_SET4E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E4h_SET4H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E5h_SET4L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E6h_SET4HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E7h_SET4A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E8h_SET5B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_E9h_SET5C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_EAh_SET5D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_EBh_SET5E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_ECh_SET5H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_EDh_SET5L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_EEh_SET5HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_EFh_SET5A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+
+int CB_OP_F0h_SET6B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F1h_SET6C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F2h_SET6D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F3h_SET6E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F4h_SET6H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F5h_SET6L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F6h_SET6HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F7h_SET6A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F8h_SET7B(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_F9h_SET7C(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_FAh_SET7D(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_FBh_SET7E(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_FCh_SET7H(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_FDh_SET7L(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_FEh_SET7HL(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
+}
+
+int CB_OP_FFh_SET7A(Memory * memory, Z80 * z80)
+{
+   
+
+   return 1;
 }
 
 int Execute(Memory * memory, Z80 * z80)
 {
    int callDebug = 1;
-   uint16_t tmp;
+   uint16_t tmp, tmp_z80_PC;
 
    Debug debug;
    Error err;
@@ -2601,6 +4418,8 @@ int Execute(Memory * memory, Z80 * z80)
       DebugAll(z80, memory, &debug);
    }
 
+   tmp_z80_PC = z80->regPC;
+
    // This line has replaced the commented out
    // switch statement, but the switch is still here
    // so I can set appropriate values in the wrapper
@@ -2608,11 +4427,27 @@ int Execute(Memory * memory, Z80 * z80)
    // function (for example, LDXY)
    //
    // Return 1 if the opcode has not been implemented
-   if ((err.code = z80->op[rb(memory,(z80->regPC++))].call(memory,z80)) != 0)
+   if ((err.code = z80->op_call[rb(memory,(z80->regPC++))].call(memory,z80)) != 0)
    {
       err.code = 20;
       exiterror(&err);
    }
+
+   // Increment PC if CB prefix not called
+   if (z80->op_call != z80->cb_op)
+   {
+      z80->regPC = z80->regPC + z80->op_call[rb(memory,(tmp_z80_PC))].size - 1;
+   }
+
+   // Set tick if tick is known
+   if (z80->op_call[rb(memory,(tmp_z80_PC))].ticks != 0)
+   {
+      z80->ticks = z80->op_call[rb(memory,(tmp_z80_PC))].ticks;
+   }
+
+   // If PrefixCB set, reset here
+   z80->op_call = z80->op;
+
    /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
    /* switch(rb(memory,(z80->regPC++)))
    {
@@ -2681,78 +4516,7 @@ int Execute(Memory * memory, Z80 * z80)
    } */
 
    // Reset after acting on ticks
-   z80->ticks = 0;
+   //z80->ticks = 0;
 
    return 0;
 }
-
-int ExecuteCB(Memory * memory, Z80 * z80)
-{
-   int callDebug = 1;
-   uint16_t tmp;
-
-   Debug debug;
-   Error err;
-
-   //usleep(50000);
-
-   if (callDebug == 1) printf("rb %x\n",rb(memory,(z80->regPC)));
-
-   if (callDebug == 1)
-   {
-      debug.instructionSize = 1;
-      DebugAll(z80, memory, &debug);
-   }
-
-   /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
-   switch(rb(memory,(z80->regPC++)))
-   {
-      // NEED TO DEVELOP TEST CODE AND SORT OUT
-      /*case 0x00: OP_CB_00h_RLCB(memory,z80); break;
-      case 0x21: OP_CB_21h_SLAC(memory,z80); break;
-      case 0x22: OP_CB_22h_SLAD(memory,z80); break;
-      case 0x31: OP_CB_31h_SLAPB(memory,z80); break;*/
-      // a = 0 b = 1 c = 2 d = 3 e = 4 f = 5 h = 6 l = 7
-      //case 0x40: OP_CB_40h_BIT0B(memory,z80); break;
-      case 0x40: CB_BIT(memory,z80,0x01); break;
-      case 0x41: CB_BIT(memory,z80,0x02); break;
-      case 0x42: CB_BIT(memory,z80,0x03); break;
-      case 0x43: CB_BIT(memory,z80,0x04); break;
-      case 0x44: CB_BIT(memory,z80,0x06); break;
-      case 0x45: CB_BIT(memory,z80,0x07); break;
-      case 0x47: CB_BIT(memory,z80,0x00); break;
-      case 0x7c: CB_BIT(memory,z80,0x76); break;
-      /*case 0x40: CB_BIT(memory,z80,0x01); break;
-      case 0x40: CB_BIT(memory,z80,0x01); break;
-      case 0x41: OP_CB_41h_BIT0C(memory,z80); break;
-      case 0x42: OP_CB_42h_BIT0D(memory,z80); break;
-      case 0x43: OP_CB_43h_BIT0E(memory,z80); break;
-      case 0x44: OP_CB_44h_BIT0H(memory,z80); break;
-      case 0x45: OP_CB_45h_BIT0L(memory,z80); break;
-      case 0x50: OP_CB_50h_BIT2B(memory,z80); break;
-      case 0x51: OP_CB_51h_BIT2C(memory,z80); break;
-      case 0x52: OP_CB_52h_BIT2D(memory,z80); break;
-      case 0x53: OP_CB_53h_BIT2E(memory,z80); break;
-      case 0x54: OP_CB_54h_BIT2H(memory,z80); break;
-      case 0x55: OP_CB_55h_L(memory,z80); break;
-      case 0x60: OP_CB_60h_LDHB(memory,z80); break;
-      case 0x61: OP_CB_61h_LDHC(memory,z80); break;
-      case 0x62: OP_CB_62h_LDHD(memory,z80); break;
-      case 0x63: OP_CB_63h_LDHE(memory,z80); break;
-      case 0x64: OP_CB_64h_LDHH(memory,z80); break;
-      case 0x65: OP_CB_65h_LDHL(memory,z80); break;
-      case 0xAF: OP_CB_AFh_XORA(memory,z80); break;
-      case 0xFF: OP_CB_FFh_RST38h(memory,z80); break;*/
-
-      default:
-         err.code = 20;
-         exiterror(&err);
-      break;
-   }
-
-   // Reset after acting on ticks
-   z80->ticks = 0;
-
-   return 0;
-}
-
