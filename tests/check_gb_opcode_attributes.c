@@ -3450,7 +3450,7 @@ START_TEST (test_check_OP_E2h_LDHCA_attributes)
 
    InitZ80(&z80,&registers,&op,&cb_op);
 
-   fail_unless(z80.op_call[0xe2].size == 2);
+   fail_unless(z80.op_call[0xe2].size == 1);
    fail_unless(z80.op_call[0xe2].ticks == 8);
 }
 END_TEST

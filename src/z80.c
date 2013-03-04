@@ -61,6 +61,8 @@ int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op)
    z80->regPC = 0x00;
    z80->regSP = 0xFFFE;
 
+   z80->prefixCB = 0;
+
    return 0;
 }
 
@@ -658,11 +660,9 @@ int OP_20h_JRNZr8(Memory * memory, Z80 * z80)
 
    i = (int8_t) rb(memory,(z80->regPC)) & 0xFF;
 
-   //z80->regPC++;
-
    if ((z80->regF & 0x80) == 0x00)
    {
-      //z80->regPC = (z80->regPC + (int8_t) i) & 0xFF;
+      z80->regPC = (z80->regPC + (int8_t) i) & 0xFF;
       z80->ticks = 12;
    } else {
       z80->ticks = 8;
@@ -2355,9 +2355,6 @@ int OP_E0h_LDHa8A(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + rb(memory,z80->regPC)),z80->regA);
 
-   //z80->regPC = z80->regPC + 1;
-   //z80->ticks = 12;
-
    return 0;
 }
 
@@ -2371,7 +2368,6 @@ int OP_E1h_POPHL(Memory * memory, Z80 * z80)
 int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
 {
    wb(memory,(0xff00 + z80->regC),z80->regA);
-   //z80->ticks = 8;
 
    return 0;
 }
@@ -4412,7 +4408,7 @@ int Execute(Memory * memory, Z80 * z80)
    if (callDebug == 1)
    {
       printf("rb %x\n",rb(memory,(z80->regPC)));
-      debug.instructionSize = 1;
+      //debug.instructionSize = 1;
       DebugAll(z80, memory, &debug);
    }
 
@@ -4443,8 +4439,18 @@ int Execute(Memory * memory, Z80 * z80)
       z80->ticks = z80->op_call[rb(memory,(tmp_z80_PC))].ticks;
    }
 
-   // If PrefixCB set, reset here
-   z80->op_call = z80->op;
+   // If PrefixCB was set in the last opcode, reset here
+   if (z80->prefixCB == 1)
+   {
+      z80->op_call = z80->op;
+      z80->prefixCB = 0;
+   }
+
+   // If op_call set to prefix CB opcode, then set prefixCB variable here
+   if (z80->op_call == z80->cb_op)
+   {
+      z80->prefixCB = 1;
+   }
 
    /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
    /* switch(rb(memory,(z80->regPC++)))

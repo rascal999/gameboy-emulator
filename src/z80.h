@@ -74,6 +74,8 @@ struct Z80
 
    /* CPU ticks of last instruction */
    uint16_t ticks;
+
+   uint8_t prefixCB;
 };
 
 int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op);

@@ -301,7 +301,6 @@ int OP_1Fh_RRA_wrapper(Memory * memory, Z80 * z80)
 int OP_20h_JRNZr8_wrapper(Memory * memory, Z80 * z80)
 {
    int retValue = OP_20h_JRNZr8(memory,z80);
-
    return retValue;
 }
 
