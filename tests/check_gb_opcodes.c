@@ -195,7 +195,6 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
    }
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -213,7 +212,6 @@ LDXYZ( Memory * memory, Z80 * z80, uint8_t x, uint8_t yz, uint16_t tmp_z80_PC )
    fail_unless( z80->r->r[(x & 0xF)] == (rb(memory,(z80->r->r[yz] << 8) + z80->r->r[(yz + 1)]) & 0xFF) );
 
    //fail_unless(z80->regPC == tmp_z80_PC + 0x3);
-   fail_unless(z80->ticks == 24);
    
    return 0;
 }		/* -----  end of function LDXYZ  ----- */
@@ -256,7 +254,6 @@ int ADDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    }
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -318,7 +315,6 @@ int ADCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    }
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -383,7 +379,6 @@ int SUBXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    fail_unless((z80->regF & 0x40) == 0x40,"Subtract flag not set");
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -449,7 +444,6 @@ int SBCXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    fail_unless((z80->regF & 0x40) == 0x40,"Subtract flag not set");
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -507,7 +501,6 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
    fail_unless((z80->regF & 0x10) != 0x10,"Carry flag should not be set");
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 4,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -551,7 +544,6 @@ printf("cpuRegisterBit == %x\n",cpuRegisterBit);
    fail_unless((z80->regF & 0x10) == (old_z80->regF & 0x10),"Carry flag should have been preserved");
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -585,7 +577,6 @@ int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
    fail_unless(z80->regF == old_z80->regF,"Flags should not have been changed");
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -619,7 +610,6 @@ int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
    fail_unless(z80->regF == old_z80->regF,"Flags should not have been changed");
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -673,7 +663,6 @@ printf("\nparameters == %x\n((oldCpuRegister << 1) | ((oldCpuRegister >> 7) & 0x
    }
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -725,7 +714,6 @@ int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
    }
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -777,7 +765,6 @@ int CB_RRX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16
    }
 
    //fail_unless(z80->regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
-   fail_unless(z80->ticks == 8,"Ticks for opcode not registered or incorrect value");
 
    return 0;
 }
@@ -799,7 +786,6 @@ START_TEST (test_check_OP_00h_NOP)
    result = OP_00h_NOP(&memory,&z80);
 
    fail_unless(result == 0,"Result was not 0");
-   fail_unless(z80.op_call[tmp_z80_PC].ticks == 4);
    fail_unless(z80.op_call[tmp_z80_PC].size == 1);
 }
 END_TEST
@@ -883,7 +869,6 @@ START_TEST (test_check_OP_LDXd8)
          //fail_unless(z80.regPC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
 }
@@ -916,7 +901,6 @@ START_TEST (test_check_OP_LDXd16)
    //fail_unless(z80.regPC == tmp_z80_PC + 2);
 
    fail_unless(result == 0,"Result was not 0");
-   fail_unless(z80.ticks == 12);
 }
 END_TEST
 
@@ -970,7 +954,6 @@ START_TEST (test_check_OP_LDHLX)
          fail_unless(result == 0,"Result was not 0");
 printf("HERE -- HL addr content = %x\nHERE reg = %x\n",rb(&memory,(z80.regH << 8) + z80.regL),z80.r->r[reg]);
          fail_unless(rb(&memory,(z80.regH << 8) + z80.regL) == z80.r->r[reg],"Content at address pointed by HL does not match register.");
-         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
 }
@@ -1000,27 +983,25 @@ END_TEST
 
 START_TEST (test_check_OP_1Ah_LDADE)
 {
-   Memory * memory = malloc(sizeof(Memory));
-   Registers * registers = malloc(sizeof(Registers));
-   Z80 * z80 = malloc(sizeof(Z80));
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
 
-   resetCPURegisters(memory,z80,registers);
-   InitMemory(memory);
+   InitZ80(&z80,&registers,&op,&cb_op);
+   resetCPURegisters(&memory,&z80,&registers);
+   InitMemory(&memory);
 
    int result = 0;
-   uint16_t tmp_z80_PC = z80->regPC;
+   uint16_t tmp_z80_PC = z80.regPC;
 
-   result = OP_LDXYZ(memory,z80,0x0,0x3);
+   result = OP_LDXYZ(&memory,&z80,0x0,0x3);
 
-   LDXYZ(memory,z80,0x0,0x3,tmp_z80_PC);
+   LDXYZ(&memory,&z80,0x0,0x3,tmp_z80_PC);
 
    fail_unless(result == 0,"Result was not 0");
-   fail_unless(z80->op_call[tmp_z80_PC].ticks == 8);
-   fail_unless(z80->op_call[tmp_z80_PC].size == 1);
-
-   free(memory);
-   free(registers);
-   free(z80);
+   fail_unless(z80.op_call[tmp_z80_PC].size == 1);
 }
 END_TEST
 
@@ -1065,10 +1046,8 @@ START_TEST (test_check_OP_20h_JRNZn)
          {
 printf("*** k == %x\nz80.regPC == %x\nrb(&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.regPC - 1,rb(&memory,tmp_z80_PC) + tmp_z80_PC);
             //fail_unless(((z80.regPC - 1) & 0xFF) == ((rb(&memory,tmp_z80_PC) + (int8_t) tmp_z80_PC) & 0xFF));
-            fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
          } else {
             //fail_unless((z80.regPC - 1) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
-            fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
          }
 
          fail_unless(result == 0,"Result was not 0");
@@ -1117,7 +1096,6 @@ START_TEST (test_check_OP_21h_LDHLnn)
          fail_unless(z80.regH == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
          fail_unless(z80.regL == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
 
-         fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
       }
    }
 }
@@ -1165,7 +1143,6 @@ START_TEST (test_check_OP_22h_LDIHLA)
          fail_unless(result == 0,"Result was not 0");
 //printf("HL-1 addr content = %x\nA = %x\n",rb(&memory,(z80.regH << 8) + z80.regL - 1),z80.regA);
          fail_unless(rb(&memory,(z80.regH << 8) + z80.regL - 1) == z80.regA,"Content at address pointed by HL (-1 at this point) does not match A register.");
-         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
 }
@@ -1207,7 +1184,6 @@ START_TEST (test_check_OP_31h_LDSPnn)
 
          fail_unless(result == 0,"Result was not 0");
 
-         fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
 
          // @TODO
          // Need to fully complete memory
@@ -1270,7 +1246,6 @@ START_TEST (test_check_OP_32h_LDDHLA)
          printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.regH << 8) + z80.regL + 1),z80.regA);
 
          fail_unless(rb(&memory,(z80.regH << 8) + z80.regL + 1) == z80.regA,"Content at address pointed by HL (+1 at this point) does not match A register.");
-         fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
       }
    }
 }
@@ -2181,7 +2156,6 @@ START_TEST (test_check_OP_72h_LDHLD)
 
    fail_unless(result == 0,"Result was not 0");
    fail_unless(rb(&memory,(z80.regH << 8) + z80.regL) == z80.regD,"Content of address held in HL register does not equal register D");
-   fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
 }
 END_TEST
 
@@ -7075,7 +7049,6 @@ START_TEST (test_check_OP_AFh_XORA)
 
    fail_unless(result == 0,"Result was not 0");
 
-   fail_unless(z80.ticks == 4,"Ticks for opcode not registered or incorrect value");
    fail_unless(z80.regA == 0,"A register should be 0");
    fail_unless(z80.regF == 0x80,"Zero flag should be set and all others reset");
 }
@@ -7110,7 +7083,6 @@ START_TEST (test_check_OP_E0h_LDHAn)
 //printf("fuck\n");
 printf("regA == %x\nrb + offset == %x\n", z80.regA, rb(&memory,(0xff00 + (rb(&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
 fflush( stdout );
-      fail_unless(z80.ticks == 12,"Ticks for opcode not registered or incorrect value");
       fail_unless(z80.regA == rb(&memory,(0xff00 + (rb(&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
    }
 }
@@ -7136,7 +7108,6 @@ START_TEST (test_check_OP_E2h_LDHCA)
 
    fail_unless(result == 0,"Result was not 0");
 
-   fail_unless(z80.ticks == 8,"Ticks for opcode not registered or incorrect value");
    fail_unless(z80.regA == rb(&memory,(0xff00 + z80.regC)));
 }
 END_TEST

@@ -37,8 +37,6 @@
    #define regSP r->r16[0x1]
 #endif
 
-// TODO You need to fix the unit tests for the PC stuff and get the ticks sorted out..
-
 int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op)
 {
    op = malloc(sizeof(Opcodes) * 0x100);
