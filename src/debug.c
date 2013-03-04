@@ -41,12 +41,12 @@ int DebugFullInstruction(Z80 * z80, Memory * memory)
 {
    uint8_t i;
    //DebugNextInstructionSize(rb(memory,z80->regPC));
-   uint8_t k = z80->op[rb(memory,z80->regPC)].size;
+   uint8_t k = z80->op[rb(z80,memory,z80->regPC)].size;
 
    printf("FULL = ");
    for(i=0;i<k;i++)
    {
-      printf("%x ",rb(memory,(z80->regPC + i)));
+      printf("%x ",rb(z80,memory,(z80->regPC + i)));
    }
    printf("\n");
 
@@ -59,7 +59,7 @@ int DebugAll(Z80 * z80, Memory * memory, Debug * debug)
    /*printf("-------------\n");
    printf("| D E B U G |\n");
    printf("-------------\n");*/
-   printf("OPCODE = %x ( %s )\n",rb(memory,(z80->regPC)),z80->op[rb(memory,(z80->regPC))].name);
+   printf("OPCODE = %x ( %s )\n",rb(z80,memory,(z80->regPC)),z80->op[rb(z80,memory,(z80->regPC))].name);
    DebugFullInstruction(z80,memory);
    printf("\n");
    printf("A = %x\tB = %x\tC = %x\n",z80->regA,z80->regB,z80->regC);

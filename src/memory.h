@@ -71,23 +71,23 @@ typedef struct
 } Memory;
 
 // Mock functions
-uint8_t mock_rb(Memory * mem, uint16_t addr);
-int mock_wb(Memory * mem, uint16_t addr, uint8_t value);
-uint16_t mock_rw(Memory * mem, uint16_t addr);
-int mock_ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value);
+uint8_t mock_rb(Z80 * z80, Memory * mem, uint16_t addr);
+int mock_wb(Z80 * z80, Memory * mem, uint16_t addr, uint8_t value);
+uint16_t mock_rw(Z80 * z80, Memory * mem, uint16_t addr);
+int mock_ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value);
 
 /* MMU */
 /* Read byte */
-uint8_t rb(Memory * mem, uint16_t addr);
+uint8_t rb(Z80 * z80, Memory * mem, uint16_t addr);
 
 /* Write byte */
-int wb(Memory * mem, uint16_t addr, uint8_t value);
+int wb(Z80 * z80, Memory * mem, uint16_t addr, uint8_t value);
 
 /* Read word */
-uint16_t rw(Memory * mem, uint16_t addr);
+uint16_t rw(Z80 * z80, Memory * mem, uint16_t addr);
 
 /* Write word */
-int ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value);
+int ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value);
 /* END MMU */
 
 int InitMemory(Memory * memory);

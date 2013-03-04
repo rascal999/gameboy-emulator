@@ -37,12 +37,12 @@
    #define regSP r->r16[0x1]
 #endif
 
-int LoadCartridge(char * ROM, Cartridge * cartridge)
+int LoadCartridge(Memory * memory, char * ROM, Cartridge * cartridge)
 {
-   int bufSize = 512;
+   int bufSize = 0x4000;
    int bufSizeRead = 0;
-   //int i = 0;
-   //int k = 0;
+   int i = 0;
+   int k = 0;
    char buf[bufSize];
    Error error;
 
@@ -56,12 +56,18 @@ int LoadCartridge(char * ROM, Cartridge * cartridge)
 
    while((bufSizeRead=read(cartridge->fd,buf,bufSize))>0)
    {
-      /* Where to load to? */
-      /* for(k=0;k<bufSizeRead;k++)
+      // Where to load to?
+      for(k=0;k<bufSizeRead;k++)
       {
-         memory[512 + i] = buf[i];
+         memory->bank0[i] = buf[i];
+
+         if (i == 0x4000)
+         {
+            break;
+         }
+
          i++;
-      } */
+      }
    }
 
    if (bufSizeRead == -1)

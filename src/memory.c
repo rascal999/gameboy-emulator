@@ -42,13 +42,13 @@ Error err;
 /* MMU */
 /* 8 bit */
 /* Read byte */
-uint8_t mock_rb(Memory * mem, uint16_t addr)
+uint8_t mock_rb(Z80 * z80, Memory * mem, uint16_t addr)
 {
    return mem->addr[addr];    
 }
 
 /* Write byte */              
-int mock_wb(Memory * mem, uint16_t addr, uint8_t value)
+int mock_wb(Z80 * z80, Memory * mem, uint16_t addr, uint8_t value)
 {
    mem->addr[addr] = value;   
 
@@ -57,13 +57,13 @@ int mock_wb(Memory * mem, uint16_t addr, uint8_t value)
 
 /* 16 bit */                  
 /* Read word */               
-uint16_t mock_rw(Memory * mem, uint16_t addr)
+uint16_t mock_rw(Z80 * z80, Memory * mem, uint16_t addr)
 {
-   return (rb(mem,(addr+1)) << 8) + rb(mem,(addr));
+   return (rb(z80,mem,(addr+1)) << 8) + rb(z80,mem,(addr));
 }
 
 /* Write word */              
-int mock_ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value) 
+int mock_ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value) 
 {
    mem->addr[addr] = ((value & 0xFF00) >> 4);
    mem->addr[addr + 1] = (value & 0xFF);
@@ -86,13 +86,13 @@ int mock_InitMemory(Memory * memory)
 /* MMU */
 /* 8 bit */
 /* Read byte */
-uint8_t rb(Memory * mem, uint16_t addr)
+uint8_t rb(Z80 * z80, Memory * mem, uint16_t addr)
 {
    // Mock function
    int mock_func_return = 0;
    if (UNIT_TEST == 1)
    {
-      mock_func_return = mock_rb(mem,addr);
+      mock_func_return = mock_rb(z80,mem,addr);
       return mock_func_return;
    }
 
@@ -104,6 +104,8 @@ uint8_t rb(Memory * mem, uint16_t addr)
             if (addr < 0x100)
             {
                return mem->bios_rom[addr];
+            } else if (z80->regPC == 0x0100) {
+               mem->bios_rom_loaded = 0;
             }
          }
          return mem->bank0[addr];
@@ -217,13 +219,13 @@ uint8_t rb(Memory * mem, uint16_t addr)
 }
 
 /* Write byte */
-int wb(Memory * mem, uint16_t addr, uint8_t value)
+int wb(Z80 * z80, Memory * mem, uint16_t addr, uint8_t value)
 {
    // Mock function
    int mock_func_return = 0;
    if (UNIT_TEST == 1)
    {
-      mock_func_return = mock_wb(mem,addr,value);
+      mock_func_return = mock_wb(z80,mem,addr,value);
       return mock_func_return;
    }
 
@@ -283,27 +285,27 @@ int wb(Memory * mem, uint16_t addr, uint8_t value)
 
 /* 16 bit */
 /* Read word */
-uint16_t rw(Memory * mem, uint16_t addr)
+uint16_t rw(Z80 * z80, Memory * mem, uint16_t addr)
 {
    // Mock function
    int mock_func_return = 0;
    if (UNIT_TEST == 1)
    {
-      mock_func_return = mock_rw(mem,addr);
+      mock_func_return = mock_rw(z80,mem,addr);
       return mock_func_return;
    }
 
-   return (rb(mem,(addr+1)) << 8) + rb(mem,(addr));
+   return (rb(z80,mem,(addr+1)) << 8) + rb(z80,mem,(addr));
 }
 
 /* Write word */
-int ww(Memory * mem, Z80 * z80, uint16_t addr, uint16_t value)
+int ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value)
 {
    // Mock function
    int mock_func_return = 0;
    if (UNIT_TEST == 1)
    {
-      mock_func_return = mock_ww(mem,z80,addr,value);
+      mock_func_return = mock_ww(z80,mem,addr,value);
       return mock_func_return;
    }
 

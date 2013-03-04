@@ -333,7 +333,7 @@ int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
  */
 int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
 {
-   z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC)) & 0xFF;
+   z80->r->r[(x & 0xF)] = rb(z80,memory,(z80->regPC)) & 0xFF;
 
    //z80->regPC = z80->regPC + 1;
    //z80->ticks = 8;
@@ -350,8 +350,8 @@ int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
    int
 OP_LDXd16 ( Memory * memory, Z80 * z80, uint8_t x )
 {
-   z80->r->r[(x & 0xF)] = rb(memory,(z80->regPC + 1)) & 0xFF;
-   z80->r->r[(x & 0xF) + 1] = rb(memory,(z80->regPC)) & 0xFF;
+   z80->r->r[(x & 0xF)] = rb(z80,memory,(z80->regPC + 1)) & 0xFF;
+   z80->r->r[(x & 0xF) + 1] = rb(z80,memory,(z80->regPC)) & 0xFF;
 
    //z80->regPC = z80->regPC + 2;
    //z80->ticks = 12;
@@ -369,7 +369,7 @@ OP_LDXd16 ( Memory * memory, Z80 * z80, uint8_t x )
    int
 OP_LDXYZ ( Memory * memory, Z80 * z80, uint8_t x, uint8_t yz )
 {
-   z80->r->r[(x & 0xF)] = rb(memory,(((z80->r->r[(yz & 0xF)] << 8) + z80->r->r[((yz & 0xF) + 0x1)]))) & 0xFF;
+   z80->r->r[(x & 0xF)] = rb(z80,memory,(((z80->r->r[(yz & 0xF)] << 8) + z80->r->r[((yz & 0xF) + 0x1)]))) & 0xFF;
 
    //z80->regPC = z80->regPC + 3;
    //z80->ticks = 24;
@@ -388,7 +388,7 @@ int OP_LDXY(Memory * memory, Z80 * z80, uint8_t x)
 
 int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x)
 {
-   wb(memory,(z80->regH << 8) + z80->regL,z80->r->r[x & 0xF]);
+   wb(z80,memory,(z80->regH << 8) + z80->regL,z80->r->r[x & 0xF]);
 
    //z80->ticks = 8;
 
@@ -658,7 +658,7 @@ int OP_20h_JRNZr8(Memory * memory, Z80 * z80)
 {
    int8_t i;
 
-   i = (int8_t) rb(memory,(z80->regPC)) & 0xFF;
+   i = (int8_t) rb(z80,memory,(z80->regPC)) & 0xFF;
 
    if ((z80->regF & 0x80) == 0x00)
    {
@@ -673,8 +673,8 @@ int OP_20h_JRNZr8(Memory * memory, Z80 * z80)
 
 int OP_21h_LDHLd16(Memory * memory, Z80 * z80)
 {
-   z80->regH = rb(memory,(z80->regPC+1));
-   z80->regL = rb(memory,(z80->regPC));
+   z80->regH = rb(z80,memory,(z80->regPC+1));
+   z80->regL = rb(z80,memory,(z80->regPC));
    //z80->regPC = z80->regPC + 2;
    //z80->ticks = 12;
 
@@ -685,7 +685,7 @@ int OP_22h_LDIHLA(Memory * memory, Z80 * z80)
 {
    uint16_t tmp;
 
-   wb(memory,(z80->regH << 8) + z80->regL,z80->regA);
+   wb(z80,memory,(z80->regH << 8) + z80->regL,z80->regA);
    tmp = (z80->regH << 8) + z80->regL;
 
    incrementHL(z80);
@@ -795,7 +795,7 @@ int OP_30h_JRNCr8(Memory * memory, Z80 * z80)
 
 int OP_31h_LDSPd16(Memory * memory, Z80 * z80)
 {
-   z80->regSP = (uint16_t) rw(memory,z80->regPC);
+   z80->regSP = (uint16_t) rw(z80,memory,z80->regPC);
    //z80->regPC = (uint16_t) z80->regPC + 2;
    //z80->ticks = 12;
 
@@ -807,7 +807,7 @@ int OP_32h_LDDHLA(Memory * memory, Z80 * z80)
    uint16_t tmp;
 
    // BUG?
-   wb(memory,(z80->regH << 8) + z80->regL,z80->regA);
+   wb(z80,memory,(z80->regH << 8) + z80->regL,z80->regA);
    tmp = (z80->regH << 8) + z80->regL;
 
    decrementHL(z80);
@@ -1263,7 +1263,7 @@ int OP_71h_LDHLC(Memory * memory, Z80 * z80)
 
 int OP_72h_LDHLD(Memory * memory, Z80 * z80)
 {
-   wb(memory,(z80->regH << 8) + z80->regL,z80->regD);
+   wb(z80,memory,(z80->regH << 8) + z80->regL,z80->regD);
 
    //z80->ticks = 8;
 
@@ -2353,7 +2353,7 @@ int OP_DFh_RST18H(Memory * memory, Z80 * z80)
 
 int OP_E0h_LDHa8A(Memory * memory, Z80 * z80)
 {
-   wb(memory,(0xff00 + rb(memory,z80->regPC)),z80->regA);
+   wb(z80,memory,(0xff00 + rb(z80,memory,z80->regPC)),z80->regA);
 
    return 0;
 }
@@ -2367,7 +2367,7 @@ int OP_E1h_POPHL(Memory * memory, Z80 * z80)
 
 int OP_E2h_LDHCA(Memory * memory, Z80 * z80)
 {
-   wb(memory,(0xff00 + z80->regC),z80->regA);
+   wb(z80,memory,(0xff00 + z80->regC),z80->regA);
 
    return 0;
 }
@@ -4407,7 +4407,7 @@ int Execute(Memory * memory, Z80 * z80)
 
    if (callDebug == 1)
    {
-      printf("rb %x\n",rb(memory,(z80->regPC)));
+      printf("rb %x\n",rb(z80,memory,(z80->regPC)));
       //debug.instructionSize = 1;
       DebugAll(z80, memory, &debug);
    }
@@ -4421,7 +4421,7 @@ int Execute(Memory * memory, Z80 * z80)
    // function (for example, LDXY)
    //
    // Return 1 if the opcode has not been implemented
-   if ((err.code = z80->op_call[rb(memory,(z80->regPC++))].call(memory,z80)) != 0)
+   if ((err.code = z80->op_call[rb(z80,memory,(z80->regPC++))].call(memory,z80)) != 0)
    {
       err.code = 20;
       exiterror(&err);
@@ -4430,13 +4430,13 @@ int Execute(Memory * memory, Z80 * z80)
    // Increment PC if CB prefix not called
    if (z80->op_call != z80->cb_op)
    {
-      z80->regPC = z80->regPC + z80->op_call[rb(memory,(tmp_z80_PC))].size - 1;
+      z80->regPC = z80->regPC + z80->op_call[rb(z80,memory,(tmp_z80_PC))].size - 1;
    }
 
    // Set tick if tick is known
-   if (z80->op_call[rb(memory,(tmp_z80_PC))].ticks != 0)
+   if (z80->op_call[rb(z80,memory,(tmp_z80_PC))].ticks != 0)
    {
-      z80->ticks = z80->op_call[rb(memory,(tmp_z80_PC))].ticks;
+      z80->ticks = z80->op_call[rb(z80,memory,(tmp_z80_PC))].ticks;
    }
 
    // If PrefixCB was set in the last opcode, reset here
@@ -4453,7 +4453,7 @@ int Execute(Memory * memory, Z80 * z80)
    }
 
    /* switch((memory->addr[z80->regPC] & 0xFF00) >> 8) */
-   /* switch(rb(memory,(z80->regPC++)))
+   /* switch(rb(z80,memory,(z80->regPC++)))
    {
       case 0x00: OP_00h_NOP(memory,z80); break;
 

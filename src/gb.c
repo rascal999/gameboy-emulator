@@ -39,7 +39,7 @@
 
 int main()
 {
-   //Cartridge cartridge;
+   Cartridge cartridge;
    //Display display;
    //Error error;
    Memory memory;
@@ -48,16 +48,16 @@ int main()
    Registers registers;
    Z80 z80;
 
+   int i;
+
    InitZ80(&z80,&registers,&op,&cb_op);
    InitMemory(&memory);
 
    LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
    //LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/tetris.gb");
-   //LoadROM("/home/user/git/gameboy-emulator/roms/tetris.gb",&cartridge);
+   LoadCartridge(&memory,"/home/user/git/gameboy-emulator/roms/pb.gb",&cartridge);
 
    Dispatch(&memory,&z80);
-
-   int i;
 
    for(i=0;i<100;i++)
    {

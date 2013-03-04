@@ -44,4 +44,4 @@ typedef struct
    int fd;
 } Cartridge;
 
-int LoadCartridge(char * ROM, Cartridge * cartridge);
+int LoadCartridge(Memory * memory, char * ROM, Cartridge * cartridge);

@@ -209,7 +209,7 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
    int
 LDXYZ( Memory * memory, Z80 * z80, uint8_t x, uint8_t yz, uint16_t tmp_z80_PC )
 {
-   fail_unless( z80->r->r[(x & 0xF)] == (rb(memory,(z80->r->r[yz] << 8) + z80->r->r[(yz + 1)]) & 0xFF) );
+   fail_unless( z80->r->r[(x & 0xF)] == (rb(z80,memory,(z80->r->r[yz] << 8) + z80->r->r[(yz + 1)]) & 0xFF) );
 
    //fail_unless(z80->regPC == tmp_z80_PC + 0x3);
    
@@ -865,7 +865,7 @@ START_TEST (test_check_OP_LDXd8)
 
          result = OP_LDXd8(&memory,&z80,h);
 
-         fail_unless((z80.r->r[h] & 0xFF) == rb(&memory,(tmp_z80_PC)) & 0xFF);
+         fail_unless((z80.r->r[h] & 0xFF) == rb(&z80,&memory,(tmp_z80_PC)) & 0xFF);
          //fail_unless(z80.regPC == tmp_z80_PC + 1,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
@@ -896,8 +896,8 @@ START_TEST (test_check_OP_LDXd16)
 
    result = OP_LDXd16(&memory,&z80,h);
 
-   fail_unless((z80.r->r[h] & 0xFF) == rb(&memory,(tmp_z80_PC + 1)) & 0xFF);
-   fail_unless((z80.r->r[h + 1] & 0xFF) == rb(&memory,(tmp_z80_PC)) & 0xFF);
+   fail_unless((z80.r->r[h] & 0xFF) == rb(&z80,&memory,(tmp_z80_PC + 1)) & 0xFF);
+   fail_unless((z80.r->r[h + 1] & 0xFF) == rb(&z80,&memory,(tmp_z80_PC)) & 0xFF);
    //fail_unless(z80.regPC == tmp_z80_PC + 2);
 
    fail_unless(result == 0,"Result was not 0");
@@ -952,8 +952,8 @@ START_TEST (test_check_OP_LDHLX)
          //fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-printf("HERE -- HL addr content = %x\nHERE reg = %x\n",rb(&memory,(z80.regH << 8) + z80.regL),z80.r->r[reg]);
-         fail_unless(rb(&memory,(z80.regH << 8) + z80.regL) == z80.r->r[reg],"Content at address pointed by HL does not match register.");
+printf("HERE -- HL addr content = %x\nHERE reg = %x\n",rb(&z80,&memory,(z80.regH << 8) + z80.regL),z80.r->r[reg]);
+         fail_unless(rb(&z80,&memory,(z80.regH << 8) + z80.regL) == z80.r->r[reg],"Content at address pointed by HL does not match register.");
       }
    }
 }
@@ -973,7 +973,7 @@ START_TEST (test_check_OP_0Eh_LDCd8)
 
    result = OP_LDXd8(memory,z80,0x2);
 
-   LDXd8(memory,z80,0x2,rb(memory,tmp_z80_PC));
+   LDXd8(memory,z80,0x2,rb(z80,memory,tmp_z80_PC));
 
    free(memory);
    free(registers);
@@ -1044,8 +1044,8 @@ START_TEST (test_check_OP_20h_JRNZn)
          // If last result is non-zero, ticks == 12, else ticks == 8
          if ((z80.regF & 0x80) == 0x00)
          {
-printf("*** k == %x\nz80.regPC == %x\nrb(&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.regPC - 1,rb(&memory,tmp_z80_PC) + tmp_z80_PC);
-            //fail_unless(((z80.regPC - 1) & 0xFF) == ((rb(&memory,tmp_z80_PC) + (int8_t) tmp_z80_PC) & 0xFF));
+printf("*** k == %x\nz80.regPC == %x\nrb(&z80,&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.regPC - 1,rb(&z80,&memory,tmp_z80_PC) + tmp_z80_PC);
+            //fail_unless(((z80.regPC - 1) & 0xFF) == ((rb(&z80,&memory,tmp_z80_PC) + (int8_t) tmp_z80_PC) & 0xFF));
          } else {
             //fail_unless((z80.regPC - 1) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
          }
@@ -1093,8 +1093,8 @@ START_TEST (test_check_OP_21h_LDHLnn)
 
          fail_unless(result == 0,"Result was not 0");
          //tmp_z80_PC is 0, and this byte is treated as an address
-         fail_unless(z80.regH == rb(&memory,(tmp_z80_PC + 1)),"H register incorrect value");
-         fail_unless(z80.regL == rb(&memory,(tmp_z80_PC)),"L register incorrect value");
+         fail_unless(z80.regH == rb(&z80,&memory,(tmp_z80_PC + 1)),"H register incorrect value");
+         fail_unless(z80.regL == rb(&z80,&memory,(tmp_z80_PC)),"L register incorrect value");
 
       }
    }
@@ -1141,8 +1141,8 @@ START_TEST (test_check_OP_22h_LDIHLA)
          //fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-//printf("HL-1 addr content = %x\nA = %x\n",rb(&memory,(z80.regH << 8) + z80.regL - 1),z80.regA);
-         fail_unless(rb(&memory,(z80.regH << 8) + z80.regL - 1) == z80.regA,"Content at address pointed by HL (-1 at this point) does not match A register.");
+//printf("HL-1 addr content = %x\nA = %x\n",rb(&z80,&memory,(z80.regH << 8) + z80.regL - 1),z80.regA);
+         fail_unless(rb(&z80,&memory,(z80.regH << 8) + z80.regL - 1) == z80.regA,"Content at address pointed by HL (-1 at this point) does not match A register.");
       }
    }
 }
@@ -1196,9 +1196,9 @@ START_TEST (test_check_OP_31h_LDSPnn)
             continue;
          }*/
 
-printf("z80.regSP == %x\n(rb(&memory,(tmp_z80_PC + 1)) << 8) == %x\nrb(&memory,(tmp_z80_PC)) == %x\n",z80.regSP,(rb(&memory,(tmp_z80_PC + 1)) << 8),rb(&memory,(tmp_z80_PC)));
+printf("z80.regSP == %x\n(rb(&z80,&memory,(tmp_z80_PC + 1)) << 8) == %x\nrb(&z80,&memory,(tmp_z80_PC)) == %x\n",z80.regSP,(rb(&z80,&memory,(tmp_z80_PC + 1)) << 8),rb(&z80,&memory,(tmp_z80_PC)));
 printf("tmp_z80_PC == %x\n",tmp_z80_PC);
-         fail_unless((uint16_t) z80.regSP == (uint16_t) (rb(&memory,((uint16_t) tmp_z80_PC + (uint16_t) 1)) << 8) + (uint16_t) rb(&memory,((uint16_t) tmp_z80_PC)),"SP register incorrect value");
+         fail_unless((uint16_t) z80.regSP == (uint16_t) (rb(&z80,&memory,((uint16_t) tmp_z80_PC + (uint16_t) 1)) << 8) + (uint16_t) rb(&z80,&memory,((uint16_t) tmp_z80_PC)),"SP register incorrect value");
       }
    }
 }
@@ -1243,9 +1243,9 @@ START_TEST (test_check_OP_32h_LDDHLA)
          //fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-         printf("HL+1 addr content = %x\nA = %x\n",rb(&memory,(z80.regH << 8) + z80.regL + 1),z80.regA);
+         printf("HL+1 addr content = %x\nA = %x\n",rb(&z80,&memory,(z80.regH << 8) + z80.regL + 1),z80.regA);
 
-         fail_unless(rb(&memory,(z80.regH << 8) + z80.regL + 1) == z80.regA,"Content at address pointed by HL (+1 at this point) does not match A register.");
+         fail_unless(rb(&z80,&memory,(z80.regH << 8) + z80.regL + 1) == z80.regA,"Content at address pointed by HL (+1 at this point) does not match A register.");
       }
    }
 }
@@ -2155,7 +2155,7 @@ START_TEST (test_check_OP_72h_LDHLD)
    //fail_unless(z80.regPC == tmp_z80_PC,"Program Counter should not be incremented by opcode function code");
 
    fail_unless(result == 0,"Result was not 0");
-   fail_unless(rb(&memory,(z80.regH << 8) + z80.regL) == z80.regD,"Content of address held in HL register does not equal register D");
+   fail_unless(rb(&z80,&memory,(z80.regH << 8) + z80.regL) == z80.regD,"Content of address held in HL register does not equal register D");
 }
 END_TEST
 
@@ -7081,9 +7081,9 @@ START_TEST (test_check_OP_E0h_LDHAn)
       fail_unless(result == 0,"Result was not 0");
 //printf("SEG PC == %x\nSEG rb == %x\nSEG addr == %x\n",z80.regPC & 0xFF,0xff00 + z80.regPC);
 //printf("fuck\n");
-printf("regA == %x\nrb + offset == %x\n", z80.regA, rb(&memory,(0xff00 + (rb(&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
+printf("regA == %x\nrb + offset == %x\n", z80.regA, rb(&z80,&memory,(0xff00 + (rb(&z80,&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
 fflush( stdout );
-      fail_unless(z80.regA == rb(&memory,(0xff00 + (rb(&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
+      fail_unless(z80.regA == rb(&z80,&memory,(0xff00 + (rb(&z80,&memory,(tmp_z80_PC & 0xFF)) & 0xFF))));
    }
 }
 END_TEST
@@ -7108,7 +7108,7 @@ START_TEST (test_check_OP_E2h_LDHCA)
 
    fail_unless(result == 0,"Result was not 0");
 
-   fail_unless(z80.regA == rb(&memory,(0xff00 + z80.regC)));
+   fail_unless(z80.regA == rb(&z80,&memory,(0xff00 + z80.regC)));
 }
 END_TEST
 
