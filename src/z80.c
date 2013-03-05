@@ -37,6 +37,10 @@
    #define regSP r->r16[0x1]
 #endif
 
+// TODO 0x4f is done but CALLa16 opcode is still broken (points to 0x94 instead of 0x95).
+//      Unit test passes because it's obviously broken.. Don't think this problem will be
+//      too difficult to fix
+
 int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op)
 {
    op = malloc(sizeof(Opcodes) * 0x100);
@@ -2219,9 +2223,22 @@ int OP_CCh_CALLZa16(Memory * memory, Z80 * z80)
 
 int OP_CDh_CALLa16(Memory * memory, Z80 * z80)
 {
-   
+   z80->regSP = (z80->regSP - 0x2);
+   ww(z80,memory,z80->regSP,(z80->regPC + 0x3));
 
-   return 1;
+   z80->regPC = rw(z80,memory,z80->regPC);
+/*
+   CALLnn: function () {
+      Z80._r.sp -= 2;
+    
+      MMU.ww(Z80._r.sp, Z80._r.pc + 2);
+    
+      Z80._r.pc = MMU.rw(Z80._r.pc);
+    
+      Z80._r.m = 5;
+  },*/
+
+   return 0;
 }
 
 int OP_CEh_ADCAd8(Memory * memory, Z80 * z80)
@@ -4430,7 +4447,7 @@ int Execute(Memory * memory, Z80 * z80)
    // Increment PC if CB prefix not called
    if (z80->op_call != z80->cb_op)
    {
-      z80->regPC = z80->regPC + z80->op_call[rb(z80,memory,(tmp_z80_PC))].size - 1;
+      z80->regPC = z80->regPC + z80->op_call[rb(z80,memory,(tmp_z80_PC))].advancePC - 1;
    }
 
    // Set tick if tick is known

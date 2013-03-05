@@ -142,7 +142,6 @@ pow_uint8 ( uint8_t value, uint8_t pow )
    }
 }
 
-
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  LDXd8
@@ -198,7 +197,6 @@ int LDXY(Memory * memory, Z80 * z80, uint8_t regOrder, uint16_t tmp_z80_PC)
 
    return 0;
 }
-
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -718,7 +716,6 @@ int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
    return 0;
 }
 
-
 int CB_RLX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    return 0;
@@ -1183,7 +1180,6 @@ START_TEST (test_check_OP_31h_LDSPnn)
          //fail_unless((z80.regPC - 2) == tmp_z80_PC,"Program Counter should be incremented by opcode function code");
 
          fail_unless(result == 0,"Result was not 0");
-
 
          // @TODO
          // Need to fully complete memory
@@ -3298,6 +3294,1174 @@ START_TEST (test_check_OP_A7h_ANDA)
    free(z80);
    free(memory);
    free(registers);
+}
+END_TEST
+
+START_TEST (test_check_OP_A8h_XORB)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_A9h_XORC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_AAh_XORD)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_ABh_XORE)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_ACh_XORH)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_ADh_XORL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_AEh_XORHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+// Implemented elsewhere
+/*
+START_TEST (test_check_OP_AFh_XORA)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST*/
+
+START_TEST (test_check_OP_B0h_ORB)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B1h_ORC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B2h_ORD)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B3h_ORE)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B4h_ORH)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B5h_ORL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B6h_ORHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B7h_ORA)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B8h_CPB)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_B9h_CPC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_BAh_CPD)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_BBh_CPE)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_BCh_CPH)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_BDh_CPL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_BEh_CPHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_BFh_CPA)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C0h_RETNZ)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C1h_POPBC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C2h_JPNZa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C3h_JPa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C4h_CALLNZa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C5h_PUSHBC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C6h_ADDAd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C7h_RST00H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C8h_RETZ)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_C9h_RET)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_CAh_JPZa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_CBh_PREFIXCB)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_CCh_CALLZa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_CDh_CALLa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   int result = 0;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+   uint16_t tmp_z80_SP = z80.regSP;
+
+   result = OP_CDh_CALLa16_wrapper(&memory,&z80);
+
+   fail_unless((z80.regSP + 2) == tmp_z80_SP);
+printf("HIT %x %x\n",rw(&z80,&memory,z80.regSP), (z80.regPC + 0x3));
+   fail_unless(rw(&z80,&memory,z80.regSP) == (z80.regPC + 0x3));
+   fail_unless(z80.regPC == rw(&z80,&memory,z80.regPC));
+
+/*  CALLnn: function () {
+      Z80._r.sp -= 2;
+    
+      MMU.ww(Z80._r.sp, Z80._r.pc + 2);
+    
+      Z80._r.pc = MMU.rw(Z80._r.pc);
+    
+      Z80._r.m = 5;
+  },*/
+}
+END_TEST
+
+START_TEST (test_check_OP_CEh_ADCAd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_CFh_RST08H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D0h_RETNC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D1h_POPDE)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D2h_JPNCa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D3h_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D4h_CALLNCa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D5h_PUSHDE)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D6h_SUBd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D7h_RST10H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D8h_RETC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_D9h_RETI)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_DAh_JPCa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_DBh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_DCh_CALLCa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_DDh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_DEh_SBCAd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_DFh_RST18H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E0h_LDHa8A)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E1h_POPHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+// Implemented elsewhere
+/*
+START_TEST (test_check_OP_E2h_LDHCA)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST*/
+
+START_TEST (test_check_OP_E3h_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E4h_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E5h_PUSHHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E6h_ANDd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E7h_RST20H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E8h_ADDSPr8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_E9h_JPHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_EAh_LDnnA)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_EBh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_ECh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_EDh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_EEh_XORd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_EFh_RST28H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F0h_LDHAa8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F1h_POPAF)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F2h_LDAC)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F3h_DI)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F4h_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F5h_PUSHAF)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F6h_ORd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F7h_RST30H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F8h_LDHLSPr8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_F9h_LDSPHL)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_FAh_LDAa16)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_FBh_EI)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_FCh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_FDh_INVALID)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_FEh_CPd8)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
+}
+END_TEST
+
+START_TEST (test_check_OP_FFh_RST38H)
+{
+   Memory memory;
+   Opcodes op;
+   Opcodes cb_op;
+   Registers registers;
+   Z80 z80;
+
+   InitZ80(&z80,&registers,&op,&cb_op);
+
 }
 END_TEST
 
@@ -7216,6 +8380,7 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_9Ch_SBCAH);
    tcase_add_test(tc_core,test_check_OP_9Dh_SBCAL);
    tcase_add_test(tc_core,test_check_OP_9Fh_SBCAA);
+
    tcase_add_test(tc_core,test_check_OP_A0h_ANDB);
    tcase_add_test(tc_core,test_check_OP_A1h_ANDC);
    tcase_add_test(tc_core,test_check_OP_A2h_ANDD);
@@ -7223,6 +8388,99 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_A4h_ANDH);
    tcase_add_test(tc_core,test_check_OP_A5h_ANDL);
    tcase_add_test(tc_core,test_check_OP_A7h_ANDA);
+   tcase_add_test(tc_core,test_check_OP_A8h_XORB);
+   tcase_add_test(tc_core,test_check_OP_A9h_XORC);
+   tcase_add_test(tc_core,test_check_OP_AAh_XORD);
+   tcase_add_test(tc_core,test_check_OP_ABh_XORE);
+   tcase_add_test(tc_core,test_check_OP_ACh_XORH);
+   tcase_add_test(tc_core,test_check_OP_ADh_XORL);
+   tcase_add_test(tc_core,test_check_OP_AEh_XORHL);
+   tcase_add_test(tc_core,test_check_OP_AFh_XORA);
+
+   tcase_add_test(tc_core,test_check_OP_B0h_ORB);
+   tcase_add_test(tc_core,test_check_OP_B1h_ORC);
+   tcase_add_test(tc_core,test_check_OP_B2h_ORD);
+   tcase_add_test(tc_core,test_check_OP_B3h_ORE);
+   tcase_add_test(tc_core,test_check_OP_B4h_ORH);
+   tcase_add_test(tc_core,test_check_OP_B5h_ORL);
+   tcase_add_test(tc_core,test_check_OP_B6h_ORHL);
+   tcase_add_test(tc_core,test_check_OP_B7h_ORA);
+   tcase_add_test(tc_core,test_check_OP_B8h_CPB);
+   tcase_add_test(tc_core,test_check_OP_B9h_CPC);
+   tcase_add_test(tc_core,test_check_OP_BAh_CPD);
+   tcase_add_test(tc_core,test_check_OP_BBh_CPE);
+   tcase_add_test(tc_core,test_check_OP_BCh_CPH);
+   tcase_add_test(tc_core,test_check_OP_BDh_CPL);
+   tcase_add_test(tc_core,test_check_OP_BEh_CPHL);
+   tcase_add_test(tc_core,test_check_OP_BFh_CPA);
+
+   tcase_add_test(tc_core,test_check_OP_C0h_RETNZ);
+   tcase_add_test(tc_core,test_check_OP_C1h_POPBC);
+   tcase_add_test(tc_core,test_check_OP_C2h_JPNZa16);
+   tcase_add_test(tc_core,test_check_OP_C3h_JPa16);
+   tcase_add_test(tc_core,test_check_OP_C4h_CALLNZa16);
+   tcase_add_test(tc_core,test_check_OP_C5h_PUSHBC);
+   tcase_add_test(tc_core,test_check_OP_C6h_ADDAd8);
+   tcase_add_test(tc_core,test_check_OP_C7h_RST00H);
+   tcase_add_test(tc_core,test_check_OP_C8h_RETZ);
+   tcase_add_test(tc_core,test_check_OP_C9h_RET);
+   tcase_add_test(tc_core,test_check_OP_CAh_JPZa16);
+   tcase_add_test(tc_core,test_check_OP_CBh_PREFIXCB);
+   tcase_add_test(tc_core,test_check_OP_CCh_CALLZa16);
+   tcase_add_test(tc_core,test_check_OP_CDh_CALLa16);
+   tcase_add_test(tc_core,test_check_OP_CEh_ADCAd8);
+   tcase_add_test(tc_core,test_check_OP_CFh_RST08H);
+
+   tcase_add_test(tc_core,test_check_OP_D0h_RETNC);
+   tcase_add_test(tc_core,test_check_OP_D1h_POPDE);
+   tcase_add_test(tc_core,test_check_OP_D2h_JPNCa16);
+   tcase_add_test(tc_core,test_check_OP_D3h_INVALID);
+   tcase_add_test(tc_core,test_check_OP_D4h_CALLNCa16);
+   tcase_add_test(tc_core,test_check_OP_D5h_PUSHDE);
+   tcase_add_test(tc_core,test_check_OP_D6h_SUBd8);
+   tcase_add_test(tc_core,test_check_OP_D7h_RST10H);
+   tcase_add_test(tc_core,test_check_OP_D8h_RETC);
+   tcase_add_test(tc_core,test_check_OP_D9h_RETI);
+   tcase_add_test(tc_core,test_check_OP_DAh_JPCa16);
+   tcase_add_test(tc_core,test_check_OP_DBh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_DCh_CALLCa16);
+   tcase_add_test(tc_core,test_check_OP_DDh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_DEh_SBCAd8);
+   tcase_add_test(tc_core,test_check_OP_DFh_RST18H);
+
+   tcase_add_test(tc_core,test_check_OP_E0h_LDHa8A);
+   tcase_add_test(tc_core,test_check_OP_E1h_POPHL);
+   tcase_add_test(tc_core,test_check_OP_E2h_LDHCA);
+   tcase_add_test(tc_core,test_check_OP_E3h_INVALID);
+   tcase_add_test(tc_core,test_check_OP_E4h_INVALID);
+   tcase_add_test(tc_core,test_check_OP_E5h_PUSHHL);
+   tcase_add_test(tc_core,test_check_OP_E6h_ANDd8);
+   tcase_add_test(tc_core,test_check_OP_E7h_RST20H);
+   tcase_add_test(tc_core,test_check_OP_E8h_ADDSPr8);
+   tcase_add_test(tc_core,test_check_OP_E9h_JPHL);
+   tcase_add_test(tc_core,test_check_OP_EAh_LDnnA);
+   tcase_add_test(tc_core,test_check_OP_EBh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_ECh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_EDh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_EEh_XORd8);
+   tcase_add_test(tc_core,test_check_OP_EFh_RST28H);
+
+   tcase_add_test(tc_core,test_check_OP_F0h_LDHAa8);
+   tcase_add_test(tc_core,test_check_OP_F1h_POPAF);
+   tcase_add_test(tc_core,test_check_OP_F2h_LDAC);
+   tcase_add_test(tc_core,test_check_OP_F3h_DI);
+   tcase_add_test(tc_core,test_check_OP_F4h_INVALID);
+   tcase_add_test(tc_core,test_check_OP_F5h_PUSHAF);
+   tcase_add_test(tc_core,test_check_OP_F6h_ORd8);
+   tcase_add_test(tc_core,test_check_OP_F7h_RST30H);
+   tcase_add_test(tc_core,test_check_OP_F8h_LDHLSPr8);
+   tcase_add_test(tc_core,test_check_OP_F9h_LDSPHL);
+   tcase_add_test(tc_core,test_check_OP_FAh_LDAa16);
+   tcase_add_test(tc_core,test_check_OP_FBh_EI);
+   tcase_add_test(tc_core,test_check_OP_FCh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_FDh_INVALID);
+   tcase_add_test(tc_core,test_check_OP_FEh_CPd8);
+   tcase_add_test(tc_core,test_check_OP_FFh_RST38H);
 
    // CB prefix opcodes
    tcase_add_test(tc_core,test_check_OP_CB_00h_RLCB);
@@ -7363,9 +8621,6 @@ Suite * add_suite(void)
    tcase_add_test(tc_core,test_check_OP_CB_FDh_SET7L);
    tcase_add_test(tc_core,test_check_OP_CB_FFh_SET7A);
 
-   tcase_add_test(tc_core,test_check_OP_AFh_XORA);
-   tcase_add_test(tc_core,test_check_OP_E0h_LDHAn);
-   tcase_add_test(tc_core,test_check_OP_E2h_LDHCA);
    suite_add_tcase(s,tc_core);
 
    return s;

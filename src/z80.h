@@ -43,6 +43,7 @@ typedef struct
 {
    uint8_t size;
    uint8_t ticks;
+   uint8_t advancePC;
    char name[1024];
    // Function pointer
    int (*call)();

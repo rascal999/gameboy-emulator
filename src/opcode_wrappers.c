@@ -630,11 +630,10 @@ int OP_4Eh_LDCHL_wrapper(Memory * memory, Z80 * z80)
 
 int OP_4Fh_LDCA_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_4Fh_LDCA(memory,z80);
+   int retValue = OP_LDXY(memory,z80,0x20);
 
    return retValue;
 }
-
 
 int OP_50h_LDDB_wrapper(Memory * memory, Z80 * z80)
 {

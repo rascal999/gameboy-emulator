@@ -65,8 +65,8 @@ uint16_t mock_rw(Z80 * z80, Memory * mem, uint16_t addr)
 /* Write word */              
 int mock_ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value) 
 {
-   mem->addr[addr] = ((value & 0xFF00) >> 4);
-   mem->addr[addr + 1] = (value & 0xFF);
+   mem->addr[addr] = (value & 0xFF);
+   mem->addr[addr + 1] = (value & 0xFF00);
 
    return 0;                  
 }
@@ -309,8 +309,8 @@ int ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value)
       return mock_func_return;
    }
 
-   mem->addr[addr] = ((value & 0xFF00) >> 4);
-   mem->addr[addr + 1] = (value & 0xFF);
+   mem->addr[addr] = (value & 0xFF);
+   mem->addr[addr + 1] = (value & 0xFF00);
 
    return 0;
 }
