@@ -509,7 +509,7 @@ int ANDXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t regOrder, uint16_t 
  *  Description:  Test bit X of register Y
  * =====================================================================================
  */
-int CB_BITXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_BITXY_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegisterBit;
    char destName;
@@ -552,7 +552,7 @@ printf("cpuRegisterBit == %x\n",cpuRegisterBit);
  *  Description:  Reset bit X of register Y
  * =====================================================================================
  */
-int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_RESXY_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
    uint8_t flagBit;
@@ -585,7 +585,7 @@ int CB_RESXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
  *  Description:  Set bit X of register Y
  * =====================================================================================
  */
-int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_SETXY_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
    uint8_t flagBit;
@@ -618,7 +618,7 @@ int CB_SETXY(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint
  *  Description:  Rotate register X left and add carry
  * =====================================================================================
  */
-int CB_RLCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_RLCX_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
    uint8_t oldCpuRegister;
@@ -671,7 +671,7 @@ printf("\nparameters == %x\n((oldCpuRegister << 1) | ((oldCpuRegister >> 7) & 0x
  *  Description:  Rotate register X right and add carry
  * =====================================================================================
  */
-int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_RRCX_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
    uint8_t oldCpuRegister;
@@ -716,12 +716,12 @@ int CB_RRCX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint1
    return 0;
 }
 
-int CB_RLX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_RLX_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    return 0;
 }
 
-int CB_RRX(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
+int CB_RRX_test(Memory * memory, Z80 * z80, Z80 * old_z80, uint8_t parameters, uint16_t tmp_z80_PC)
 {
    uint8_t cpuRegister;
    uint8_t oldCpuRegister;
@@ -1029,8 +1029,15 @@ START_TEST (test_check_OP_06h_LDBd8)
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   int result = 1;
 
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   result = OP_06h_LDBd8_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   fail_unless(z80.regB == rb(&z80,&memory,z80.regPC));
 }
 END_TEST
 
@@ -1259,8 +1266,27 @@ START_TEST (test_check_OP_17h_RLA)
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   int result = 1;
 
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   uint8_t tmp_z80_regA = z80.regA;
+   uint8_t tmp_z80_regF = z80.regF;
+
+   result = OP_17h_RLA_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   // Carry flag
+   fail_unless(((z80.regF >> 4) & 0x01) == ((tmp_z80_regA >> 7) & 0x01));
+   // Bit shift
+   fail_unless(z80.regA == (((tmp_z80_regA << 1) & 0xFF) | ((tmp_z80_regF >> 4) & 0x01)));
+   // Neg flag
+   fail_unless(((z80.regF >> 6) & 0x01) == 0x00);
+   // Half flag
+   fail_unless(((z80.regF >> 5) & 0x01) == 0x00);
+   // Zero flag
+   fail_unless(((z80.regF >> 7) & 0x01) == 0x00);
 }
 END_TEST
 
@@ -2301,6 +2327,8 @@ START_TEST (test_check_OP_4Fh_LDCA)
    result = OP_LDXY(memory,z80,0x20);
 
    LDXY(memory,z80,0x20,tmp_z80_PC);
+
+   fail_unless(z80->regC == z80->regA);
 
    free(memory);
    free(registers);
@@ -4652,8 +4680,22 @@ START_TEST (test_check_OP_C1h_POPBC)
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   int result = 1;
 
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   z80.regSP = 0xFFFD;
+
+   uint16_t tmp_z80_SP = z80.regSP;
+
+   result = OP_C1h_POPBC_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+printf("HIT %x -- %x\n",z80.regSP,(tmp_z80_SP + 0x2));
+   fail_unless(z80.regSP == (tmp_z80_SP + 0x2));
+   fail_unless(rb(&z80,&memory,(z80.regSP - 0x1)) == z80.regB);
+   fail_unless(rb(&z80,&memory,(z80.regSP - 0x2)) == z80.regC);
 }
 END_TEST
 
@@ -4704,8 +4746,19 @@ START_TEST (test_check_OP_C5h_PUSHBC)
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   int result = 1;
 
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   uint16_t tmp_z80_SP = z80.regSP;
+
+   result = OP_C5h_PUSHBC_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   fail_unless(z80.regSP == (tmp_z80_SP - 0x2));
+   fail_unless(rb(&z80,&memory,(z80.regSP)) == z80.regC);
+   fail_unless(rb(&z80,&memory,(z80.regSP + 0x1)) == z80.regB);
 }
 END_TEST
 
@@ -5521,7 +5574,7 @@ START_TEST (test_check_CB_OP_00h_RLCB)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x1);
-   CB_RLCX(memory,z80,old_z80,0x1,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x1,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5549,7 +5602,7 @@ START_TEST (test_check_CB_OP_01h_RLCC)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x2);
-   CB_RLCX(memory,z80,old_z80,0x2,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x2,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5577,7 +5630,7 @@ START_TEST (test_check_CB_OP_02h_RLCD)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x3);
-   CB_RLCX(memory,z80,old_z80,0x3,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x3,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5605,7 +5658,7 @@ START_TEST (test_check_CB_OP_03h_RLCE)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x4);
-   CB_RLCX(memory,z80,old_z80,0x4,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x4,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5633,7 +5686,7 @@ START_TEST (test_check_CB_OP_04h_RLCH)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x6);
-   CB_RLCX(memory,z80,old_z80,0x6,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x6,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5661,7 +5714,7 @@ START_TEST (test_check_CB_OP_05h_RLCL)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x7);
-   CB_RLCX(memory,z80,old_z80,0x7,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x7,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5702,7 +5755,7 @@ START_TEST (test_check_CB_OP_07h_RLCA)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RLC(memory,z80,0x0);
-   CB_RLCX(memory,z80,old_z80,0x0,tmp_z80_PC);
+   CB_RLCX_test(memory,z80,old_z80,0x0,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5730,7 +5783,7 @@ START_TEST (test_check_CB_OP_08h_RRCB)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x1);
-   CB_RRCX(memory,z80,old_z80,0x1,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x1,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5758,7 +5811,7 @@ START_TEST (test_check_CB_OP_09h_RRCC)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x2);
-   CB_RRCX(memory,z80,old_z80,0x2,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x2,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5786,7 +5839,7 @@ START_TEST (test_check_CB_OP_0Ah_RRCD)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x3);
-   CB_RRCX(memory,z80,old_z80,0x3,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x3,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5814,7 +5867,7 @@ START_TEST (test_check_CB_OP_0Bh_RRCE)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x4);
-   CB_RRCX(memory,z80,old_z80,0x4,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x4,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5842,7 +5895,7 @@ START_TEST (test_check_CB_OP_0Ch_RRCH)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x6);
-   CB_RRCX(memory,z80,old_z80,0x6,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x6,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5870,7 +5923,7 @@ START_TEST (test_check_CB_OP_0Dh_RRCL)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x7);
-   CB_RRCX(memory,z80,old_z80,0x7,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x7,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5911,7 +5964,7 @@ START_TEST (test_check_CB_OP_0Fh_RRCA)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RRC(memory,z80,0x0);
-   CB_RRCX(memory,z80,old_z80,0x0,tmp_z80_PC);
+   CB_RRCX_test(memory,z80,old_z80,0x0,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -5943,8 +5996,27 @@ START_TEST (test_check_CB_OP_11h_RLC)
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   int result = 1;
 
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   uint8_t tmp_z80_regC = z80.regC;
+   uint8_t tmp_z80_regF = z80.regF;
+
+   result = CB_OP_11h_RLC_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   // Carry flag
+   fail_unless(((z80.regF >> 4) & 0x01) == (((tmp_z80_regC >> 7) & 0x01)));
+   // Bit shift
+   fail_unless(z80.regC == (((tmp_z80_regC << 1) & 0xFF) | ((tmp_z80_regF >> 4) & 0x01)));
+   // Neg flag
+   fail_unless(((z80.regF >> 6) & 0x01) == 0x00);
+   // Half flag
+   fail_unless(((z80.regF >> 5) & 0x01) == 0x00);
+   // Zero flag
+   fail_unless(((z80.regF >> 7) & 0x01) == ((z80.regC & 0xFF) == 0x00));
 }
 END_TEST
 
@@ -6563,7 +6635,7 @@ START_TEST (test_check_CB_OP_40h_BIT0B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x01);
-   CB_BITXY(memory,z80,old_z80,0x01,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x01,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -6591,7 +6663,7 @@ START_TEST (test_check_CB_OP_41h_BIT0C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x02);
-   CB_BITXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x02,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -6619,7 +6691,7 @@ START_TEST (test_check_CB_OP_42h_BIT0D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x03);
-   CB_BITXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x03,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -6647,7 +6719,7 @@ START_TEST (test_check_CB_OP_43h_BIT0E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x04);
-   CB_BITXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x04,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -6675,7 +6747,7 @@ START_TEST (test_check_CB_OP_44h_BIT0H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x06);
-   CB_BITXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x06,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -6703,7 +6775,7 @@ START_TEST (test_check_CB_OP_45h_BIT0L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x06);
-   CB_BITXY(memory,z80,old_z80,0x6,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x6,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -6744,7 +6816,7 @@ START_TEST (test_check_CB_OP_47h_BIT0A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_BIT(memory,z80,0x00);
-   CB_BITXY(memory,z80,old_z80,0x00,tmp_z80_PC);
+   CB_BITXY_test(memory,z80,old_z80,0x00,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7500,7 +7572,7 @@ START_TEST (test_check_CB_OP_80h_RES0B)
    uint16_t tmp_z80_PC = z80->regPC;
 printf("B == %x\n",z80->regB);
    result = CB_RES(memory,z80,0x01);
-   CB_RESXY(memory,z80,old_z80,0x01,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x01,tmp_z80_PC);
 printf("B == %x\n",z80->regB);
 
    free(old_z80);
@@ -7529,7 +7601,7 @@ START_TEST (test_check_CB_OP_81h_RES0C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x02);
-   CB_RESXY(memory,z80,old_z80,0x02,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x02,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7557,7 +7629,7 @@ START_TEST (test_check_CB_OP_82h_RES0D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x03);
-   CB_RESXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x03,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7585,7 +7657,7 @@ START_TEST (test_check_CB_OP_83h_RES0E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x04);
-   CB_RESXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x04,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7613,7 +7685,7 @@ START_TEST (test_check_CB_OP_84h_RES0H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x06);
-   CB_RESXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x06,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7641,7 +7713,7 @@ START_TEST (test_check_CB_OP_85h_RES0L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x07);
-   CB_RESXY(memory,z80,old_z80,0x07,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x07,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7682,7 +7754,7 @@ START_TEST (test_check_CB_OP_87h_RES0A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x00);
-   CB_RESXY(memory,z80,old_z80,0x00,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x00,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7710,7 +7782,7 @@ START_TEST (test_check_CB_OP_88h_RES1B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x11);
-   CB_RESXY(memory,z80,old_z80,0x11,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x11,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7738,7 +7810,7 @@ START_TEST (test_check_CB_OP_89h_RES1C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x12);
-   CB_RESXY(memory,z80,old_z80,0x12,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x12,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7766,7 +7838,7 @@ START_TEST (test_check_CB_OP_8Ah_RES1D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x13);
-   CB_RESXY(memory,z80,old_z80,0x13,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x13,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7794,7 +7866,7 @@ START_TEST (test_check_CB_OP_8Bh_RES1E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x14);
-   CB_RESXY(memory,z80,old_z80,0x14,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x14,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7822,7 +7894,7 @@ START_TEST (test_check_CB_OP_8Ch_RES1H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x17);
-   CB_RESXY(memory,z80,old_z80,0x17,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x17,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7850,7 +7922,7 @@ START_TEST (test_check_CB_OP_8Dh_RES1L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x17);
-   CB_RESXY(memory,z80,old_z80,0x17,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x17,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7891,7 +7963,7 @@ START_TEST (test_check_CB_OP_8Fh_RES1A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x10);
-   CB_RESXY(memory,z80,old_z80,0x10,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x10,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7919,7 +7991,7 @@ START_TEST (test_check_CB_OP_90h_RES2B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x21);
-   CB_RESXY(memory,z80,old_z80,0x21,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x21,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7947,7 +8019,7 @@ START_TEST (test_check_CB_OP_91h_RES2C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x22);
-   CB_RESXY(memory,z80,old_z80,0x22,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x22,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -7975,7 +8047,7 @@ START_TEST (test_check_CB_OP_92h_RES2D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x23);
-   CB_RESXY(memory,z80,old_z80,0x23,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x23,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8003,7 +8075,7 @@ START_TEST (test_check_CB_OP_93h_RES2E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x24);
-   CB_RESXY(memory,z80,old_z80,0x24,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x24,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8031,7 +8103,7 @@ START_TEST (test_check_CB_OP_94h_RES2H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x26);
-   CB_RESXY(memory,z80,old_z80,0x26,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x26,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8059,7 +8131,7 @@ START_TEST (test_check_CB_OP_95h_RES2L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x27);
-   CB_RESXY(memory,z80,old_z80,0x27,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x27,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8100,7 +8172,7 @@ START_TEST (test_check_CB_OP_97h_RES2A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x20);
-   CB_RESXY(memory,z80,old_z80,0x20,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x20,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8128,7 +8200,7 @@ START_TEST (test_check_CB_OP_98h_RES3B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x31);
-   CB_RESXY(memory,z80,old_z80,0x31,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x31,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8156,7 +8228,7 @@ START_TEST (test_check_CB_OP_99h_RES3C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x32);
-   CB_RESXY(memory,z80,old_z80,0x32,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x32,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8184,7 +8256,7 @@ START_TEST (test_check_CB_OP_9Ah_RES3D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x33);
-   CB_RESXY(memory,z80,old_z80,0x33,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x33,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8212,7 +8284,7 @@ START_TEST (test_check_CB_OP_9Bh_RES3E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x34);
-   CB_RESXY(memory,z80,old_z80,0x34,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x34,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8240,7 +8312,7 @@ START_TEST (test_check_CB_OP_9Ch_RES3H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x36);
-   CB_RESXY(memory,z80,old_z80,0x36,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x36,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8268,7 +8340,7 @@ START_TEST (test_check_CB_OP_9Dh_RES3L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x37);
-   CB_RESXY(memory,z80,old_z80,0x37,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x37,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8309,7 +8381,7 @@ START_TEST (test_check_CB_OP_9Fh_RES3A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x30);
-   CB_RESXY(memory,z80,old_z80,0x30,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x30,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8337,7 +8409,7 @@ START_TEST (test_check_CB_OP_A0h_RES4B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x41);
-   CB_RESXY(memory,z80,old_z80,0x41,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x41,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8365,7 +8437,7 @@ START_TEST (test_check_CB_OP_A1h_RES4C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x42);
-   CB_RESXY(memory,z80,old_z80,0x42,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x42,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8393,7 +8465,7 @@ START_TEST (test_check_CB_OP_A2h_RES4D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x43);
-   CB_RESXY(memory,z80,old_z80,0x43,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x43,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8421,7 +8493,7 @@ START_TEST (test_check_CB_OP_A3h_RES4E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x44);
-   CB_RESXY(memory,z80,old_z80,0x44,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x44,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8449,7 +8521,7 @@ START_TEST (test_check_CB_OP_A4h_RES4H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x46);
-   CB_RESXY(memory,z80,old_z80,0x46,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x46,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8477,7 +8549,7 @@ START_TEST (test_check_CB_OP_A5h_RES4L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x47);
-   CB_RESXY(memory,z80,old_z80,0x47,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x47,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8518,7 +8590,7 @@ START_TEST (test_check_CB_OP_A7h_RES4A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x40);
-   CB_RESXY(memory,z80,old_z80,0x40,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x40,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8546,7 +8618,7 @@ START_TEST (test_check_CB_OP_A8h_RES5B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x51);
-   CB_RESXY(memory,z80,old_z80,0x51,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x51,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8574,7 +8646,7 @@ START_TEST (test_check_CB_OP_A9h_RES5C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x52);
-   CB_RESXY(memory,z80,old_z80,0x52,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x52,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8602,7 +8674,7 @@ START_TEST (test_check_CB_OP_AAh_RES5D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x53);
-   CB_RESXY(memory,z80,old_z80,0x53,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x53,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8630,7 +8702,7 @@ START_TEST (test_check_CB_OP_ABh_RES5E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x54);
-   CB_RESXY(memory,z80,old_z80,0x54,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x54,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8658,7 +8730,7 @@ START_TEST (test_check_CB_OP_ACh_RES5H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x56);
-   CB_RESXY(memory,z80,old_z80,0x56,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x56,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8686,7 +8758,7 @@ START_TEST (test_check_CB_OP_ADh_RES5L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x57);
-   CB_RESXY(memory,z80,old_z80,0x57,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x57,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8727,7 +8799,7 @@ START_TEST (test_check_CB_OP_AFh_RES5A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x50);
-   CB_RESXY(memory,z80,old_z80,0x50,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x50,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8755,7 +8827,7 @@ START_TEST (test_check_CB_OP_B0h_RES6B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x61);
-   CB_RESXY(memory,z80,old_z80,0x61,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x61,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8783,7 +8855,7 @@ START_TEST (test_check_CB_OP_B1h_RES6C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x62);
-   CB_RESXY(memory,z80,old_z80,0x62,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x62,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8811,7 +8883,7 @@ START_TEST (test_check_CB_OP_B2h_RES6D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x63);
-   CB_RESXY(memory,z80,old_z80,0x63,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x63,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8839,7 +8911,7 @@ START_TEST (test_check_CB_OP_B3h_RES6E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x64);
-   CB_RESXY(memory,z80,old_z80,0x64,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x64,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8867,7 +8939,7 @@ START_TEST (test_check_CB_OP_B4h_RES6H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x66);
-   CB_RESXY(memory,z80,old_z80,0x66,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x66,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8895,7 +8967,7 @@ START_TEST (test_check_CB_OP_B5h_RES6L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x67);
-   CB_RESXY(memory,z80,old_z80,0x67,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x67,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8936,7 +9008,7 @@ START_TEST (test_check_CB_OP_B7h_RES6A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x60);
-   CB_RESXY(memory,z80,old_z80,0x60,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x60,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8964,7 +9036,7 @@ START_TEST (test_check_CB_OP_B8h_RES7B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x71);
-   CB_RESXY(memory,z80,old_z80,0x71,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x71,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -8992,7 +9064,7 @@ START_TEST (test_check_CB_OP_B9h_RES7C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x72);
-   CB_RESXY(memory,z80,old_z80,0x72,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x72,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9020,7 +9092,7 @@ START_TEST (test_check_CB_OP_BAh_RES7D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x73);
-   CB_RESXY(memory,z80,old_z80,0x73,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x73,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9048,7 +9120,7 @@ START_TEST (test_check_CB_OP_BBh_RES7E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x74);
-   CB_RESXY(memory,z80,old_z80,0x74,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x74,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9076,7 +9148,7 @@ START_TEST (test_check_CB_OP_BCh_RES7H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x76);
-   CB_RESXY(memory,z80,old_z80,0x76,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x76,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9104,7 +9176,7 @@ START_TEST (test_check_CB_OP_BDh_RES7L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x77);
-   CB_RESXY(memory,z80,old_z80,0x77,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x77,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9145,7 +9217,7 @@ START_TEST (test_check_CB_OP_BFh_RES7A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_RES(memory,z80,0x70);
-   CB_RESXY(memory,z80,old_z80,0x70,tmp_z80_PC);
+   CB_RESXY_test(memory,z80,old_z80,0x70,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9171,10 +9243,10 @@ START_TEST (test_check_CB_OP_C0h_SET0B)
 
    int result = 0;
    uint16_t tmp_z80_PC = z80->regPC;
-printf("CB_SET (pre) B == %x\n",z80->regB);
+printf("CB_SET _test(pre) B == %x\n",z80->regB);
    result = CB_SET(memory,z80,0x01);
-   CB_SETXY(memory,z80,old_z80,0x01,tmp_z80_PC);
-printf("CB_SET (post) B == %x\n",z80->regB);
+   CB_SETXY_test(memory,z80,old_z80,0x01,tmp_z80_PC);
+printf("CB_SET _test(post) B == %x\n",z80->regB);
 
    free(old_z80);
    free(old_registers);
@@ -9201,10 +9273,10 @@ START_TEST (test_check_CB_OP_C1h_SET0C)
    int result = 0;
    uint16_t tmp_z80_PC = z80->regPC;
 
-printf("CB_SET (pre) C == %x\n",z80->regC);
+printf("CB_SET _test(pre) C == %x\n",z80->regC);
    result = CB_SET(memory,z80,0x02);
-   CB_SETXY(memory,z80,old_z80,0x02,tmp_z80_PC);
-printf("CB_SET (post) C == %x\n",z80->regC);
+   CB_SETXY_test(memory,z80,old_z80,0x02,tmp_z80_PC);
+printf("CB_SET _test(post) C == %x\n",z80->regC);
 
    free(old_z80);
    free(old_registers);
@@ -9232,7 +9304,7 @@ START_TEST (test_check_CB_OP_C2h_SET0D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x03);
-   CB_SETXY(memory,z80,old_z80,0x03,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x03,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9260,7 +9332,7 @@ START_TEST (test_check_CB_OP_C3h_SET0E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x04);
-   CB_SETXY(memory,z80,old_z80,0x04,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x04,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9288,7 +9360,7 @@ START_TEST (test_check_CB_OP_C4h_SET0H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x06);
-   CB_SETXY(memory,z80,old_z80,0x06,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x06,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9316,7 +9388,7 @@ START_TEST (test_check_CB_OP_C5h_SET0L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x07);
-   CB_SETXY(memory,z80,old_z80,0x07,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x07,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9357,7 +9429,7 @@ START_TEST (test_check_CB_OP_C7h_SET0A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x00);
-   CB_SETXY(memory,z80,old_z80,0x00,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x00,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9385,7 +9457,7 @@ START_TEST (test_check_CB_OP_C8h_SET1B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x11);
-   CB_SETXY(memory,z80,old_z80,0x11,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x11,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9413,7 +9485,7 @@ START_TEST (test_check_CB_OP_C9h_SET1C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x12);
-   CB_SETXY(memory,z80,old_z80,0x12,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x12,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9441,7 +9513,7 @@ START_TEST (test_check_CB_OP_CAh_SET1D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x13);
-   CB_SETXY(memory,z80,old_z80,0x13,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x13,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9469,7 +9541,7 @@ START_TEST (test_check_CB_OP_CBh_SET1E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x14);
-   CB_SETXY(memory,z80,old_z80,0x14,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x14,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9497,7 +9569,7 @@ START_TEST (test_check_CB_OP_CCh_SET1H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x16);
-   CB_SETXY(memory,z80,old_z80,0x16,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x16,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9525,7 +9597,7 @@ START_TEST (test_check_CB_OP_CDh_SET1L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x17);
-   CB_SETXY(memory,z80,old_z80,0x17,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x17,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9566,7 +9638,7 @@ START_TEST (test_check_CB_OP_CFh_SET1A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x10);
-   CB_SETXY(memory,z80,old_z80,0x10,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x10,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9594,7 +9666,7 @@ START_TEST (test_check_CB_OP_D0h_SET2B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x21);
-   CB_SETXY(memory,z80,old_z80,0x21,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x21,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9622,7 +9694,7 @@ START_TEST (test_check_CB_OP_D1h_SET2C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x22);
-   CB_SETXY(memory,z80,old_z80,0x22,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x22,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9650,7 +9722,7 @@ START_TEST (test_check_CB_OP_D2h_SET2D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x23);
-   CB_SETXY(memory,z80,old_z80,0x23,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x23,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9678,7 +9750,7 @@ START_TEST (test_check_CB_OP_D3h_SET2E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x24);
-   CB_SETXY(memory,z80,old_z80,0x24,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x24,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9706,7 +9778,7 @@ START_TEST (test_check_CB_OP_D4h_SET2H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x26);
-   CB_SETXY(memory,z80,old_z80,0x26,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x26,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9734,7 +9806,7 @@ START_TEST (test_check_CB_OP_D5h_SET2L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x27);
-   CB_SETXY(memory,z80,old_z80,0x27,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x27,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9775,7 +9847,7 @@ START_TEST (test_check_CB_OP_D7h_SET2A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x20);
-   CB_SETXY(memory,z80,old_z80,0x20,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x20,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9803,7 +9875,7 @@ START_TEST (test_check_CB_OP_D8h_SET3B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x31);
-   CB_SETXY(memory,z80,old_z80,0x31,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x31,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9831,7 +9903,7 @@ START_TEST (test_check_CB_OP_D9h_SET3C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x32);
-   CB_SETXY(memory,z80,old_z80,0x32,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x32,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9859,7 +9931,7 @@ START_TEST (test_check_CB_OP_DAh_SET3D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x33);
-   CB_SETXY(memory,z80,old_z80,0x33,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x33,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9887,7 +9959,7 @@ START_TEST (test_check_CB_OP_DBh_SET3E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x34);
-   CB_SETXY(memory,z80,old_z80,0x34,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x34,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9915,7 +9987,7 @@ START_TEST (test_check_CB_OP_DCh_SET3H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x36);
-   CB_SETXY(memory,z80,old_z80,0x36,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x36,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9943,7 +10015,7 @@ START_TEST (test_check_CB_OP_DDh_SET3L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x37);
-   CB_SETXY(memory,z80,old_z80,0x37,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x37,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -9984,7 +10056,7 @@ START_TEST (test_check_CB_OP_DFh_SET3A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x30);
-   CB_SETXY(memory,z80,old_z80,0x30,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x30,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10012,7 +10084,7 @@ START_TEST (test_check_CB_OP_E0h_SET4B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x41);
-   CB_SETXY(memory,z80,old_z80,0x41,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x41,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10040,7 +10112,7 @@ START_TEST (test_check_CB_OP_E1h_SET4C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x42);
-   CB_SETXY(memory,z80,old_z80,0x42,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x42,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10068,7 +10140,7 @@ START_TEST (test_check_CB_OP_E2h_SET4D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x43);
-   CB_SETXY(memory,z80,old_z80,0x43,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x43,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10096,7 +10168,7 @@ START_TEST (test_check_CB_OP_E3h_SET4E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x44);
-   CB_SETXY(memory,z80,old_z80,0x44,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x44,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10124,7 +10196,7 @@ START_TEST (test_check_CB_OP_E4h_SET4H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x46);
-   CB_SETXY(memory,z80,old_z80,0x46,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x46,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10152,7 +10224,7 @@ START_TEST (test_check_CB_OP_E5h_SET4L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x47);
-   CB_SETXY(memory,z80,old_z80,0x47,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x47,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10193,7 +10265,7 @@ START_TEST (test_check_CB_OP_E7h_SET4A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x40);
-   CB_SETXY(memory,z80,old_z80,0x40,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x40,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10221,7 +10293,7 @@ START_TEST (test_check_CB_OP_E8h_SET5B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x51);
-   CB_SETXY(memory,z80,old_z80,0x51,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x51,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10249,7 +10321,7 @@ START_TEST (test_check_CB_OP_E9h_SET5C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x52);
-   CB_SETXY(memory,z80,old_z80,0x52,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x52,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10277,7 +10349,7 @@ START_TEST (test_check_CB_OP_EAh_SET5D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x53);
-   CB_SETXY(memory,z80,old_z80,0x53,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x53,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10305,7 +10377,7 @@ START_TEST (test_check_CB_OP_EBh_SET5E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x54);
-   CB_SETXY(memory,z80,old_z80,0x54,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x54,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10333,7 +10405,7 @@ START_TEST (test_check_CB_OP_ECh_SET5H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x56);
-   CB_SETXY(memory,z80,old_z80,0x56,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x56,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10361,7 +10433,7 @@ START_TEST (test_check_CB_OP_EDh_SET5L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x57);
-   CB_SETXY(memory,z80,old_z80,0x57,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x57,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10402,7 +10474,7 @@ START_TEST (test_check_CB_OP_EFh_SET5A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x50);
-   CB_SETXY(memory,z80,old_z80,0x50,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x50,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10430,7 +10502,7 @@ START_TEST (test_check_CB_OP_F0h_SET6B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x61);
-   CB_SETXY(memory,z80,old_z80,0x61,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x61,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10458,7 +10530,7 @@ START_TEST (test_check_CB_OP_F1h_SET6C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x62);
-   CB_SETXY(memory,z80,old_z80,0x62,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x62,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10486,7 +10558,7 @@ START_TEST (test_check_CB_OP_F2h_SET6D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x63);
-   CB_SETXY(memory,z80,old_z80,0x63,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x63,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10514,7 +10586,7 @@ START_TEST (test_check_CB_OP_F3h_SET6E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x64);
-   CB_SETXY(memory,z80,old_z80,0x64,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x64,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10542,7 +10614,7 @@ START_TEST (test_check_CB_OP_F4h_SET6H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x66);
-   CB_SETXY(memory,z80,old_z80,0x66,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x66,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10570,7 +10642,7 @@ START_TEST (test_check_CB_OP_F5h_SET6L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x67);
-   CB_SETXY(memory,z80,old_z80,0x67,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x67,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10611,7 +10683,7 @@ START_TEST (test_check_CB_OP_F7h_SET6A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x60);
-   CB_SETXY(memory,z80,old_z80,0x60,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x60,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10639,7 +10711,7 @@ START_TEST (test_check_CB_OP_F8h_SET7B)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x71);
-   CB_SETXY(memory,z80,old_z80,0x71,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x71,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10667,7 +10739,7 @@ START_TEST (test_check_CB_OP_F9h_SET7C)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x72);
-   CB_SETXY(memory,z80,old_z80,0x72,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x72,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10695,7 +10767,7 @@ START_TEST (test_check_CB_OP_FAh_SET7D)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x73);
-   CB_SETXY(memory,z80,old_z80,0x73,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x73,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10723,7 +10795,7 @@ START_TEST (test_check_CB_OP_FBh_SET7E)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x74);
-   CB_SETXY(memory,z80,old_z80,0x74,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x74,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10751,7 +10823,7 @@ START_TEST (test_check_CB_OP_FCh_SET7H)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x76);
-   CB_SETXY(memory,z80,old_z80,0x76,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x76,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10779,7 +10851,7 @@ START_TEST (test_check_CB_OP_FDh_SET7L)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x77);
-   CB_SETXY(memory,z80,old_z80,0x77,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x77,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);
@@ -10820,7 +10892,7 @@ START_TEST (test_check_CB_OP_FFh_SET7A)
    uint16_t tmp_z80_PC = z80->regPC;
 
    result = CB_SET(memory,z80,0x70);
-   CB_SETXY(memory,z80,old_z80,0x70,tmp_z80_PC);
+   CB_SETXY_test(memory,z80,old_z80,0x70,tmp_z80_PC);
 
    free(old_z80);
    free(old_registers);

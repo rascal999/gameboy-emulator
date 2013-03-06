@@ -66,7 +66,7 @@ uint16_t mock_rw(Z80 * z80, Memory * mem, uint16_t addr)
 int mock_ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value) 
 {
    mem->addr[addr] = (value & 0xFF);
-   mem->addr[addr + 1] = (value & 0xFF00);
+   mem->addr[addr + 1] = ((value & 0xFF00) >> 8);
 
    return 0;                  
 }
@@ -75,6 +75,7 @@ int mock_ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value)
 int mock_InitMemory(Memory * memory)
 {
    int random_seed = time(NULL), i = 0;
+   printf("Random seed == %x\n",random_seed);
    srand(random_seed);
 
    for ( i=0 ; i<0xFFFF ; i++ )
@@ -310,7 +311,7 @@ int ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value)
    }
 
    mem->addr[addr] = (value & 0xFF);
-   mem->addr[addr + 1] = (value & 0xFF00);
+   mem->addr[addr + 1] = ((value & 0xFF00) >> 8);
 
    return 0;
 }

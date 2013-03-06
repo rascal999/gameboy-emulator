@@ -184,6 +184,34 @@ int CB_SET(Memory * memory, Z80 * z80, uint8_t parameters)
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  CB_RLX
+ *  Description:  Rotate X register left and update flags
+ * =====================================================================================
+ */
+   int
+CB_RLX ( Memory * memory, Z80 * z80, uint8_t x )
+{
+   uint8_t tmp_z80_regF = z80->regF;
+
+   // Negative flag and half-carry zero
+   // Others need to be set
+   z80->regF = 0x00;
+
+   // Set carry
+   z80->regF = z80->regF | (((z80->r->r[(x & 0x0F)] >> 7) & 0x01) << 4);
+
+   // Rotate register
+   z80->r->r[(x & 0xF)] = (((z80->r->r[(x & 0xF)] << 1) & 0xFF) | ((tmp_z80_regF >> 4) & 0x01));
+
+   // Zero flag
+   z80->regF = z80->regF & 0x7F;
+   z80->regF = (z80->regF | ((z80->r->r[(x & 0xF)] == 0) << 7));
+
+   return 0;
+}		/* -----  end of function CB_RLX  ----- */
+
 int CB_RLC(Memory * memory, Z80 * z80, uint8_t parameters)
 {
    // Unset F register (flags)
@@ -200,8 +228,6 @@ int CB_RLC(Memory * memory, Z80 * z80, uint8_t parameters)
 
    // Rotate register, add carry bit, and ensure 8 bits
    z80->r->r[(parameters & 0xF)] = (((z80->r->r[(parameters & 0xF)] << 1) + ((z80->regF >> 5) & 0x1)) & 0xFF);
-
-   //z80->ticks = 8;
 
    return 0;
 }
@@ -396,7 +422,6 @@ int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x)
    return 0;
 }
 
-/* OPCODES */
 int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
 {
    uint8_t oldRegValue = z80->r->r[x & 0xF];
@@ -426,6 +451,65 @@ int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  OP_PUSHXY
+ *  Description:  Push XY onto stack (BC, DE etc)
+ * =====================================================================================
+ */
+   int
+OP_PUSHXY ( Memory * memory, Z80 * z80, uint8_t xy )
+{
+   z80->regSP = z80->regSP - 0x1;
+   wb(z80,memory,z80->regSP,z80->r->r[((xy & 0xF0) >> 4)]);
+   z80->regSP = z80->regSP - 0x1;
+   wb(z80,memory,z80->regSP,z80->r->r[(xy & 0xF)]);
+
+   return 0;
+}		/* -----  end of function OP_PUSHXY  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  OP_POPXY
+ *  Description:  Pop XY off of the stack into registers (BC, DE etc)
+ * =====================================================================================
+ */
+   int
+OP_POPXY ( Memory * memory, Z80 * z80, uint8_t xy )
+{
+   z80->r->r[(xy & 0x0F)] = rb(z80,memory,z80->regSP);
+   z80->regSP = z80->regSP + 0x1;
+   z80->r->r[((xy & 0xF0) >> 4)] = rb(z80,memory,z80->regSP);
+   z80->regSP = z80->regSP + 0x1;
+
+   return 0;
+}		/* -----  end of function OP_POPXY  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  OP_RLX
+ *  Description:  Rotate X register left and update (only) carry flag
+ * =====================================================================================
+ */
+   int
+OP_RLX ( Memory * memory, Z80 * z80, uint8_t x )
+{
+   uint8_t tmp_z80_regF = z80->regF;
+
+   // Negative flag and half-carry zero
+   // Others need to be set
+   z80->regF = 0x00;
+
+   // Set carry
+   z80->regF = z80->regF | (((z80->r->r[(x & 0x0F)] >> 7) & 0x01) << 4);
+
+   // Rotate register
+   z80->r->r[(x & 0xF)] = (((z80->r->r[(x & 0xF)] << 1) & 0xFF) | ((tmp_z80_regF >> 4) & 0x01));
+
+   return 0;
+}		/* -----  end of function OP_RLX  ----- */
+
+/* OPCODES */
 int OP_00h_NOP(Memory * memory, Z80 * z80)
 {
    //z80->ticks = 4;
@@ -470,9 +554,10 @@ int OP_05h_DECB(Memory * memory, Z80 * z80)
 
 int OP_06h_LDBd8(Memory * memory, Z80 * z80)
 {
-   OP_LDXd8(memory,z80,0x1);
+   // Not used
+   // Wrapper redirect to OP_LDXd8
 
-   return 0;
+   return 1;
 }
 
 int OP_07h_RLCA(Memory * memory, Z80 * z80)
@@ -540,7 +625,6 @@ int OP_0Fh_RRCA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int OP_10h_STOP0(Memory * memory, Z80 * z80)
 {
    
@@ -592,7 +676,8 @@ int OP_16h_LDd8(Memory * memory, Z80 * z80)
 
 int OP_17h_RLA(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_RLX
 
    return 1;
 }
@@ -653,7 +738,6 @@ int OP_1Fh_RRA(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int OP_20h_JRNZr8(Memory * memory, Z80 * z80)
 {
@@ -786,7 +870,6 @@ int OP_2Fh_CPL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int OP_30h_JRNCr8(Memory * memory, Z80 * z80)
 {
    
@@ -909,7 +992,6 @@ int OP_3Fh_CCF(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int OP_40h_LDBB(Memory * memory, Z80 * z80)
 {
    
@@ -1022,7 +1104,6 @@ int OP_4Fh_LDCA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int OP_50h_LDDB(Memory * memory, Z80 * z80)
 {
    
@@ -1134,7 +1215,6 @@ int OP_5Fh_LDEA(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int OP_60h_LDHB(Memory * memory, Z80 * z80)
 {
@@ -2127,7 +2207,6 @@ int OP_BFh_CPA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int OP_C0h_RETNZ(Memory * memory, Z80 * z80)
 {
    
@@ -2137,7 +2216,8 @@ int OP_C0h_RETNZ(Memory * memory, Z80 * z80)
 
 int OP_C1h_POPBC(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_POPXY
 
    return 1;
 }
@@ -2165,7 +2245,8 @@ int OP_C4h_CALLNZa16(Memory * memory, Z80 * z80)
 
 int OP_C5h_PUSHBC(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_PUSHXY
 
    return 1;
 }
@@ -2241,7 +2322,6 @@ int OP_CFh_RST08H(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int OP_D0h_RETNC(Memory * memory, Z80 * z80)
 {
@@ -2466,7 +2546,6 @@ int OP_EFh_RST28H(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int OP_F0h_LDHAa8(Memory * memory, Z80 * z80)
 {
@@ -2704,7 +2783,6 @@ int CB_OP_0Fh_RRCA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_10h_RLB(Memory * memory, Z80 * z80)
 {
    
@@ -2714,7 +2792,8 @@ int CB_OP_10h_RLB(Memory * memory, Z80 * z80)
 
 int CB_OP_11h_RLC(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to CB_RLX
 
    return 1;
 }
@@ -2816,7 +2895,6 @@ int CB_OP_1Fh_RRA(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_20h_SLAB(Memory * memory, Z80 * z80)
 {
@@ -2930,7 +3008,6 @@ int CB_OP_2Fh_SRAA(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_30h_SWAPB(Memory * memory, Z80 * z80)
 {
    
@@ -3042,7 +3119,6 @@ int CB_OP_3Fh_SRLA(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_40h_BIT0B(Memory * memory, Z80 * z80)
 {
@@ -3156,7 +3232,6 @@ int CB_OP_4Fh_BIT1A(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_50h_BIT2B(Memory * memory, Z80 * z80)
 {
    
@@ -3268,7 +3343,6 @@ int CB_OP_5Fh_BIT3A(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_60h_BIT4B(Memory * memory, Z80 * z80)
 {
@@ -3382,7 +3456,6 @@ int CB_OP_6Fh_BIT5A(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_70h_BIT6B(Memory * memory, Z80 * z80)
 {
    
@@ -3494,7 +3567,6 @@ int CB_OP_7Fh_BIT7A(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_80h_RES0B(Memory * memory, Z80 * z80)
 {
@@ -3608,7 +3680,6 @@ int CB_OP_8Fh_RES1A(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_90h_RES2B(Memory * memory, Z80 * z80)
 {
    
@@ -3720,7 +3791,6 @@ int CB_OP_9Fh_RES3A(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_A0h_RES4B(Memory * memory, Z80 * z80)
 {
@@ -3834,7 +3904,6 @@ int CB_OP_AFh_RES5A(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_B0h_RES6B(Memory * memory, Z80 * z80)
 {
    
@@ -3946,7 +4015,6 @@ int CB_OP_BFh_RES7A(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_C0h_SET0B(Memory * memory, Z80 * z80)
 {
@@ -4060,7 +4128,6 @@ int CB_OP_CFh_SET1A(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_D0h_SET2B(Memory * memory, Z80 * z80)
 {
    
@@ -4173,7 +4240,6 @@ int CB_OP_DFh_SET3A(Memory * memory, Z80 * z80)
    return 1;
 }
 
-
 int CB_OP_E0h_SET4B(Memory * memory, Z80 * z80)
 {
    
@@ -4285,7 +4351,6 @@ int CB_OP_EFh_SET5A(Memory * memory, Z80 * z80)
 
    return 1;
 }
-
 
 int CB_OP_F0h_SET6B(Memory * memory, Z80 * z80)
 {
