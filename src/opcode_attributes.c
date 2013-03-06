@@ -57,7 +57,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0x5].size = 0x1; z80->op[0x5].ticks = 0x4; z80->op[0x5].advancePC = z80->op[0x5].size;
    strncpy(z80->op[0x5].name,"DEC B",1023); z80->op[0x5].call = OP_not_implemented;
    z80->op[0x6].size = 0x2; z80->op[0x6].ticks = 0x8; z80->op[0x6].advancePC = z80->op[0x6].size;
-   strncpy(z80->op[0x6].name,"LD B,d8",1023); z80->op[0x6].call = OP_not_implemented;
+   strncpy(z80->op[0x6].name,"LD B,d8",1023); z80->op[0x6].call = OP_06h_LDBd8_wrapper;
    z80->op[0x7].size = 0x1; z80->op[0x7].ticks = 0x4; z80->op[0x7].advancePC = z80->op[0x7].size;
    strncpy(z80->op[0x7].name,"RLCA",1023); z80->op[0x7].call = OP_not_implemented;
    z80->op[0x8].size = 0x3; z80->op[0x8].ticks = 0x14; z80->op[0x8].advancePC = z80->op[0x8].size;

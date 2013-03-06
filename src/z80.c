@@ -339,9 +339,6 @@ int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
 {
    z80->r->r[(x & 0xF)] = rb(z80,memory,(z80->regPC)) & 0xFF;
 
-   //z80->regPC = z80->regPC + 1;
-   //z80->ticks = 8;
-
    return 0;
 }
 
@@ -473,9 +470,9 @@ int OP_05h_DECB(Memory * memory, Z80 * z80)
 
 int OP_06h_LDBd8(Memory * memory, Z80 * z80)
 {
-   
+   OP_LDXd8(memory,z80,0x1);
 
-   return 1;
+   return 0;
 }
 
 int OP_07h_RLCA(Memory * memory, Z80 * z80)
@@ -2224,19 +2221,9 @@ int OP_CCh_CALLZa16(Memory * memory, Z80 * z80)
 int OP_CDh_CALLa16(Memory * memory, Z80 * z80)
 {
    z80->regSP = (z80->regSP - 0x2);
-   ww(z80,memory,z80->regSP,(z80->regPC + 0x3));
+   ww(z80,memory,z80->regSP,(z80->regPC + 0x2));
 
    z80->regPC = rw(z80,memory,z80->regPC);
-/*
-   CALLnn: function () {
-      Z80._r.sp -= 2;
-    
-      MMU.ww(Z80._r.sp, Z80._r.pc + 2);
-    
-      Z80._r.pc = MMU.rw(Z80._r.pc);
-    
-      Z80._r.m = 5;
-  },*/
 
    return 0;
 }
@@ -4444,8 +4431,8 @@ int Execute(Memory * memory, Z80 * z80)
       exiterror(&err);
    }
 
-   // Increment PC if CB prefix not called
-   if (z80->op_call != z80->cb_op)
+   // Increment PC if CB prefix not called, and advancePC is not 0
+   if ((z80->op_call != z80->cb_op) && (z80->op_call[rb(z80,memory,(tmp_z80_PC))].advancePC != 0))
    {
       z80->regPC = z80->regPC + z80->op_call[rb(z80,memory,(tmp_z80_PC))].advancePC - 1;
    }
