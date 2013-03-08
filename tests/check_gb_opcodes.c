@@ -1016,7 +1016,30 @@ START_TEST (test_check_OP_05h_DECB)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
+
+   uint8_t tmp_z80_regB = z80.regB;
+
+   result = OP_05h_DECB_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+
+   fail_unless(tmp_z80_regB == (uint8_t) (z80.regB + 0x1));
+   // Zero flag
+   fail_unless(((z80.regF >> 7) & 0x01) == (z80.regB == 0));
+   // Neg flag
+   fail_unless(((z80.regF >> 6) & 0x01) == 0x1);
+   // Half-carry
+   fail_unless(((z80.regF >> 5) & 0x01) == ((z80.regB & 0x0F) == 0xF));
+
+/*  return ''+
+  ''+R+'=(--'+R+')&0xFF;'+
+  'FZ=('+R+'==0);'+
+  'FN=1;'+
+  'FH=('+R+'&0xF)==0xF;'+
+  'gbCPUTicks=4;';*/
 
 }
 END_TEST
@@ -1214,8 +1237,16 @@ START_TEST (test_check_OP_13h_INCDE)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   uint16_t tmp_z80_DE = ((uint16_t) ((z80.regD << 8) + z80.regE));
+
+   result = OP_13h_INCDE_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   fail_unless(tmp_z80_DE == ((uint16_t) (((z80.regD << 8) + z80.regE) - 0x1)));
 }
 END_TEST
 
@@ -1556,8 +1587,16 @@ START_TEST (test_check_OP_23h_INCHL)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   uint16_t tmp_z80_HL = ((uint16_t) ((z80.regH << 8) + z80.regL));
+
+   result = OP_23h_INCHL_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   fail_unless(tmp_z80_HL == ((uint16_t) (((z80.regH << 8) + z80.regL) - 0x1)));
 }
 END_TEST
 
@@ -1853,8 +1892,11 @@ START_TEST (test_check_OP_34h_INCHL)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   result = OP_34h_INCHL_wrapper(&memory,&z80);
 }
 END_TEST
 
@@ -4692,7 +4734,6 @@ START_TEST (test_check_OP_C1h_POPBC)
    result = OP_C1h_POPBC_wrapper(&memory,&z80);
 
    fail_unless(result == 0);
-printf("HIT %x -- %x\n",z80.regSP,(tmp_z80_SP + 0x2));
    fail_unless(z80.regSP == (tmp_z80_SP + 0x2));
    fail_unless(rb(&z80,&memory,(z80.regSP - 0x1)) == z80.regB);
    fail_unless(rb(&z80,&memory,(z80.regSP - 0x2)) == z80.regC);
@@ -4809,8 +4850,17 @@ START_TEST (test_check_OP_C9h_RET)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   uint16_t tmp_z80_regSP = z80.regSP;
+
+   result = OP_C9h_RET_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   fail_unless(z80.regPC == ((uint16_t) (rb(&z80,&memory,(z80.regSP - 0x2)) + (rb(&z80,&memory,((z80.regSP - 0x1))) << 8)) + 0x3));
+   fail_unless(z80.regSP == (uint16_t) (tmp_z80_regSP + 0x2));
 }
 END_TEST
 
@@ -4866,11 +4916,12 @@ START_TEST (test_check_OP_CDh_CALLa16)
    InitZ80(&z80,&registers,&op,&cb_op);
 
    uint16_t tmp_z80_SP = z80.regSP;
+   uint16_t tmp_z80_PC = z80.regPC;
 
    result = OP_CDh_CALLa16_wrapper(&memory,&z80);
 
-   fail_unless((z80.regSP + 2) == tmp_z80_SP);
-   fail_unless(rw(&z80,&memory,z80.regSP) == (z80.regPC + 0x2));
+   fail_unless((z80.regSP + 0x2) == tmp_z80_SP);
+   fail_unless(rw(&z80,&memory,(z80.regSP - 0x2)) == tmp_z80_PC);
    fail_unless(z80.regPC == rw(&z80,&memory,z80.regPC));
 }
 END_TEST
@@ -5539,8 +5590,29 @@ START_TEST (test_check_OP_FEh_CPd8)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   result = OP_FEh_CPd8_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+ 
+   // Zero flag 
+   fail_unless(((z80.regF >> 7) & 0x01) == (z80.regA == rb(&z80,&memory,(uint16_t) (z80.regPC + 0x1))));
+   // Neg flag
+   fail_unless(((z80.regF >> 6) & 0x01) == 0x1);
+   // Carry flag
+printf("HIT %x %x\n",((z80.regF >> 4) & 0x01),(z80.regA < rb(&z80,&memory,(uint16_t) (z80.regPC + 0x1))));
+   fail_unless(((z80.regF >> 4) & 0x01) == (z80.regA < rb(&z80,&memory,(uint16_t) (z80.regPC + 0x1))));
+   // Half-carry flag
+   fail_unless(((z80.regF >> 4) & 0x01) == ((z80.regA & 0x0F) < (rb(&z80,&memory,(uint16_t) (z80.regPC + 0x1)) & 0x0F)));
+
+/*  'FZ=(RA=='+R+');'+
+  'FN=1;'+
+  'FC=RA<'+R+';'+
+  'FH=(RA&0x0F)<('+R+'&0x0F);'+
+  'gbCPUTicks='+C+';';*/
 }
 END_TEST
 

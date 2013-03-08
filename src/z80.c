@@ -37,9 +37,8 @@
    #define regSP r->r16[0x1]
 #endif
 
-// TODO 0x4f is done but CALLa16 opcode is still broken (points to 0x94 instead of 0x95).
-//      Unit test passes because it's obviously broken.. Don't think this problem will be
-//      too difficult to fix
+// TODO Fix return opcode. You will probably need to make a stack debug function.
+//      DebugStack(startAddress,endAddress)
 
 int InitZ80(Z80 * z80, Registers * registers, Opcodes * op, Opcodes * cb_op)
 {
@@ -275,6 +274,27 @@ int decrementHL(Z80 * z80)
    return 0;
 }
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  incrementDE
+ *  Description:  Increment D and E register as 16bit wide DE.
+ * =====================================================================================
+ */
+   int
+incrementDE ( Z80 * z80  )
+{
+   uint16_t tmpDE;
+
+   tmpDE = (z80->regD << 8) + z80->regE;
+   tmpDE++;
+
+   z80->regD = (tmpDE & 0xFF00) >> 8;
+   z80->regE = (tmpDE & 0xFF);
+
+   return 0;
+}		/* -----  end of function incrementDE  ----- */
+
 int incrementHL(Z80 * z80)
 {
    uint16_t tmpHL;
@@ -363,6 +383,7 @@ int calculateAndFlags(Memory * memory, Z80 * z80, uint8_t dest)
  */
 int OP_LDXd8(Memory * memory, Z80 * z80, uint8_t x)
 {
+   DebugStack(z80,memory,0xfff0,0xffff);
    z80->r->r[(x & 0xF)] = rb(z80,memory,(z80->regPC)) & 0xFF;
 
    return 0;
@@ -421,6 +442,39 @@ int OP_LDHLX(Memory * memory, Z80 * z80, uint8_t x)
 
    return 0;
 }
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  OP_DECX
+ *  Description:  Decrement register X and set flags
+ * =====================================================================================
+ */
+   int
+OP_DECX ( Memory * memory, Z80 * z80, uint8_t x )
+{
+   z80->r->r[(x & 0xF)] = (uint16_t) (z80->r->r[(x & 0xF)] - 0x1);
+
+   z80->regF = (z80->regF & 0x10);
+
+   // Zero flag
+   z80->regF = (z80->regF | ((z80->r->r[(x & 0xF)] == 0x0) << 7));
+
+   // Neg flag
+   z80->regF = (z80->regF | 0x40);
+
+   // Half carry flag
+   z80->regF = (z80->regF | (((z80->r->r[(x & 0xF)] & 0xF) == 0xF) << 5));
+
+/*  return ''+
+  ''+R+'=(--'+R+')&0xFF;'+
+  'FZ=('+R+'==0);'+
+  'FN=1;'+
+  'FH=('+R+'&0xF)==0xF;'+
+  'gbCPUTicks=4;';*/
+
+   return 0;
+}		/* -----  end of function OP_DECX  ----- */
 
 int OP_INCX(Memory * memory, Z80 * z80, uint8_t x)
 {
@@ -547,7 +601,8 @@ int OP_04h_INCB(Memory * memory, Z80 * z80)
 
 int OP_05h_DECB(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_DECX
 
    return 1;
 }
@@ -648,9 +703,9 @@ int OP_12h_LDDEA(Memory * memory, Z80 * z80)
 
 int OP_13h_INCDE(Memory * memory, Z80 * z80)
 {
-   
+   incrementDE(z80);
 
-   return 1;
+   return 0;
 }
 
 int OP_14h_INCD(Memory * memory, Z80 * z80)
@@ -781,9 +836,9 @@ int OP_22h_LDIHLA(Memory * memory, Z80 * z80)
 
 int OP_23h_INCHL(Memory * memory, Z80 * z80)
 {
-   
+   incrementHL(z80);
 
-   return 1;
+   return 0;
 }
 
 int OP_24h_INCH(Memory * memory, Z80 * z80)
@@ -1934,8 +1989,6 @@ int OP_9Fh_SBCAA(Memory * memory, Z80 * z80)
 
    z80->regA = z80->regA - ((z80->regF & 0x10) >> 4) & 0xFF;
 
-   //z80->ticks = 4;
-
    return 0;
 }
 
@@ -1946,8 +1999,6 @@ int OP_A0h_ANDB(Memory * memory, Z80 * z80)
    uint8_t dest = z80->regA & 0xFF;
 
    calculateAndFlags(memory,z80,dest);
-
-   //z80->ticks = 4;
 
    return 0;
 }
@@ -1960,8 +2011,6 @@ int OP_A1h_ANDC(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   //z80->ticks = 4;
-
    return 0;
 }
 
@@ -1972,8 +2021,6 @@ int OP_A2h_ANDD(Memory * memory, Z80 * z80)
    uint8_t dest = z80->regA & 0xFF;
 
    calculateAndFlags(memory,z80,dest);
-
-   //z80->ticks = 4;
 
    return 0;
 }
@@ -1986,8 +2033,6 @@ int OP_A3h_ANDE(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   //z80->ticks = 4;
-
    return 0;
 }
 
@@ -1999,8 +2044,6 @@ int OP_A4h_ANDH(Memory * memory, Z80 * z80)
 
    calculateAndFlags(memory,z80,dest);
 
-   //z80->ticks = 4;
-
    return 0;
 }
 
@@ -2011,8 +2054,6 @@ int OP_A5h_ANDL(Memory * memory, Z80 * z80)
    uint8_t dest = z80->regA & 0xFF;
 
    calculateAndFlags(memory,z80,dest);
-
-   //z80->ticks = 4;
 
    return 0;
 }
@@ -2274,9 +2315,11 @@ int OP_C8h_RETZ(Memory * memory, Z80 * z80)
 
 int OP_C9h_RET(Memory * memory, Z80 * z80)
 {
-   
+   z80->regSP = ((uint16_t) (z80->regSP + 0x2));
+   z80->regPC = ((uint16_t) rb(z80,memory,(z80->regSP - 0x2)));
+   z80->regPC = (z80->regPC + (((uint16_t) rb(z80,memory,(z80->regSP - 0x1)) << 8) + 0x3));
 
-   return 1;
+   return 0;
 }
 
 int OP_CAh_JPZa16(Memory * memory, Z80 * z80)
@@ -2302,7 +2345,9 @@ int OP_CCh_CALLZa16(Memory * memory, Z80 * z80)
 int OP_CDh_CALLa16(Memory * memory, Z80 * z80)
 {
    z80->regSP = (z80->regSP - 0x2);
-   ww(z80,memory,z80->regSP,(z80->regPC + 0x2));
+   // z80->regPC - 0x1 because the z80->regPC++ in the Execute
+   // loop evaluates before hitting the call function pointer
+   ww(z80,memory,z80->regSP,(z80->regPC - 0x1));
 
    z80->regPC = rw(z80,memory,z80->regPC);
 
@@ -2647,9 +2692,19 @@ int OP_FDh_INVALID(Memory * memory, Z80 * z80)
 
 int OP_FEh_CPd8(Memory * memory, Z80 * z80)
 {
-   
+   // Unset all flags
+   z80->regF = 0x0;
 
-   return 1;
+   // Zero flag
+   z80->regF = (z80->regF | ((z80->regA == rb(z80,memory,z80->regPC)) << 7));
+   // Neg flag
+   z80->regF = (z80->regF | 0x40);
+   // Carry flag
+   z80->regF = (z80->regF | (z80->regA < rb(z80,memory,z80->regPC)) << 4);
+   // Half-carry flag
+   z80->regF = (z80->regF | ((z80->regA & 0x0F) < (rb(z80,memory,z80->regPC) & 0x0F)) << 4);
+   
+   return 0;
 }
 
 int OP_FFh_RST38H(Memory * memory, Z80 * z80)

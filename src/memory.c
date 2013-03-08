@@ -289,12 +289,12 @@ int wb(Z80 * z80, Memory * mem, uint16_t addr, uint8_t value)
 uint16_t rw(Z80 * z80, Memory * mem, uint16_t addr)
 {
    // Mock function
-   int mock_func_return = 0;
-   if (UNIT_TEST == 1)
-   {
-      mock_func_return = mock_rw(z80,mem,addr);
-      return mock_func_return;
-   }
+   //int mock_func_return = 0;
+   //if (UNIT_TEST == 1)
+   //{
+      //mock_func_return = mock_rw(z80,mem,addr);
+      //return mock_func_return;
+   //}
 
    return (rb(z80,mem,(addr+1)) << 8) + rb(z80,mem,(addr));
 }
@@ -303,15 +303,17 @@ uint16_t rw(Z80 * z80, Memory * mem, uint16_t addr)
 int ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value)
 {
    // Mock function
-   int mock_func_return = 0;
-   if (UNIT_TEST == 1)
-   {
-      mock_func_return = mock_ww(z80,mem,addr,value);
-      return mock_func_return;
-   }
+   //int mock_func_return = 0;
+   //if (UNIT_TEST == 1)
+   //{
+      //mock_func_return = mock_ww(z80,mem,addr,value);
+      //return mock_func_return;
+   //}
 
-   mem->addr[addr] = (value & 0xFF);
-   mem->addr[addr + 1] = ((value & 0xFF00) >> 8);
+   //mem->addr[addr] = (value & 0xFF);
+   wb(z80,mem,addr,(value & 0xFF));
+   //mem->addr[addr + 1] = ((value & 0xFF00) >> 8);
+   wb(z80,mem,(addr + 0x1),((value & 0xFF00) >> 8));
 
    return 0;
 }

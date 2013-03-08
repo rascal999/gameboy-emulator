@@ -53,9 +53,36 @@ int DebugFullInstruction(Z80 * z80, Memory * memory)
    return 0;
 }
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  DebugStack
+ *  Description:  Print all values of stack between startAddress and endAddress
+ * Return codes:  1 - startAddress > endAddress
+ * =====================================================================================
+ */
+   int
+DebugStack ( Z80 * z80, Memory * memory, uint16_t startAddress, uint16_t endAddress )
+{
+   if ( startAddress > endAddress)
+   {
+      return 1;
+   }
+
+   uint16_t i = startAddress;
+
+   /* Stack dump */
+   for ( ; i < endAddress ; i++ )
+   {
+      printf("%x == %x\n",i,rb(z80,memory,i));
+   }
+   printf("\n");
+
+   return 0;
+}		/* -----  end of function DebugStack  ----- */
+
 int DebugAll(Z80 * z80, Memory * memory, Debug * debug)
 {
-   /* CPU Dump */
+   /* CPU dump */
    /*printf("-------------\n");
    printf("| D E B U G |\n");
    printf("-------------\n");*/

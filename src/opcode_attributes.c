@@ -55,7 +55,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0x4].size = 0x1; z80->op[0x4].ticks = 0x4; z80->op[0x4].advancePC = z80->op[0x4].size;
    strncpy(z80->op[0x4].name,"INC B",1023); z80->op[0x4].call = OP_not_implemented;
    z80->op[0x5].size = 0x1; z80->op[0x5].ticks = 0x4; z80->op[0x5].advancePC = z80->op[0x5].size;
-   strncpy(z80->op[0x5].name,"DEC B",1023); z80->op[0x5].call = OP_not_implemented;
+   strncpy(z80->op[0x5].name,"DEC B",1023); z80->op[0x5].call = OP_05h_DECB_wrapper;
    z80->op[0x6].size = 0x2; z80->op[0x6].ticks = 0x8; z80->op[0x6].advancePC = z80->op[0x6].size;
    strncpy(z80->op[0x6].name,"LD B,d8",1023); z80->op[0x6].call = OP_06h_LDBd8_wrapper;
    z80->op[0x7].size = 0x1; z80->op[0x7].ticks = 0x4; z80->op[0x7].advancePC = z80->op[0x7].size;
@@ -83,7 +83,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0x12].size = 0x1; z80->op[0x12].ticks = 0x8; z80->op[0x12].advancePC = z80->op[0x12].size;
    strncpy(z80->op[0x12].name,"LD (DE),A",1023); z80->op[0x12].call = OP_not_implemented;
    z80->op[0x13].size = 0x1; z80->op[0x13].ticks = 0x8; z80->op[0x13].advancePC = z80->op[0x13].size;
-   strncpy(z80->op[0x13].name,"INC DE",1023); z80->op[0x13].call = OP_not_implemented;
+   strncpy(z80->op[0x13].name,"INC DE",1023); z80->op[0x13].call = OP_13h_INCDE_wrapper;
    z80->op[0x14].size = 0x1; z80->op[0x14].ticks = 0x4; z80->op[0x14].advancePC = z80->op[0x14].size;
    strncpy(z80->op[0x14].name,"INC D",1023); z80->op[0x14].call = OP_not_implemented;
    z80->op[0x15].size = 0x1; z80->op[0x15].ticks = 0x4; z80->op[0x15].advancePC = z80->op[0x15].size;
@@ -115,7 +115,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0x22].size = 0x1; z80->op[0x22].ticks = 0x8; z80->op[0x22].advancePC = z80->op[0x22].size;
    strncpy(z80->op[0x22].name,"LD (HL+),A",1023); z80->op[0x22].call = OP_22h_LDIHLA_wrapper;
    z80->op[0x23].size = 0x1; z80->op[0x23].ticks = 0x8; z80->op[0x23].advancePC = z80->op[0x23].size;
-   strncpy(z80->op[0x23].name,"INC HL",1023); z80->op[0x23].call = OP_not_implemented;
+   strncpy(z80->op[0x23].name,"INC HL",1023); z80->op[0x23].call = OP_23h_INCHL_wrapper;
    z80->op[0x24].size = 0x1; z80->op[0x24].ticks = 0x4; z80->op[0x24].advancePC = z80->op[0x24].size;
    strncpy(z80->op[0x24].name,"INC H",1023); z80->op[0x24].call = OP_not_implemented;
    z80->op[0x25].size = 0x1; z80->op[0x25].ticks = 0x4; z80->op[0x25].advancePC = z80->op[0x25].size;
@@ -291,7 +291,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0x7a].size = 0x1; z80->op[0x7a].ticks = 0x4; z80->op[0x7a].advancePC = z80->op[0x7a].size;
    strncpy(z80->op[0x7a].name,"LD A,D",1023); z80->op[0x7a].call = OP_not_implemented;
    z80->op[0x7b].size = 0x1; z80->op[0x7b].ticks = 0x4; z80->op[0x7b].advancePC = z80->op[0x7b].size;
-   strncpy(z80->op[0x7b].name,"LD A,E",1023); z80->op[0x7b].call = OP_not_implemented;
+   strncpy(z80->op[0x7b].name,"LD A,E",1023); z80->op[0x7b].call = OP_7Bh_LDAE_wrapper;
    z80->op[0x7c].size = 0x1; z80->op[0x7c].ticks = 0x4; z80->op[0x7c].advancePC = z80->op[0x7c].size;
    strncpy(z80->op[0x7c].name,"LD A,H",1023); z80->op[0x7c].call = OP_not_implemented;
    z80->op[0x7d].size = 0x1; z80->op[0x7d].ticks = 0x4; z80->op[0x7d].advancePC = z80->op[0x7d].size;
@@ -447,7 +447,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0xc8].size = 0x1; z80->op[0xc8].ticks = 0x0; z80->op[0xc8].advancePC = z80->op[0xc8].size;
    strncpy(z80->op[0xc8].name,"RET Z",1023); z80->op[0xc8].call = OP_not_implemented;
    z80->op[0xc9].size = 0x1; z80->op[0xc9].ticks = 0x10; z80->op[0xc9].advancePC = z80->op[0xc9].size;
-   strncpy(z80->op[0xc9].name,"RET",1023); z80->op[0xc9].call = OP_not_implemented;
+   strncpy(z80->op[0xc9].name,"RET",1023); z80->op[0xc9].call = OP_C9h_RET_wrapper;
    z80->op[0xca].size = 0x3; z80->op[0xca].ticks = 0x0; z80->op[0xca].advancePC = z80->op[0xca].size;
    strncpy(z80->op[0xca].name,"JP Z,a16",1023); z80->op[0xca].call = OP_not_implemented;
    z80->op[0xcb].size = 0x1; z80->op[0xcb].ticks = 0x4; z80->op[0xcb].advancePC = z80->op[0xcb].size;
@@ -553,7 +553,7 @@ int InitZ80OpcodeStats(Z80 * z80, Registers * registers)
    z80->op[0xfd].size = 0x0; z80->op[0xfd].ticks = 0x0; z80->op[0xfd].advancePC = z80->op[0xfd].size;
    strncpy(z80->op[0xfd].name,"INVALID",1023); z80->op[0xfd].call = OP_invalid; // 0xfd invalid
    z80->op[0xfe].size = 0x2; z80->op[0xfe].ticks = 0x8; z80->op[0xfe].advancePC = z80->op[0xfe].size;
-   strncpy(z80->op[0xfe].name,"CP d8",1023); z80->op[0xfe].call = OP_not_implemented;
+   strncpy(z80->op[0xfe].name,"CP d8",1023); z80->op[0xfe].call = OP_FEh_CPd8_wrapper;
    z80->op[0xff].size = 0x1; z80->op[0xff].ticks = 0x10; z80->op[0xff].advancePC = z80->op[0xff].size;
    strncpy(z80->op[0xff].name,"RST 38H",1023); z80->op[0xff].call = OP_not_implemented;
 
