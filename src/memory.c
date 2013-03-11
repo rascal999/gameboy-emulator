@@ -39,6 +39,23 @@
 
 Error err;
 
+/*
+  http://nocash.emubase.de/pandocs.htm
+
+  0000-3FFF   16KB ROM Bank 00     (in cartridge, fixed at bank 00)
+  4000-7FFF   16KB ROM Bank 01..NN (in cartridge, switchable bank number)
+  8000-9FFF   8KB Video RAM (VRAM) (switchable bank 0-1 in CGB Mode)
+  A000-BFFF   8KB External RAM     (in cartridge, switchable bank, if any)
+  C000-CFFF   4KB Work RAM Bank 0 (WRAM)
+  D000-DFFF   4KB Work RAM Bank 1 (WRAM)  (switchable bank 1-7 in CGB Mode)
+  E000-FDFF   Same as C000-DDFF (ECHO)    (typically not used)
+  FE00-FE9F   Sprite Attribute Table (OAM)
+  FEA0-FEFF   Not Usable
+  FF00-FF7F   I/O Ports
+  FF80-FFFE   High RAM (HRAM)
+  FFFF        Interrupt Enable Register
+*/
+
 /* MMU */
 /* 8 bit */
 /* Read byte */
@@ -230,6 +247,41 @@ int wb(Z80 * z80, Memory * mem, uint16_t addr, uint8_t value)
       return mock_func_return;
    }
 
+   switch(addr & 0xF000)
+   {
+      // vram
+      case 0x8000:
+      case 0x9000:
+         mem->vram[addr & 0x1FFF] = value;
+      break;
+
+      // eram
+      case 0xA000:
+      case 0xB000:
+         mem->eram[addr & 0x1FFF] = value;
+      break;
+
+      // wram0
+      case 0xC000:
+         mem->wram0[addr & 0x1FFF] = value;
+      break;
+
+      // wram1 (switchable bank in CGB)
+      case 0xD000:
+         mem->wram1[addr & 0x2FFF] = value;
+      break;
+
+      // wram (shadow)
+      case 0xE000:
+         mem->wram_shadow[addr & 0x1FFF] = value;
+      break;
+
+      default:
+      break;
+
+      return 0;
+   }
+
    /* Timer registers */
    switch(addr & 0xFFFF)
    {
@@ -302,6 +354,7 @@ uint16_t rw(Z80 * z80, Memory * mem, uint16_t addr)
 /* Write word */
 int ww(Z80 * z80, Memory * mem, uint16_t addr, uint16_t value)
 {
+printf("ADDR == %x\n",addr);
    // Mock function
    //int mock_func_return = 0;
    //if (UNIT_TEST == 1)

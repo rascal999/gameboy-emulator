@@ -594,7 +594,8 @@ int OP_03h_INCBC(Memory * memory, Z80 * z80)
 
 int OP_04h_INCB(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_INCX
 
    return 1;
 }
@@ -660,7 +661,8 @@ int OP_0Ch_INCC(Memory * memory, Z80 * z80)
 
 int OP_0Dh_DECC(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_DECX
 
    return 1;
 }
@@ -739,9 +741,9 @@ int OP_17h_RLA(Memory * memory, Z80 * z80)
 
 int OP_18h_JRr8(Memory * memory, Z80 * z80)
 {
-   
+   z80->regPC = z80->regPC + (int8_t) rb(z80,memory,z80->regPC);
 
-   return 1;
+   return 0;
 }
 
 int OP_19h_ADDHLDE(Memory * memory, Z80 * z80)
@@ -871,9 +873,19 @@ int OP_27h_DAA(Memory * memory, Z80 * z80)
 
 int OP_28h_JRZr8(Memory * memory, Z80 * z80)
 {
-   
+   int8_t i;
 
-   return 1;
+   i = (int8_t) rb(z80,memory,(z80->regPC)) & 0xFF;
+
+   if ((z80->regF & 0x80) == 0x80)
+   {
+      z80->regPC = (z80->regPC + (int8_t) i) & 0xFF;
+      z80->ticks = 12;
+   } else {
+      z80->ticks = 8;
+   }
+
+   return 0;
 }
 
 int OP_29h_ADDHLHL(Memory * memory, Z80 * z80)
@@ -913,7 +925,8 @@ int OP_2Dh_DECL(Memory * memory, Z80 * z80)
 
 int OP_2Eh_LDLd8(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_LDXd8
 
    return 1;
 }
@@ -1027,7 +1040,8 @@ int OP_3Ch_INCA(Memory * memory, Z80 * z80)
 
 int OP_3Dh_DECA(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_DECX
 
    return 1;
 }
@@ -1210,7 +1224,8 @@ int OP_56h_LDDHL(Memory * memory, Z80 * z80)
 
 int OP_57h_LDDA(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_LDXY
 
    return 1;
 }
@@ -1322,7 +1337,8 @@ int OP_66h_LDHHL(Memory * memory, Z80 * z80)
 
 int OP_67h_LDHA(Memory * memory, Z80 * z80)
 {
-   
+   // Not used
+   // Wrapper redirect to OP_LDXY
 
    return 1;
 }
@@ -2550,11 +2566,21 @@ int OP_E9h_JPHL(Memory * memory, Z80 * z80)
    return 1;
 }
 
-int OP_EAh_LDnnA(Memory * memory, Z80 * z80)
+int OP_EAh_LDa16A(Memory * memory, Z80 * z80)
 {
-   
+   wb(z80,memory,((rb(z80,memory,z80->regPC + 0x1) << 8) + rb(z80,memory,z80->regPC)),z80->regA);
+   DebugStack(z80,memory,0x9905,0x9915);
 
-   return 1;
+/*function () {
+  
+    MEMW((MEMR(PC + 1) << 8) | MEMR(PC), RA);
+  
+    PC += 2;
+  
+    gbCPUTicks = 16;
+};*/  
+
+   return 0;
 }
 
 int OP_EBh_INVALID(Memory * memory, Z80 * z80)

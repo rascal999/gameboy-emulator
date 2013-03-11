@@ -1150,8 +1150,30 @@ START_TEST (test_check_OP_0Dh_DECC)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   uint8_t tmp_z80_regC = z80.regC;
+
+   result = OP_0Dh_DECC_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+
+   fail_unless(tmp_z80_regC == (uint8_t) (z80.regC + 0x1));
+   // Zero flag
+   fail_unless(((z80.regF >> 7) & 0x01) == (z80.regC == 0));
+   // Neg flag
+   fail_unless(((z80.regF >> 6) & 0x01) == 0x1);
+   // Half-carry
+   fail_unless(((z80.regF >> 5) & 0x01) == ((z80.regC & 0x0F) == 0xF));
+
+/*  return ''+
+  ''+R+'=(--'+R+')&0xFF;'+
+  'FZ=('+R+'==0);'+
+  'FN=1;'+
+  'FH=('+R+'&0xF)==0xF;'+
+  'gbCPUTicks=4;';*/
 }
 END_TEST
 
@@ -1329,8 +1351,16 @@ START_TEST (test_check_OP_18h_JRr8)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   uint16_t tmp_z80_regPC = z80.regPC;
+
+   result = OP_18h_JRr8_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   fail_unless(z80.regPC == (tmp_z80_regPC + (int8_t) rb(&z80,&memory,(tmp_z80_regPC))));
 }
 END_TEST
 
@@ -1469,7 +1499,7 @@ START_TEST (test_check_OP_20h_JRNZr8)
 
          tmp_z80_PC = z80.regPC;
 
-         result = OP_20h_JRNZr8(&memory,&z80);
+         result = OP_20h_JRNZr8_wrapper(&memory,&z80);
 
          // Relative jump if last result is non-zero
          // If last result is non-zero, ticks == 12, else ticks == 8
@@ -1661,7 +1691,42 @@ START_TEST (test_check_OP_28h_JRZr8)
    Z80 z80;
 
    InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
 
+   // Perhaps it would be worth setting the PC to be at the 0x20 opcode?
+   LoadGBROM(&memory,"/home/user/git/gameboy-emulator/roms/DMG_ROM.bin");
+
+   int result = 0, i = 0, k = 0;
+   z80.regPC = k;
+   uint16_t tmp_z80_PC = z80.regPC;
+
+   for(k=0;k<0xFF;k++)
+   {
+      for(i=0;i<0x2;i++)
+      {
+         z80.regPC = k;
+
+         if (i == 0x0)
+         {
+            z80.regF = 0x80;
+         } else {
+            z80.regF = 0x00;
+         }
+
+         tmp_z80_PC = z80.regPC;
+
+         result = OP_28h_JRZr8_wrapper(&memory,&z80);
+
+         // Relative jump if last result is zero
+         // If last result is zero, ticks == 12, else ticks == 8 CHECK
+         if ((z80.regF & 0x80) == 0x80)
+         {
+printf("*** k == %x\nz80.regPC == %x\nrb(&z80,&memory,tmp_z80_PC) + tmp_z80_PC == %x\n",k,z80.regPC - 1,rb(&z80,&memory,tmp_z80_PC) + tmp_z80_PC);
+         }
+
+         fail_unless(result == 0,"Result was not 0");
+      }
+   }
 }
 END_TEST
 
@@ -1732,14 +1797,23 @@ END_TEST
 
 START_TEST (test_check_OP_2Eh_LDLd8)
 {
-   Memory memory;
-   Opcodes op;
-   Opcodes cb_op;
-   Registers registers;
-   Z80 z80;
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   resetCPURegisters(memory,z80,registers);
+   InitMemory(memory);
 
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->regPC;
+
+   result = OP_LDXd8(memory,z80,0x7);
+
+   LDXd8(memory,z80,0x7,rb(z80,memory,tmp_z80_PC));
+
+   free(memory);
+   free(registers);
+   free(z80);
 }
 END_TEST
 
@@ -2012,8 +2086,30 @@ START_TEST (test_check_OP_3Dh_DECA)
    Registers registers;
    Z80 z80;
 
+   int result = 1;
+
    InitZ80(&z80,&registers,&op,&cb_op);
 
+   uint8_t tmp_z80_regA = z80.regA;
+
+   result = OP_3Dh_DECA_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+
+   fail_unless(tmp_z80_regA == (uint8_t) (z80.regA + 0x1));
+   // Zero flag
+   fail_unless(((z80.regF >> 7) & 0x01) == (z80.regA == 0));
+   // Neg flag
+   fail_unless(((z80.regF >> 6) & 0x01) == 0x1);
+   // Half-carry
+   fail_unless(((z80.regF >> 5) & 0x01) == ((z80.regA & 0x0F) == 0xF));
+
+/*  return ''+
+  ''+R+'=(--'+R+')&0xFF;'+
+  'FZ=('+R+'==0);'+
+  'FN=1;'+
+  'FH=('+R+'&0xF)==0xF;'+
+  'gbCPUTicks=4;';*/
 }
 END_TEST
 
@@ -2525,14 +2621,23 @@ END_TEST
 
 START_TEST (test_check_OP_57h_LDDA)
 {
-   Memory memory;
-   Opcodes op;
-   Opcodes cb_op;
-   Registers registers;
-   Z80 z80;
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   resetCPURegisters(memory,z80,registers);
+   InitMemory(memory);
 
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->regPC;
+
+   result = OP_LDXY(memory,z80,0x30);
+
+   LDXY(memory,z80,0x30,tmp_z80_PC);
+
+   free(memory);
+   free(registers);
+   free(z80);
 }
 END_TEST
 
@@ -2855,14 +2960,23 @@ END_TEST
 
 START_TEST (test_check_OP_67h_LDHA)
 {
-   Memory memory;
-   Opcodes op;
-   Opcodes cb_op;
-   Registers registers;
-   Z80 z80;
+   Memory * memory = malloc(sizeof(Memory));
+   Registers * registers = malloc(sizeof(Registers));
+   Z80 * z80 = malloc(sizeof(Z80));
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   resetCPURegisters(memory,z80,registers);
+   InitMemory(memory);
 
+   int result = 0;
+   uint16_t tmp_z80_PC = z80->regPC;
+
+   result = OP_LDXY(memory,z80,0x60);
+
+   LDXY(memory,z80,0x60,tmp_z80_PC);
+
+   free(memory);
+   free(registers);
+   free(z80);
 }
 END_TEST
 
@@ -5330,8 +5444,17 @@ START_TEST (test_check_OP_EAh_LDa16A)
    Registers registers;
    Z80 z80;
 
-   InitZ80(&z80,&registers,&op,&cb_op);
+   int result = 1;
 
+   InitZ80(&z80,&registers,&op,&cb_op);
+   InitMemory(&memory);
+
+   result = OP_EAh_LDa16A_wrapper(&memory,&z80);
+
+   fail_unless(result == 0);
+   // 0x0 and 0x1 on the PC counts because opcode
+   // does not exist in mock memory
+   fail_unless(rb(&z80,&memory,(rb(&z80,&memory,(z80.regPC)) + (rb(&z80,&memory,(z80.regPC + 0x1)) << 8))) == z80.regA);
 }
 END_TEST
 

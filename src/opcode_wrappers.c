@@ -101,7 +101,7 @@ int OP_03h_INCBC_wrapper(Memory * memory, Z80 * z80)
 
 int OP_04h_INCB_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_04h_INCB(memory,z80);
+   int retValue = OP_INCX(memory,z80,(uint8_t) 0x1);
 
    return retValue;
 }
@@ -164,7 +164,7 @@ int OP_0Ch_INCC_wrapper(Memory * memory, Z80 * z80)
 
 int OP_0Dh_DECC_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_0Dh_DECC(memory,z80);
+   int retValue = OP_DECX(memory,z80,0x2);
 
    return retValue;
 }
@@ -397,7 +397,7 @@ int OP_2Dh_DECL_wrapper(Memory * memory, Z80 * z80)
 
 int OP_2Eh_LDLd8_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_2Eh_LDLd8(memory,z80);
+   int retValue = OP_LDXd8(memory,z80,(uint8_t) 0x7);
 
    return retValue;
 }
@@ -503,7 +503,7 @@ int OP_3Ch_INCA_wrapper(Memory * memory, Z80 * z80)
 
 int OP_3Dh_DECA_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_3Dh_DECA(memory,z80);
+   int retValue = OP_DECX(memory,z80,0x0);
 
    return retValue;
 }
@@ -686,7 +686,7 @@ int OP_56h_LDDHL_wrapper(Memory * memory, Z80 * z80)
 
 int OP_57h_LDDA_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_57h_LDDA(memory,z80);
+   int retValue = OP_LDXY(memory,z80,0x30);
 
    return retValue;
 }
@@ -799,7 +799,7 @@ int OP_66h_LDHHL_wrapper(Memory * memory, Z80 * z80)
 
 int OP_67h_LDHA_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_67h_LDHA(memory,z80);
+   int retValue = OP_LDXY(memory,z80,0x60);
 
    return retValue;
 }
@@ -1725,9 +1725,9 @@ int OP_E9h_JPHL_wrapper(Memory * memory, Z80 * z80)
    return retValue;
 }
 
-int OP_EAh_LDnnA_wrapper(Memory * memory, Z80 * z80)
+int OP_EAh_LDa16A_wrapper(Memory * memory, Z80 * z80)
 {
-   int retValue = OP_EAh_LDnnA(memory,z80);
+   int retValue = OP_EAh_LDa16A(memory,z80);
 
    return retValue;
 }

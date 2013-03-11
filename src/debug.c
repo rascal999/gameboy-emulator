@@ -89,10 +89,12 @@ int DebugAll(Z80 * z80, Memory * memory, Debug * debug)
    printf("OPCODE = %x ( %s )\n",rb(z80,memory,(z80->regPC)),z80->op[rb(z80,memory,(z80->regPC))].name);
    DebugFullInstruction(z80,memory);
    printf("\n");
-   printf("A = %x\tB = %x\tC = %x\n",z80->regA,z80->regB,z80->regC);
-   printf("D = %x\tE = %x\tF = %x\n",z80->regD,z80->regE,z80->regF);
-   printf("H = %x\tL = %x\tSP = %x\n",z80->regH,z80->regL,z80->regSP);
-   printf("PC = %x\n",z80->regPC);
+   printf("AF = 0x%02x%02x\n",z80->regA,z80->regF);
+   printf("BC = 0x%02x%02x\n",z80->regB,z80->regC);
+   printf("DE = 0x%02x%02x\n",z80->regD,z80->regE);
+   printf("HL = 0x%02x%02x\n",z80->regH,z80->regL);
+   printf("SP = 0x%04x\n",z80->regSP);
+   printf("PC = 0x%04x\n",z80->regPC);
    /*printf("-------------\n");
    printf("| E   N   D |\n");
    printf("-------------\n");*/
